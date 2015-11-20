@@ -1,0 +1,1104 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloVentas.xhtml">
+
+
+	<ui:define name="head">
+		<title>Gestion de Proformas</title>
+		
+		<style type="text/css">
+		    .ui-spinner {
+		    background-color:lightyellow;
+		    }
+		</style>
+		
+	</ui:define>
+
+	<ui:define name="header">
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li class="fuente-link-sidebar"><a href="/buffalo/">
+							Inicio </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="/buffalo/pages/ventas/home.xhtml"> Modulo Ventas </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="/buffalo/pages/ventas/proforma-home.xhtml"> Proformas </a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/ventas/proforma_servicios.xhtml">Proforma
+							Servicios</a></li>
+				</ol>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formRegistroProforma">
+			<p:outputPanel autoUpdate="true">
+				<div class="btn-group btn-group-sm" style="width: 100%;">
+				
+				
+				<h:panelGrid columns="0" cellpadding="1" width="100%" styleClass="main-panel">		
+				
+				
+					<p:outputPanel id="opToolBar">
+						<p:toolbar>
+							<p:toolbarGroup align="left" styleClass="main-panel">
+								
+								<p:commandButton style="width: 8em;"
+									rendered="#{proformaServicioController.nuevo=='false'}"
+									action="#{proformaServicioController.crearProforma()}"
+									icon="ui-icon-plusthick" value="Crear"
+									update=":formRegistroProforma" />
+			
+								<p:commandButton style="width: 8em;"
+									rendered="#{proformaServicioController.modificar!='false' and proformaServicioController.nuevo}"
+									disabled="#{proformaServicioController.modificar=='false'}"
+									action="#{proformaServicioController.initNewProforma()}"
+									icon="ui-icon-minus" value="Cancelar" immediate="true"
+									update=":formRegistroProforma" />
+			
+								<p:commandButton style="width: 8em;"
+									action="#{proformaServicioController.verModificarProforma()}"
+									disabled="#{proformaServicioController.modificar!='true'}"
+									rendered="#{proformaServicioController.nuevo=='false'}"
+									icon="ui-icon-disk" value="Modificar"
+									update=":formRegistroProforma" />
+			
+								<p:commandButton style="width: 8em;"
+									action="#{proformaServicioController.modificarProforma()}"
+									disabled="#{proformaServicioController.modificar!='true' or proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}"
+									rendered="#{proformaServicioController.nuevo!='false'}"
+									icon="ui-icon-disk" value="Modificar"
+									update=":formRegistroProforma" />
+			
+								<p:commandButton style="width: 8em;"
+									oncomplete="PF('confirmProccess').show()"
+									disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA' or empty listaDetalleServicio}"
+									rendered="#{proformaServicioController.nuevo=='true' and proformaServicioController.modificar=='true'}"
+									icon="ui-icon-circle-check" value="Procesar"
+									update=":formRegistroProforma" />
+			
+			
+								<p:confirmDialog id="confirmDialog" widgetVar="confirmProccess"
+									message="Si esta seguro precione [SI], si quiere cancelar esperacion presione [NO]."
+									header="Desea Procesar esta Proforma?" severity="alert" closeOnEscape="true"
+									appendTo="@(body)"
+									closable="true">
+			
+									<p:commandButton id="btnYes" value="Si" process="@this"
+										oncomplete="PF('confirmProccess').hide()"
+										actionListener="#{proformaServicioController.procesarProforma()}"
+										update=":formRegistroProforma" />
+			
+									<p:commandButton id="btnNo" value="No"
+										oncomplete="PF('confirmProccess').hide()" type="button" />
+								</p:confirmDialog>
+			
+								<p:commandButton style="width: 8em;"
+									oncomplete="PF('confirmRemove').show()"
+									disabled="#{proformaServicioController.modificar!='true' or proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}"
+									icon="ui-icon-trash" value="Borrar" update=":formRegistroProforma"
+									/>
+								
+								<p:confirmDialog id="confirmDialogRemove" widgetVar="confirmRemove"
+									message="Si esta seguro precione [SI], si quiere cancelar esperacion presione [NO]."
+									header="Desea Borrar esta Proforma?" severity="alert" closeOnEscape="true"
+									appendTo="@(body)"
+									closable="true">
+			
+									<p:commandButton id="btnYesRemove" value="Si" process="@this"
+										oncomplete="PF('confirmRemove').hide()"
+										actionListener="#{proformaServicioController.eliminarProforma()}"
+										update=":formRegistroProforma" />
+			
+									<p:commandButton id="btnNoRemove" value="No"
+										oncomplete="PF('confirmRemove').hide()" type="button" />
+								</p:confirmDialog>
+								
+								
+							</p:toolbarGroup>
+							
+							<p:toolbarGroup  align="right" styleClass="main-panel" >									
+								
+								<p:commandButton value="Servicio"
+										icon="ui-icon-plusthick"
+										rendered="#{proformaServicioController.nuevo=='true' and proformaServicioController.modificar=='true'}"
+										disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}"
+										actionListener="#{proformaServicioController.showModalServicios()}"
+										update=":formModalServicios" oncomplete="PF('dlgModalServicios').show()" />
+										
+								<p:commandButton oncomplete="PF('dlgCliente').show()" value="Registrar Cliente"
+										update=":formModalCliente"
+										rendered="#{proformaServicioController.nuevo=='true' and proformaServicioController.modificar=='true'}"
+										disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}"
+										icon="ui-icon-person"
+										action="#{proformaServicioController.crearCliente()}">
+								</p:commandButton>
+								
+								<p:commandButton value="Descargar"
+									disabled="#{empty listaDetalleServicio}"
+									rendered="#{proformaServicioController.nuevo=='true' and proformaServicioController.modificar=='true'}"
+									ajax="false" icon="ui-icon-arrowstop-1-s">
+									<p:fileDownload
+										value="#{proformaServicioController.streamedContent}" />
+								</p:commandButton>
+								
+							</p:toolbarGroup>
+							
+							
+						</p:toolbar>
+					</p:outputPanel>
+				</h:panelGrid>
+				
+					
+				</div>
+			</p:outputPanel>
+
+			<br />
+			<br />
+			<div class="row">
+				<div class="col-sm-12 col-md-12" align="left">
+
+					<ui:fragment rendered="#{!proformaServicioController.nuevo}">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<span class="icon"> <i aria-hidden="true"
+										class="icon-list"></i>
+									</span> <strong>REGISTRO DE PROFORMAS</strong>
+								</h3>
+							</div>
+
+							<h:panelGroup rendered="#{empty listaProformaServicio}">
+								<h4>No se encontraron registros de proformas.</h4>
+							</h:panelGroup>
+
+							<!-- Table -->
+							<div class="table-responsive">
+
+								<p:dataTable
+									styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+									selection="#{proformaServicioController.selectedProforma}"
+									selectionMode="single" rowKey="#{_proforma.id}"
+									id="ProformasTable" var="_proforma"
+									value="#{listaProformaServicio}"
+									rendered="#{not empty listaProformaServicio}"
+									emptyMessage="No se encontraron registros.">
+
+									<p:ajax event="rowSelect" update=":formRegistroProforma"
+										listener="#{proformaServicioController.onRowSelectProformaClick}" />
+
+									<p:ajax event="rowDblselect" update=":formRegistroProforma"
+										listener="#{proformaServicioController.onRowSelectProformaDBLClick}" />
+
+									<p:column headerText="Proforma" width="100"
+										filterStyle="width: 100%;" filterBy="#{_proforma.id}"
+										filterMatchMode="contains">
+										<center>
+											<span class="badge"> <h:outputText
+													value="#{_proforma.id}" />
+											</span>
+										</center>
+									</p:column>
+
+
+
+									<p:column headerText="Nombre del Cliente"
+										filterStyle="width: 100%;"
+										filterBy="#{_proforma.cliente.nombreCompleto}"
+										filterMatchMode="contains">
+										<h:outputText value="#{_proforma.cliente.nombreCompleto}" />
+									</p:column>
+
+
+									<p:column headerText="REF. Cliente" filterStyle="width: 100%;"
+										filterBy="#{_proforma.observacion}" filterMatchMode="contains">
+										<h:outputText value="#{_proforma.observacion}" />
+									</p:column>
+									
+									<p:column headerText="Estado" width="10%;"
+										filterStyle="width: 100%;" filterBy="#{_proforma.estado}"
+										filterMatchMode="contains">
+										
+										<h:outputText styleClass="label label-success" 
+											value="Activo" rendered="#{_proforma.estado=='AC'}" style="font-size:12px;"/>
+										<h:outputText styleClass="label label-danger" 
+											value="Inactivo" rendered="#{_proforma.estado=='IN'}" style="font-size:12px;"/>
+										<h:outputText styleClass="label label-primary" 
+											value="Procesado" rendered="#{_proforma.estado=='PR'}" style="font-size:12px;"/>
+										<h:outputText styleClass="label label-default" 
+											value="Facturado" rendered="#{_proforma.estado=='FA'}" style="font-size:12px;"/>
+										
+									</p:column>
+
+									<p:column headerText="Registro" width="10%;"
+										filterStyle="width: 100%;"
+										filterBy="#{_proforma.usuarioRegistro}"
+										filterMatchMode="contains">
+										<h:outputText value="#{_proforma.usuarioRegistro}" />
+									</p:column>
+
+									<p:column headerText="Validez" width="10%;"
+										filterStyle="width: 100%;"
+										filterBy="#{proformaServicioController.obtenerFecha(_proforma.fechaEntrega)}"
+										filterMatchMode="contains">
+										<h:outputText value="#{_proforma.fechaEntrega}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</p:column>
+
+									<p:column headerText="Descuento" width="10%;"
+										filterStyle="width: 100%;"
+										filterBy="#{_proforma.totalDescuento}"
+										filterMatchMode="contains">
+										
+										<h:outputText value="Bs.- " style="float:left;"/>
+										<strong>
+											<h:outputText value="#{_proforma.totalDescuento}" style="float:right;">
+												<f:convertNumber pattern="#,##0.00" locale="en" />
+											</h:outputText>
+										</strong>
+										
+									</p:column>
+
+									<p:column headerText="Importe Total" width="10%;"
+										filterStyle="width: 100%;" filterBy="#{_proforma.total}"
+										filterMatchMode="contains">
+										<h:outputText value="Bs.- " style="float:left;"/>
+										<strong>
+											<h:outputText value="#{_proforma.total}" style="float:right;">
+												<f:convertNumber pattern="#,##0.00" locale="en" />
+											</h:outputText>
+										</strong>
+
+									</p:column>
+									
+
+								</p:dataTable>
+							</div>
+						</div>
+					</ui:fragment>
+				</div>
+			</div>
+			<div class="row">
+				<ui:fragment rendered="#{proformaServicioController.nuevo}">
+					<div class="col-sm-5 col-md-3" align="left">
+						<div class="panel panel-primary">
+							<!-- Default panel contents -->
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<span class="icon"> <i aria-hidden="true"
+										class="icon-forward"></i>
+									</span> <strong>PROFORMA SERVICIOS</strong>
+								</h3>
+							</div>
+							<div class="panel-body">
+
+								<h:panelGrid columns="3">
+									<h:outputLabel value="Codigo" for="codigoID" />
+									<p:inputText id="codigoID" styleClass="form-control"
+										disabled="true"
+										value="#{proformaServicioController.newProforma.id}"
+										required="true" requiredMessage="Codigo Requerido." size="10" />
+									<p:message for="codigoID" />
+
+
+									<h:outputLabel value="Validez" for="fentregaID" />
+									<p:calendar id="fentregaID" showOn="button" size="10"
+										disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}"
+										value="#{proformaServicioController.newProforma.fechaEntrega}"
+										required="true" requiredMessage="Requerido."
+										pattern="dd/MM/yyyy" mask="true">
+									</p:calendar>
+									<p:message for="fentregaID" />
+									
+									<h:outputLabel value="Cliente" for="clienteID" />
+									<p:autoComplete id="clienteID" maxResults="10"
+										value="#{proformaServicioController.nombreCliente}"
+										style="text-transform: uppercase" required="true"
+										disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}"
+										requiredMessage="Requerido."
+										validatorMessage="Nombre Invalido!" size="30"
+										completeMethod="#{proformaServicioController.completeDescripcionClientes}">
+										<p:ajax event="itemSelect"
+											listener="#{proformaServicioController.onItemSelectCliente}"
+											update=":formRegistroProforma:creditoID, :growl" />
+									</p:autoComplete>
+									<p:message for="clienteID" />
+									
+									<h:outputLabel value="Credito" for="creditoID" />
+									<p:selectBooleanCheckbox id="creditoID" 
+										disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA' or proformaServicioController.newProforma.cliente.credito=='false'}"
+										value="#{proformaServicioController.newProforma.credito}">
+										<p:ajax event="change"/>
+									</p:selectBooleanCheckbox>
+									<p:message for="creditoID" />
+
+									<h:outputLabel value="Descuento" for="desccuentoID" />
+									<p:inputText id="desccuentoID" styleClass="form-control"
+										disabled="true"
+										value="#{proformaServicioController.newProforma.totalDescuento}"
+										required="true" requiredMessage="Codigo Requerido." size="20">
+										<f:convertNumber pattern="#,##0.000" locale="en" />
+									</p:inputText>
+									<p:message for="desccuentoID" />
+
+									<h:outputLabel value="REF_Cliente" for="observacionID" />
+									<p:inputText id="observacionID" styleClass="form-control"
+										disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}"
+										value="#{proformaServicioController.newProforma.observacion}"
+										required="false" requiredMessage="Codigo Requerido." size="40" />
+									<p:message for="observacionID" />
+
+									<h:outputLabel value="Estado" for="estadoACID" />
+									<p:inputText id="estadoACID" styleClass="form-control"
+										disabled="true" value="#{proformaServicioController.newProforma.estado=='AC'?'ACTIVA':'NULLA' or proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'?'PROCESADA':'NULLA' or proformaServicioController.newProforma.estado=='FA'?'FACTURADA':'NULLA'}" required="true"
+										requiredMessage="Requerido." size="40">
+									</p:inputText>
+									<p:message for="estadoACID"/>
+
+									<h:outputLabel value="Total Bs" for="totalID" />
+									<p:inputText id="totalID" styleClass="form-control"
+										disabled="true"
+										value="#{proformaServicioController.newProforma.total}"
+										required="true" requiredMessage="Codigo Requerido." size="40">
+										<f:convertNumber pattern="#,##0.00" locale="en" />
+									</p:inputText>
+									<p:message for="totalID" />
+								</h:panelGrid>
+								
+							</div>
+						</div>
+
+					</div>
+
+
+
+
+					<div class="panel-body">
+
+
+
+						<div class="col-sm-5 col-md-9" align="left">
+							
+							<div class="panel-body">
+							
+							<div class="panel panel-default">
+								<!-- Default panel contents -->
+								<div class="panel-heading">
+									<h3 class="panel-title">
+										<span class="icon"> <i aria-hidden="true"
+											class="glyphicon glyphicon-th-list"></i>
+										</span> <strong>LISTA DE SERVICIOS</strong>
+									</h3>
+																	</div>
+								
+									<!-- Table -->
+									<div class="table-responsive">
+
+										<div id="newdetalleMessages" class="update" />
+										<h:panelGroup rendered="#{empty listaDetalleServicio}">
+											<em>No se encontraron Servicios en la Proforma.</em>
+										</h:panelGroup>
+
+										<p:dataTable
+											selection="#{proformaServicioController.selectedDetalleServicio}"
+											selectionMode="single" rows="10" id="proformasTableDetalle"
+											rowKey="#{_prod}" var="_prod" value="#{listaDetalleServicio}"
+											rendered="#{not empty listaDetalleServicio}"
+											emptyMessage="No existe Proformas registradas.">
+
+											<p:ajax event="rowDblselect" update=":formRegistroProforma"
+												listener="#{proformaServicioController.onRowSelectDetalleFarmacoClick}" />
+
+											<p:column width="3" headerText="#">
+												<p:commandLink id="quitarCompuestoID2"
+													disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}"
+													update=":formRegistroProforma"
+													action="#{proformaServicioController.removeDetalle(_prod)}">
+													<span class="badge alert-danger">x</span>
+												</p:commandLink>
+												<p:tooltip id="quitarToolTip2" for="quitarCompuestoID2"
+													value="Eliminar #{_prod.servicio.nombreServicio}" />
+											</p:column>
+
+											<p:column headerText="Codigo" width="10%;">
+												<span class="badge">#{_prod.servicio.id}</span>
+											</p:column>
+											<p:column headerText="Descripcion del Servicio">
+												<h:outputText value="#{_prod.servicio.nombreServicio}" />
+											</p:column>
+
+											<p:column headerText="P. Unitario" width="10%;">
+												<h:outputText value="Bs.- " />
+												<p:inputText size="8" value="#{_prod.precio}"
+													disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}">
+													<f:convertNumber pattern="#,##0.00" locale="en" />
+													<p:ajax event="change" update=":formRegistroProforma"
+														listener="#{proformaServicioController.calcualteTotals()}" />
+												</p:inputText>
+											</p:column>
+											<p:column headerText="Cantidad" width="10%;">
+												<p:inputText size="5" value="#{_prod.cantidad}"
+													disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}">
+													<f:convertNumber pattern="#,##0.00" locale="en" />
+													<p:ajax event="change" update=":formRegistroProforma"
+														listener="#{proformaServicioController.calcualteTotals()}" />
+												</p:inputText>
+											</p:column>
+											<p:column headerText="Descuento" width="10%;">
+												<h:outputText value="% " />
+												<p:inputText size="5" value="#{_prod.descuento}"
+													disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}">
+													<f:convertNumber pattern="#,##0.00" locale="en" />
+													<p:ajax event="change" update=":formRegistroProforma"
+														listener="#{proformaServicioController.calcualteTotals()}" />
+												</p:inputText>
+											</p:column>
+											<p:column headerText="SubTotal" width="10%;">
+												<h:outputText value="Bs.- " />
+												<h:outputText value="#{_prod.total}">
+													<f:convertNumber pattern="#,##0.00" locale="en" />
+												</h:outputText>
+											</p:column>
+
+										</p:dataTable>
+
+									</div>
+									<div class="btn-group btn-group-sm">
+										<p:commandButton value="Eliminar Todo"
+											disabled="#{proformaServicioController.newProforma.estado=='PR' or proformaServicioController.newProforma.estado=='FA'}"
+											icon="ui-icon-arrowstop-1-w" update=":formRegistroProforma"
+											actionListener="#{proformaServicioController.removeDetalleAll()}" />
+									</div>
+							</div>
+							</div>
+							
+						</div>
+					</div>
+
+				</ui:fragment>
+
+			</div>
+
+		</h:form>
+
+		<!-- VISTA DETALLE FARMACO -->
+		<p:dialog showEffect="explode" header="[+] AGREGAR SERVICIO"
+			widgetVar="dlgFarmaco" resizable="false" modal="true"
+			position="center" width="600" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}" id="modalFarmaco">
+
+			<h:form id="formModalFarmaco">
+
+				<script type="text/javascript">
+			    function handleDialogSubmit(xhr, status, args) {
+			        if (args.validationFailed) {
+			        	PF('dlgFarmaco').show();
+			        } else {
+			        	PF('dlgFarmaco').hide();
+			        	
+			        }
+			    }
+			</script>
+
+				<h:panelGrid columns="6">
+
+					<label for="nombrepID">Producto</label>
+					<p:inputText id="nombrepID"
+						value="#{proformaServicioController.detalleServicio.servicio.nombreServicio}"
+						disabled="true" />
+					<p:message for="nombrepID" />
+
+					<label for="idpID">Cantidad</label>
+					<p:inputText id="idpID" validatorMessage="Invalido."
+						value="#{proformaServicioController.detalleServicio.cantidad}">
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+						<p:ajax event="change"
+							listener="#{proformaServicioController.calcualteTotal()}"
+							update="totalID" />
+					</p:inputText>
+					<p:message for="idpID" />
+
+					<label for="precioID">P.Venta</label>
+					<p:inputText id="precioID"
+						value="#{proformaServicioController.detalleServicio.precio}"
+						disabled="true">
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+					</p:inputText>
+					<p:message for="precioID" />
+
+					<label for="descuentoID">Descuento</label>
+					<p:inputText id="descuentoID" validatorMessage="Invalido."
+						value="#{proformaServicioController.detalleServicio.descuento}">
+						<p:ajax event="change"
+							listener="#{proformaServicioController.calcualteTotal()}"
+							update="totalID" />
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+					</p:inputText>
+					<p:message for="descuentoID" />
+
+					<label for="totalID">Total</label>
+					<p:inputText id="totalID"
+						value="#{proformaServicioController.detalleServicio.total}"
+						disabled="true">
+						<p:ajax event="change" update=":formModalFarmaco" />
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+					</p:inputText>
+					<p:message for="totalID" />
+
+				</h:panelGrid>
+				<br />
+				<br />
+
+			</h:form>
+
+			<div class="modal-footer">
+				<div class="btn-group btn-group-sm">
+					<p:commandButton value="Cancelar" style="width: 150px;"
+						icon="ui-icon-minus" update=":formRegistroProforma" action="#"
+						oncomplete="PF('dlgFarmaco').hide()" />
+					<p:commandButton value="Agregar" icon="ui-icon-plusthick"
+						style="width: 150px;"
+						update=":formRegistroProforma, :formModalFarmaco"
+						action="#{proformaServicioController.registrarDetalleFarmaco()}"
+						oncomplete="handleDialogSubmit(xhr, status, args)" />
+				</div>
+
+			</div>
+
+		</p:dialog>
+
+		<!-- VISTA DETALLE FARMACO -->
+		<p:dialog showEffect="explode" header="[*] MODIFICAR FARMACO"
+			widgetVar="dlgFarmacoModificar" resizable="false" modal="true"
+			position="center" width="600" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalFarmacoModificar">
+
+			<h:form id="formModalFarmacoModificar">
+
+				<script type="text/javascript">
+			    function handleDialogSubmit(xhr, status, args) {
+			        if (args.validationFailed) {
+			        	PF'(dlgFarmacoModificar').show();
+			        } else {
+			        	PF('dlgFarmacoModificar').hide();
+			        }
+			    }
+			</script>
+
+				<h:panelGrid columns="6">
+
+					<label for="nombrepID">Producto</label>
+					<p:inputText id="nombrepID"
+						value="#{proformaServicioController.detalleServicio.servicio.nombreServicio}"
+						disabled="true" />
+					<p:message for="nombrepID" />
+
+					<label for="idpID">Cantidad</label>
+					<p:inputText id="idpID" validatorMessage="Invalido."
+						value="#{proformaServiciooController.detalleFarmaco.cantidad}">
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+						<p:ajax event="change"
+							listener="#{proformaServicioController.calcualteTotal()}"
+							update="totalID" />
+					</p:inputText>
+					<p:message for="idpID" />
+
+					<label for="precioID">P.Venta</label>
+					<p:inputText id="precioID"
+						value="#{proformaServicioController.detalleServicio.precio}"
+						disabled="true">
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+					</p:inputText>
+					<p:message for="precioID" />
+
+					<label for="descuentoID">Descuento</label>
+					<p:inputText id="descuentoID" validatorMessage="Invalido."
+						value="#{proformaServicioController.detalleServicio.descuento}">
+						<p:ajax event="change"
+							listener="#{proformaServicioController.calcualteTotal()}"
+							update="totalID" />
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+					</p:inputText>
+					<p:message for="descuentoID" />
+
+					<label for="totalID">Total</label>
+					<p:inputText id="totalID"
+						value="#{proformaServicioController.detalleServicio.total}"
+						disabled="true">
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+					</p:inputText>
+					<p:message for="totalID" />
+
+				</h:panelGrid>
+				<br />
+				<br />
+
+			</h:form>
+
+			<div class="modal-footer">
+				<div class="btn-group btn-group-sm">
+					<p:commandButton value="Cancelar" style="width: 150px;"
+						icon="ui-icon-minus" update=":formRegistroProforma" action="#"
+						oncomplete="PF('dlgFarmacoModificar').hide()" />
+					<p:commandButton value="Modificar" icon="ui-icon-plusthick"
+						style="width: 150px;"
+						update=":formRegistroProforma, :formModalFarmacoModificar"
+						action="#{proformaServicioController.actualizarDetalleFarmaco}"
+						oncomplete="handleDialogSubmit(xhr, status, args)" />
+				</div>
+
+			</div>
+
+		</p:dialog>
+
+
+
+		<!--Producto  -->
+
+		<p:dialog showEffect="explode"
+			widgetVar="dlgModalServicios" resizable="false" modal="true"
+			position="center" width="600" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}" id="modalRecetas">
+			
+			<f:facet name="header">
+			        <strong>
+			        	<span class="glyphicon glyphicon-plus"/>
+			        	<h:outputText value="Agregar Servicio" />
+			        </strong>
+			</f:facet>
+			
+			<div class="modal-body">
+				<h:form id="formModalServicios">
+				
+							<h:panelGrid columns="2" >
+					     		<p:outputLabel value="Servicio: "   />									        
+						        <p:autoComplete id="servicioID" value="#{proformaServicioController.selectedServicio.id}" completeMethod="#{proformaServicioController.completeSearhServicio}"
+						                        var="_varser" itemValue="#{_varser.id}"  label="#{_varser.nombreServicio}" forceSelection="true" size="80">  
+						            <p:ajax event="itemSelect" listener="#{proformaServicioController.onItemSelectServicio}" update=":formModalServicios:detalle"/>
+						            
+						            <p:column style="width: 10%;" >
+						                <h:outputText value="#{_varser.id}" />
+						            </p:column>
+						 
+						            <p:column style="width: 60%;">
+						                <h:outputText value="#{_varser.nombreServicio}"  />
+						            </p:column>
+						            <p:column style="width: 30%;">
+						                <h:outputText value="#{_varser.precioUnitarioVenta}">
+						                	<f:convertNumber pattern="#,##0.00" locale="es"/>
+						                </h:outputText>
+						            </p:column>
+						            
+						        </p:autoComplete>
+					     	</h:panelGrid>
+							
+							<h:panelGrid columns="4" id="detalle">
+						   		<h:panelGrid columns="2">	
+						   			<p:outputLabel value="Descripcion:" />
+							        <p:inputText id="nameServicioID" value="#{proformaServicioController.selectedServicio.nombreServicio} "
+							        disabled="true"  styleClass="form-control" size="30"/> 
+							        
+							        <p:outputLabel value="Cantidad:" />
+							        <p:spinner id="cantidadID" value="#{proformaServicioController.cantidadServicio}" type="number"
+							        	disabled="false" size="40" validatorMessage="La cantidad minima es 1!">
+							        	<f:convertNumber pattern="#,##0"  locale="es" />
+							        	<f:validateLongRange minimum="1" />
+							        	<p:ajax event="change" listener="#{proformaServicioController.actualizarMonto}" update=":formModalServicios:detalle"/>
+							        </p:spinner>
+							        
+							        <p:outputLabel value="Descuento %:" />
+							        <p:inputText id="descuentoID" value="#{proformaServicioController.totalDescuento}" 
+							        	disabled="false" styleClass="form-control" size="40">
+							        	<f:convertNumber pattern="#,##0"  locale="en" />
+							        	<p:ajax event="change" listener="#{proformaServicioController.actualizarMonto}" update=":formModalServicios:detalle"/>
+							        </p:inputText> 
+
+							        <p:outputLabel value="Precio Unitario:" />
+							        <p:inputText id="puID" value="#{proformaServicioController.selectedServicio.precioUnitarioVenta}"
+							        	disabled="false"  styleClass="form-control" size="40"> 
+							        	<f:convertNumber pattern="#,##0.00"  locale="en" />
+										<p:ajax event="change" listener="#{proformaServicioController.actualizarMonto}" update=":formModalServicios:detalle"/>
+							        </p:inputText>  
+							        
+							        <p:outputLabel value="Importe Total:" />
+							        <p:inputText id="importeID" value="#{proformaServicioController.totalServicio}"
+							        	disabled="true"  styleClass="form-control" size="40">
+							        	<f:convertNumber pattern="#,##0.00"  locale="en" />
+							        </p:inputText> 
+							        
+							</h:panelGrid>
+							
+					
+					
+				
+					</h:panelGrid>
+					
+					</h:form>
+					
+			</div>
+			<div class="modal-footer">
+					
+
+						<p:commandButton value="Cancelar" icon="ui-icon-minus"
+							action="#"
+							oncomplete="PF('dlgModalServicios').hide()" />
+
+						<p:commandButton value="Agregar" icon="ui-icon-plusthick"
+							update=":formRegistroProforma"
+							action="#{proformaServicioController.agregarServicio()}"
+							oncomplete="PF('dlgModalServicios').hide()" />
+
+			</div>
+
+		</p:dialog>
+		
+		
+
+		<!-- MODAL CREAR PROFORMA VENTA -->
+		<p:dialog showEffect="explode" header="VISTA PREVIA PROFORMA VENTA"
+			widgetVar="dlgVistaProformaVenta" resizable="false" modal="true"
+			position="center" styleClass="customDialog" width="600px"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalProformaVentaPreviaID">
+
+			<p:hotkey bind="esc" handler="test();" />
+
+			<script type="text/javascript">
+	
+				function test(){
+					PF('dlgVistaProformaVenta').hide();
+				}
+					
+				</script>
+
+			<h:form id="formModalProformaVentaPrevia">
+			</h:form>
+		</p:dialog>
+
+
+		<!-- MODAL CREAR PROFORMA VENTA -->
+		<p:dialog showEffect="explode" header="CREAR PROFORMA VENTA"
+			widgetVar="dlgProformaVenta" resizable="false" modal="true"
+			position="center" styleClass="customDialog" width="600px"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalProformaVentaID">
+
+			<p:hotkey bind="esc" handler="test();" />
+
+			<script type="text/javascript">
+	
+				function test(){
+					PF('dlgProformaVenta').hide();
+				}
+					
+				</script>
+
+			<h:form id="formModalProformaVenta">
+
+				<script type="text/javascript">
+				    function handleDialogSubmit(xhr, status, args) {
+				        if (args.validationFailed) {
+				        	PF('dlgProformaVenta').show();
+				        } else {
+				        	PF('dlgProformaVenta').hide();
+				        	PF('dlgVistaPrevia').show();
+				        }
+				    }
+				</script>
+
+				<h:panelGrid columns="6">
+
+					<h:outputLabel for="proformaId" value="Proforma" />
+					<p:inputText id="proformaId"
+						value="#{proformaServicioController.newProforma.id}"
+						disabled="true" styleClass="form-control" size="40">
+					</p:inputText>
+					<p:message for="proformaId" errorClass="invalid" />
+
+					<h:outputLabel value="Cliente" for="clientePVID" />
+					<p:autoComplete id="clientePVID" maxResults="10"
+						value="#{proformaServicioController.nombreCliente}"
+						style="text-transform: uppercase" required="false"
+						requiredMessage="Requerido." validatorMessage="Nombre Invalido!"
+						completeMethod="#{proformaServicioController.completeDescripcionClientes}"
+						size="20">
+						<p:ajax event="itemSelect"
+							listener="#{proformaServicioController.onItemSelectClienteVenta}"
+							update=":formModalProformaVenta, :growl" />
+					</p:autoComplete>
+					<p:message for="clientePVID" />
+
+					<h:outputLabel value="Entrega" for="fentregaPVID" />
+					<p:calendar id="fentregaPVID" showOn="button"
+						value="#{proformaServicioController.newProformaVenta.fechaEntrega}"
+						required="true" requiredMessage="Requerido."
+						pattern="dd/MM/yyyy hh:mm" mask="true">
+						<p:ajax event="change" />
+					</p:calendar>
+					<p:message for="fentregaPVID" />
+
+
+
+					<h:outputLabel for="creditoPVID" value="Credito" />
+					<h:selectBooleanCheckbox id="creditoPVID"
+						value="#{proformaServicioController.newProformaVenta.credito}">
+						<p:ajax event="change" />
+					</h:selectBooleanCheckbox>
+					<p:message for="creditoPVID" errorClass="invalid" />
+
+
+					<h:outputLabel for="descuentoPvID" value="Descuento" />
+					<p:inputText id="descuentoPvID"
+						value="#{proformaServicioController.newProformaVenta.totalDescuento}"
+						disabled="true" styleClass="form-control" size="40">
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+					</p:inputText>
+					<p:message for="descuentoPvID" errorClass="invalid" />
+
+					<h:outputLabel for="costoPVID" value="Importe_Total" />
+					<p:inputText id="costoPVID"
+						value="#{proformaServicioController.newProformaVenta.totalPagar}"
+						disabled="true" styleClass="form-control" size="40">
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+					</p:inputText>
+					<p:message for="costoPVID" errorClass="invalid" />
+
+				</h:panelGrid>
+
+
+
+				<div class="modal-footer">
+
+					<div class="btn-group btn-group-sm" style="width: 100%;">
+
+						<p:commandButton value="Cerrar" style="width: 20%;"
+							icon="ui-icon-circle-close" oncomplete="PF('dlgProformaVenta').hide()"
+							action="#" />
+
+						<p:commandButton value="Registrar" ajax="true" style="width: 20%;"
+							update=":formModalProformaVenta, :formRegistroProforma, :growl, :formModalVistaPrevia"
+							icon="ui-icon-circle-check"
+							action="#{proformaServicioController.crearProformaVenta}"
+							oncomplete="handleDialogSubmit(xhr, status, args)" />
+
+
+					</div>
+				</div>
+			</h:form>
+		</p:dialog>
+
+		<!-- VISTA PREVIA FACTURA -->
+		<p:dialog showEffect="explode" header="Vista Previa"
+			widgetVar="dlgVistaPrevia" resizable="false" modal="true"
+			position="center" width="750" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalVistaPrevia">
+
+			<div class="modal-body">
+
+				<h:form id="formModalVistaPrevia">
+
+					<p:media id="idReporteFactura" player="pdf"
+						value="#{proformaServicioController.urlFactura}" width="700px"
+						height="500px" />
+
+				</h:form>
+			</div>
+
+			<div class="modal-footer">
+
+				<div class="btn-group btn-group-sm">
+
+					<p:commandButton value="Cerrar" style="width: 150px;"
+						icon="ui-icon-minus" action="#" styleClass="btn btn-default"
+						oncomplete="PF('dlgVistaPrevia').hide()" />
+
+				</div>
+
+			</div>
+
+		</p:dialog>
+
+
+		<!-- VISTA PREVIA FACTURA -->
+		<p:dialog showEffect="explode" header="Registrar Cliente"
+			widgetVar="dlgCliente" resizable="false" modal="true"
+			position="center" width="400" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}" id="modalCliente">
+			
+			<f:facet name="header">
+					<strong>
+			        	<span class="glyphicon glyphicon-user"/>
+			        	<h:outputText value="Registrar Cliente" />
+			        </strong>
+			</f:facet>
+			
+			<h:form id="formModalCliente">
+			
+			<div class="modal-body">
+
+				
+					<div class="col-sm-3 col-md-12" align="left">
+
+								<h:panelGrid columns="3">
+
+									<h:outputLabel value="Nombre" for="nombreID" />
+									<p:inputText id="nombreID" styleClass="form-control" size="40"
+										value="#{proformaServicioController.newCliente.nombreCompleto}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="nombreID" />
+
+									<h:outputLabel value="Direccion" for="direccionID" />
+									<p:inputText id="direccionID" styleClass="form-control"
+										size="40"
+										value="#{proformaServicioController.newCliente.direccion}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="direccionID" />
+
+									<h:outputLabel value="Telefono" for="telefonoID" />
+									<p:inputText id="telefonoID" styleClass="form-control"
+										size="40"
+										value="#{proformaServicioController.newCliente.telefono}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="telefonoID" />
+
+									<h:outputLabel value="Celular" for="celularID" />
+									<p:inputText id="celularID" styleClass="form-control" size="40"
+										value="#{proformaServicioController.newCliente.celular}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="celularID" />
+
+									<h:outputLabel value="Nº_Documento" for="documentoID" />
+									<p:inputText id="documentoID" styleClass="form-control"
+										value="#{proformaServicioController.newCliente.numeroDocumento}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="documentoID" />
+
+									<h:outputLabel value="Ciudad" for="ciudadID" />
+									<h:selectOneMenu id="ciudadID"
+										value="#{proformaServicioController.newCliente.ciudad.id}"
+										styleClass="form-control" required="true"
+										requiredMessage="Requerido.">
+										<f:selectItem itemValue="" itemLabel="-- Seleccione --" />
+										<f:selectItems
+											value="#{proformaServicioController.listaCiudad}" var="_pro"
+											itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+										<p:ajax event="change" />
+									</h:selectOneMenu>
+									<p:message for="ciudadID" />
+
+									<h:outputLabel value="Tipo" for="tipoID" />
+									<h:selectOneMenu id="tipoID"
+										value="#{proformaServicioController.newCliente.tipoCliente}"
+										styleClass="form-control" required="true"
+										requiredMessage="Requerido.">
+										<f:selectItem itemValue="" itemLabel="-- Seleccione --" />
+										<f:selectItem itemValue="NATURAL" itemLabel="NATURAL" />
+										<f:selectItem itemValue="JURIDICO" itemLabel="JURIDICO" />
+										<p:ajax event="change" />
+									</h:selectOneMenu>
+									<p:message for="tipoID" />
+
+									<h:outputLabel value="NIT" for="nitID" />
+									<p:inputText id="nitID" styleClass="form-control" size="40"
+										value="#{proformaServicioController.newCliente.nit}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="nitID" />
+
+									<h:outputLabel value="E-Mail" for="correoID" />
+									<p:inputText id="correoID" styleClass="form-control" size="40"
+										value="#{proformaServicioController.newCliente.correoElectronico}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="correoID" />
+
+									<h:outputLabel value="Nº Cuenta" for="cuentaID" />
+									<p:inputText id="cuentaID" styleClass="form-control" size="40"
+										value="#{proformaServicioController.newCliente.numeroCuenta}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="cuentaID" />
+
+									<h:outputLabel value="Permitir Credito" for="creditoID" />
+									<h:selectBooleanCheckbox
+										value="#{proformaServicioController.newCliente.credito}"
+										id="creditoID" required="true" requiredMessage="Requerido.">
+										<p:ajax event="change" update=":formRegistroProforma, :growl" />
+									</h:selectBooleanCheckbox>
+									<p:message for="creditoID" />
+
+									<h:outputLabel value="Porcentaje Credito"
+										for="porcentajeCreditoID"
+										rendered="#{proformaServicioController.newCliente.credito}" />
+									<p:inputText id="porcentajeCreditoID"
+										rendered="#{proformaServicioController.newCliente.credito}"
+										styleClass="form-control" size="40"
+										value="#{proformaServicioController.newCliente.porcentajeCredito}"
+										required="true" requiredMessage="Requerido."
+										validatorMessage="Invalido.">
+										<f:convertNumber pattern="#,##0.00" />
+									</p:inputText>
+									<p:message for="porcentajeCreditoID"
+										rendered="#{proformaServicioController.newCliente.credito}" />
+
+									<h:outputLabel value="Descuento" for="descuentoID" />
+									<p:inputText id="descuentoID" styleClass="form-control"
+										size="40"
+										value="#{proformaServicioController.newCliente.descuentos}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="descuentoID" />
+
+
+
+								</h:panelGrid>
+					
+					</div>
+					
+			</div>
+			<div style="width: 100%;" align="right">
+				<div class="btn-group btn-group-sm" style="width: 100%;" align="right">
+					<p:commandButton value="Cancelar" style="width: 40%;" immediate="true"
+						icon="ui-icon-minus" action="#" styleClass="btn btn-default"
+						oncomplete="PF('dlgCliente').hide()" />
+
+					<p:commandButton
+						action="#{proformaServicioController.registrarCliente()}"
+						icon="ui-icon-disk" style="width: 50%;"
+						styleClass="btn btn-default"
+						update=":formRegistroProforma, :growl" oncomplete="PF('dlgCliente').hide()"
+						value="Registrar" type="submit" />
+				</div>
+			</div>
+			</h:form>
+
+		</p:dialog>
+
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

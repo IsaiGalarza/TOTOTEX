@@ -1,0 +1,170 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a="http://richfaces.org/a4j"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateParametrizacions.xhtml">
+
+	<ui:define name="head">
+		<title>:: Inventario ::</title>
+
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li>
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li><a href="/buffalo/"> Inicio </a></li>
+					<li><a href="/buffalo/pages/parametrizacion/home.xhtml">Paramentrizacion</a></li>
+					<li><a
+						href="/buffalo/pages/parametrizacion/home-inventario.xhtml">Inventario</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;"
+						href="/buffalo/pages/parametrizacion/home-unidadmedida.xhtml">Gestion
+							Unidades de Medida</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+
+	<ui:define name="menu">
+		<ui:include src="/pages/parametrizacion/menuTemp.xhtml" />
+	</ui:define>
+
+	<ui:define name="content">
+
+		<h:form>
+			<div class="panel-body">
+
+				<div class="row">
+
+					<div class="col-sm-4 col-md-10" align="center">
+
+						<div class="col-lg-3">
+							<center>
+
+								<h2>
+									<span class="icon"> <i aria-hidden="true"
+										style="color: orange;" class="icon-forward"></i>
+									</span> Presentacion
+								</h2>
+								<a href="/buffalo/pages/inventario/register-presentacion.xhtml">
+									<h:graphicImage sclass="thumbnail" name="envase.png"
+										library="gfx" width="90" height="120" />
+								</a>
+								<p>Registrar Presentacion del Producto.</p>
+								<p>
+									<a class="btn btn-warning"
+										href="/buffalo/pages/inventario/register-presentacion.xhtml"
+										role="button">Ingresar</a>
+								</p>
+							</center>
+						</div>
+						<div class="col-lg-3">
+							<center>
+
+								<h2>
+									<span class="icon"> <i aria-hidden="true"
+										style="color: orange;" class="icon-forward"></i>
+									</span> Gestion Cantidad Presentacion
+								</h2>
+								<a
+									href="/buffalo/pages/administracion/register-cantidad-unidad-presentacion.xhtml">
+									<h:graphicImage sclass="thumbnail" name="presentacion.png"
+										library="gfx" width="90" height="120" />
+								</a>
+								<p>Registrar Cantidad Presentacion.</p>
+								<p>
+									<a class="btn btn-warning"
+										href="/buffalo/pages/administracion/register-cantidad-unidad-presentacion.xhtml"
+										role="button">Ingresar</a>
+								</p>
+							</center>
+						</div>
+
+						<div class="col-lg-3">
+							<center>
+
+								<h2>
+									<span class="icon"> <i aria-hidden="true"
+										style="color: orange;" class="icon-forward"></i>
+									</span> Gestion Unidad de Medida
+								</h2>
+								<a href="/buffalo/pages/inventario/register-unidades.xhtml">
+									<h:graphicImage sclass="thumbnail" name="medicion.png"
+										library="gfx" width="90" height="120" />
+								</a>
+								<p>Registrar Unidades de Medida.</p>
+								<p>
+									<a class="btn btn-warning"
+										href="/buffalo/pages/inventario/register-unidades.xhtml"
+										role="button">Ingresar</a>
+								</p>
+							</center>
+						</div>
+					</div>
+
+				</div>
+			</div>
+
+
+		</h:form>
+
+
+
+		<!-- /container -->
+
+		<script>
+		//<![CDATA[
+			//  The function to change the class
+			var changeClass = function (r,className1,className2) {
+				var regex = new RegExp("(?:^|\\s+)" + className1 + "(?:\\s+|$)");
+				if( regex.test(r.className) ) {
+					r.className = r.className.replace(regex,' '+className2+' ');
+			    }
+			    else{
+					r.className = r.className.replace(new RegExp("(?:^|\\s+)" + className2 + "(?:\\s+|$)"),' '+className1+' ');
+			    }
+			    return r.className;
+			};	
+
+			//  Creating our button in JS for smaller screens
+			var menuElements = document.getElementById('menu-menu');
+			menuElements.insertAdjacentHTML('afterBegin','<button type="button" id="menutoggle" hidden="true" class="navtoogle active" aria-hidden="true"><i aria-hidden="true" class="icon-menu"> </i> Menu</button>');
+			
+			//  Toggle the class on click to show / hide the menu
+			document.getElementById('menutoggle').onclick = function() {
+				changeClass(this, 'navtoogle active', 'navtoogle');
+			}
+
+			// http://tympanus.net/codrops/2013/05/08/responsive-retina-ready-menu/comment-page-2/#comment-438918
+			document.onclick = function(e) {
+				var mobileButton = document.getElementById('menutoggle'),
+					buttonStyle =  mobileButton.currentStyle ? mobileButton.currentStyle.display : getComputedStyle(mobileButton, null).display;
+
+				if(buttonStyle === 'block' && e.target !== mobileButton && new RegExp(' ' + 'active' + ' ').test(' ' + mobileButton.className + ' ')) {
+					changeClass(mobileButton, 'navtoogle active', 'navtoogle');
+				}
+			}
+
+			//]]>
+		</script>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+
+</ui:composition>

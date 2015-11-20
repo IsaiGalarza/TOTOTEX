@@ -1,0 +1,143 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a="http://richfaces.org/a"
+    xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+    template="/WEB-INF/templates/templateModuloVentas.xhtml">
+
+
+
+    <ui:define name="head">
+    	<title>Libros IVA</title>
+    </ui:define>
+    	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li class="fuente-link-sidebar"><a href="/buffalo/"> Inicio </a></li>
+					<li class="fuente-link-sidebar"><a href="/buffalo/pages/ventas/home.xhtml"> Modulo
+							Ventas </a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/ventas/libros-iva.xhtml">Libros IVA</a>
+					</li>
+				</ol>
+			</div>
+			 
+		</div>
+
+	</ui:define>
+    
+    
+    
+    <ui:define name="content">
+		<h:form id="formGestionContable"  styleClass="form-horizontal">
+			 
+			
+			<div class="panel-body">
+					
+					<div class="row">
+				
+						<div class="col-sm-4 col-md-3">
+						    <div class="thumbnail">
+						      <h:graphicImage
+											sclass="thumbnail" name="ventas3.jpg" library="gfx"
+											 width="100" />
+						      <div class="caption">
+						        <h3>1. Libro Ventas</h3>
+						        <p>Facturas registradas por los cajeros (Estado de las Facturas)</p>
+						        <p>
+						        
+						        <a class="btn btn-primary btn-sm"
+											href="/buffalo/pages/ventas/facturas.xhtml"
+											role="button"> <i aria-hidden="true" class="icon-forward"></i>
+											Ingresar
+										</a>
+						        </p>
+						      </div>
+						    </div>
+						  </div>
+						  
+						  <div class="col-sm-4 col-md-3">
+						    <div class="thumbnail">
+						      <h:graphicImage
+											sclass="thumbnail" name="compras.png" library="gfx"
+											 width="100" />
+						      <div class="caption">
+						        <h3>2. Libro Compras</h3>
+						        <p>Generar Excel, Generar TXT para declaracion de Impuestos</p>
+						        <p>
+						        
+						        <a class="btn btn-primary btn-sm"
+											href="/buffalo/pages/ventas/lc-compras.xhtml"
+											role="button"> <i aria-hidden="true" class="icon-forward"></i>
+											Ingresar
+										</a>
+						        </p>
+						      </div>
+						    </div>
+						  </div>
+						  
+						  <div class="col-sm-4 col-md-3">
+						    <div class="thumbnail">
+						      <h:graphicImage
+											sclass="thumbnail" name="excel-pdf.png" library="gfx"
+											 width="100" />
+						      <div class="caption">
+						        <h3>3. Exportar Ventas</h3>
+						        <p>Venta en formato PDF y Excel, utilizados para la declaracion de impuestos.</p>
+						        <p>
+						        
+						        <a class="btn btn-primary btn-sm"
+											href="/buffalo/pages/ventas/exportacion-ventas.xhtml"
+											role="button"> <i aria-hidden="true" class="icon-forward"></i>
+											Ingresar
+										</a>
+						        </p>
+						      </div>
+						    </div>
+						  </div>
+						  
+						  <div class="col-sm-4 col-md-3">
+						    <div class="thumbnail">
+						      <h:graphicImage
+											sclass="thumbnail" name="excel-pdf.png" library="gfx"
+											 width="100" />
+						      <div class="caption">
+						        <h3>4. Exportar Compras</h3>
+						        <p>Compra en formato PDF y Excel, utilizados para la declaracion de impuestos</p>
+						        <p>
+						        
+						        <a class="btn btn-primary btn-sm"
+											href="/buffalo/pages/ventas/exportacion-compras.xhtml"
+											role="button"> <i aria-hidden="true" class="icon-forward"></i>
+											Ingresar
+										</a>
+						        </p>
+						      </div>
+						    </div>
+						  </div>
+					
+				        
+				      </div>
+	
+           		</div>
+
+		</h:form>
+			
+	</ui:define>
+    
+    <ui:define name="footer">
+  
+    </ui:define>
+    
+</ui:composition>

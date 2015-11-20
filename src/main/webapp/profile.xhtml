@@ -1,0 +1,102 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a="http://richfaces.org/a4j"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateDashboard.xhtml">
+
+	<ui:define name="head">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>:: Perfil ::</title>
+		<meta name="generator" content="Bootply" />
+		<meta name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=1" />
+
+
+		<link rel="stylesheet" type="text/css"
+			href="/buffalo/resources/LandingPage/css/styles.css" />
+
+	</ui:define>
+
+
+
+	<ui:define name="content">
+
+		<ol class="breadcrumb">
+			<li class="fuente-link-sidebar">
+				<div class="lsf symbol">sitemap</div>
+			</li>
+
+			<li class="fuente-link-sidebar"><a href="/buffalo/"> Inicio
+			</a></li>
+			<li class="active" style="color: orange;"><a
+				class="fuente-link-sidebar" style="color: orange;"
+				href="/buffalo/profile.xhtml">Perfil de Usuario</a></li>
+		</ol>
+
+		<div class="panel-body" style="padding: 0px 25px 0px 25px;">
+			<div class="panel panel-default" align="left">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<strong><span class="glyphicon glyphicon-th-list" />
+						DATOS DE USUARIO</strong>
+				</div>
+				
+					<div class="panel-body" align="center">
+						<div class="media" align="center">
+							<div class="media-left">
+								<p:graphicImage styleClass="thumbnail" height="150px;" width="150px;" value="#{loginController.imageUserSession}" />
+							</div>
+							<h:form id="buttonAgregar" enctype="multipart/form-data">
+								<p:fileUpload value="#{perfilController.file}" mode="simple"
+									skinSimple="false" style="text-align: left;"
+									rendered="#{perfilController.modificar=='false'}" />
+								<br />
+								<p:commandButton id="guardarFoto" icon="ui-icon-disk"
+									rendered="#{perfilController.modificar=='false'}"
+									value="Guardar" styleClass="btn btn-info"
+									style="text-align: left;" update=":buttonAgregar" ajax="false"
+									actionListener="#{perfilController.upload}" />
+								<p:commandButton id="btnagregar" icon="ui-icon-image"
+									rendered="#{perfilController.modificar=='true'}"
+									value="Cambiar Fotografía" styleClass="btn btn-info"
+									update=":buttonAgregar"
+									actionListener="#{perfilController.cambiarModificar()}" />
+							</h:form>
+							<br />
+						</div>
+						<!-- Table -->
+						<div class="table-responsive">
+							<h:column>
+								<p:outputLabel value="Nombre:" style="text-align: left;" />
+								<p:outputLabel value="#{perfilController.usuarioSession.name}"
+									style="text-align: right;" />
+								<br />
+							</h:column>
+							<h:column>
+								<p:outputLabel value="Email:" style="text-align: left;" />
+								<p:outputLabel value="#{perfilController.usuarioSession.email}"
+									style="text-align: right;" />
+								<br />
+							</h:column>
+							<h:column>
+								<p:outputLabel value="Login:" style="text-align: right;" />
+								<p:outputLabel value="#{perfilController.usuarioSession.login}"
+									style="text-align: right;" />
+							</h:column>
+						</div>
+					</div>
+				
+			</div>
+		</div>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+
+</ui:composition>

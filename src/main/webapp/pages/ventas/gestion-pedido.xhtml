@@ -1,0 +1,860 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloVentas.xhtml">
+
+
+	<ui:define name="head">
+		<title>Gestion de Pedidos</title>
+		
+		<style type="text/css">
+		    .ui-spinner {
+		    background-color:lightyellow;
+		    }
+		</style>
+		
+	</ui:define>
+
+	<ui:define name="header">
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li class="fuente-link-sidebar"><a href="/buffalo/">
+							Inicio </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="/buffalo/pages/ventas/home.xhtml"> Modulo Ventas </a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/ventas/gestion-pedido.xhtml">Gestion de Pedidos</a></li>
+				</ol>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formPedido">
+			<p:outputPanel autoUpdate="true">
+				<div class="btn-group btn-group-sm" style="width: 100%;">
+				
+				
+				<h:panelGrid columns="0" cellpadding="1" width="100%" styleClass="main-panel">		
+				
+				
+					<p:outputPanel id="opToolBar">
+						<p:toolbar>
+							<p:toolbarGroup align="left" styleClass="main-panel">
+								
+								<p:commandButton style="width: 8em;"
+									rendered="#{pedidoController.nuevo=='false'}"
+									action="#{pedidoController.crearPedido}"
+									icon="ui-icon-plusthick" value="Crear"
+									update=":formPedido" />
+			
+								<p:commandButton style="width: 8em;"
+									rendered="#{pedidoController.modificar!='false' and pedidoController.nuevo}"
+									disabled="#{pedidoController.modificar=='false'}"
+									action="#{pedidoController.initNewPedido()}"
+									icon="ui-icon-minus" value="Cancelar" immediate="true"
+									update=":formPedido" />
+			
+								<p:commandButton style="width: 8em;"
+									action="#{pedidoController.verModificarPedido()}"
+									disabled="#{pedidoController.modificar!='true'}"
+									rendered="#{pedidoController.nuevo=='false'}"
+									icon="ui-icon-disk" value="Modificar"
+									update=":formPedido" />
+			
+								<p:commandButton style="width: 8em;"
+									action="#{pedidoController.modificarPedido()}"
+									disabled="#{pedidoController.modificar!='true' or pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}"
+									rendered="#{pedidoController.nuevo!='false'}"
+									icon="ui-icon-disk" value="Modificar"
+									update=":formPedido" />
+			
+								<p:commandButton style="width: 8em;"
+									oncomplete="PF('confirmProccess').show()"
+									disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA' or empty listaDetalleServicio}"
+									rendered="#{pedidoController.nuevo=='true' and pedidoController.modificar=='true'}"
+									icon="ui-icon-circle-check" value="Procesar"
+									update=":formPedido" />
+			
+			
+								<p:confirmDialog id="confirmDialog" widgetVar="confirmProccess"
+									message="Si esta seguro precione [SI], si quiere cancelar esperacion presione [NO]."
+									header="Desea Procesar esta Proforma?" severity="alert" closeOnEscape="true"
+									appendTo="@(body)"
+									closable="true">
+			
+									<p:commandButton id="btnYes" value="Si" process="@this"
+										oncomplete="PF('confirmProccess').hide()"
+										actionListener="#{pedidoController.procesarProforma()}"
+										update=":formPedido" />
+			
+									<p:commandButton id="btnNo" value="No"
+										oncomplete="PF('confirmProccess').hide()" type="button" />
+								</p:confirmDialog>
+			
+								<p:commandButton style="width: 8em;"
+									oncomplete="PF('confirmRemove').show()"
+									disabled="#{pedidoController.modificar!='true' or pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}"
+									icon="ui-icon-trash" value="Borrar" update=":formPedido"
+									/>
+								
+								<p:confirmDialog id="confirmDialogRemove" widgetVar="confirmRemove"
+									message="Si esta seguro precione [SI], si quiere cancelar esperacion presione [NO]."
+									header="Desea Borrar esta Proforma?" severity="alert" closeOnEscape="true"
+									appendTo="@(body)"
+									closable="true">
+			
+									<p:commandButton id="btnYesRemove" value="Si" process="@this"
+										oncomplete="PF('confirmRemove').hide()"
+										actionListener="#{pedidoController.eliminarPedido()}"
+										update=":formPedido" />
+			
+									<p:commandButton id="btnNoRemove" value="No"
+										oncomplete="PF('confirmRemove').hide()" type="button" />
+								</p:confirmDialog>
+								
+								
+							</p:toolbarGroup>
+							
+							<p:toolbarGroup  align="right" styleClass="main-panel" >									
+								
+								<p:commandButton value="Servicio"
+										icon="ui-icon-plusthick"
+										rendered="#{pedidoController.nuevo=='true' and pedidoController.modificar=='true'}"
+										disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}"
+										actionListener="#"
+										update=":formModalServicios" oncomplete="PF('dlgModalServicios').show()" />
+										
+								<p:commandButton oncomplete="PF('dlgCliente').show()" value="Registrar Cliente"
+										update=":formModalCliente"
+										rendered="#{pedidoController.nuevo=='true' and pedidoController.modificar=='true'}"
+										disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}"
+										icon="ui-icon-person"
+										action="#{pedidoController.crearCliente()}">
+								</p:commandButton>
+								
+								<p:commandButton value="Descargar"
+									disabled="#{empty listaDetalleServicio}"
+									rendered="#{pedidoController.nuevo=='true' and pedidoController.modificar=='true'}"
+									ajax="false" icon="ui-icon-arrowstop-1-s">
+									<p:fileDownload
+										value="#{pedidoController.streamedContent}" />
+								</p:commandButton>
+								
+							</p:toolbarGroup>
+							
+							
+						</p:toolbar>
+					</p:outputPanel>
+				</h:panelGrid>
+				
+					
+				</div>
+			</p:outputPanel>
+
+			<br />
+			<br />
+			<div class="row">
+				<div class="col-sm-12 col-md-12" align="left">
+
+					<ui:fragment rendered="#{!pedidoController.nuevo}">
+						<div class="panel panel-default">
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<span class="icon"> <i aria-hidden="true"
+										class="icon-list"></i>
+									</span> <strong>LISTA DE PEDIDOS</strong>
+								</h3>
+							</div>
+
+							<h:panelGroup rendered="#{empty pedidoController.listaPedido}">
+								<h4>No se encontraron registros de pedidos.</h4>
+							</h:panelGroup>
+
+							<!-- Table -->
+							<div class="table-responsive">
+
+								<p:dataTable
+									styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+									selection="#{pedidoController.selectedPedido}"
+									selectionMode="single" rowKey="#{_var.id}"
+									id="pedidoTableID" var="_var"
+									value="#{pedidoController.listaPedido}"
+									rendered="#{not empty pedidoController.listaPedido}"
+									emptyMessage="No se encontraron registros.">
+
+									<p:ajax event="rowSelect" update=":formPedido"
+										listener="#{pedidoController.onRowSelectPedidoClick}" />
+
+									<p:ajax event="rowDblselect" update=":formPedido"
+										listener="#{pedidoController.onRowSelectPedidoDBLClick}" />
+
+									<p:column headerText="Pedido" width="100"
+										filterStyle="width: 100%;" filterBy="#{_var.id}"
+										filterMatchMode="contains">
+										<center>
+											<span class="badge"> <h:outputText
+													value="#{_var.id}" />
+											</span>
+										</center>
+									</p:column>
+
+
+
+									<p:column headerText="Nombre del Cliente"
+										filterStyle="width: 100%;"
+										filterBy="#{_var.cliente.nombreCompleto}"
+										filterMatchMode="contains">
+										<h:outputText value="#{_var.cliente.nombreCompleto}" />
+									</p:column>
+
+
+									<p:column headerText="Observacion" filterStyle="width: 100%;"
+										filterBy="#{_var.observacion}" filterMatchMode="contains">
+										<h:outputText value="#{_var.observacion}" />
+									</p:column>
+									
+									<p:column headerText="Estado" width="10%;"
+										filterStyle="width: 100%;" filterBy="#{_var.estado}"
+										filterMatchMode="contains">
+										
+										<h:outputText styleClass="label label-success" 
+											value="Activo" rendered="#{_var.estado=='AC'}" style="font-size:12px;"/>
+										<h:outputText styleClass="label label-danger" 
+											value="Inactivo" rendered="#{_var.estado=='IN'}" style="font-size:12px;"/>
+										<h:outputText styleClass="label label-primary" 
+											value="Procesado" rendered="#{_var.estado=='PR'}" style="font-size:12px;"/>
+										<h:outputText styleClass="label label-default" 
+											value="Facturado" rendered="#{_var.estado=='FA'}" style="font-size:12px;"/>
+										
+									</p:column>
+
+									<p:column headerText="Registro" width="10%;"
+										filterStyle="width: 100%;"
+										filterBy="#{_var.usuarioRegistro}"
+										filterMatchMode="contains">
+										<h:outputText value="#{_var.usuarioRegistro}" />
+									</p:column>
+
+									<p:column headerText="Descuento" width="10%;"
+										filterStyle="width: 100%;"
+										filterBy="#{_var.totalDescuento}"
+										filterMatchMode="contains">
+										
+										<h:outputText value="Bs.- " style="float:left;"/>
+										<strong>
+											<h:outputText value="#{_var.totalDescuento}" style="float:right;">
+												<f:convertNumber pattern="#,##0.00" locale="en" />
+											</h:outputText>
+										</strong>
+										
+									</p:column>
+
+									<p:column headerText="Importe Total" width="10%;"
+										filterStyle="width: 100%;" filterBy="#{_var.importeTotal}"
+										filterMatchMode="contains">
+										<h:outputText value="Bs.- " style="float:left;"/>
+										<strong>
+											<h:outputText value="#{_var.importeTotal}" style="float:right;">
+												<f:convertNumber pattern="#,##0.00" locale="en" />
+											</h:outputText>
+										</strong>
+
+									</p:column>
+									
+
+								</p:dataTable>
+							</div>
+						</div>
+					</ui:fragment>
+				</div>
+			</div>
+			
+			<div class="row">
+				<ui:fragment rendered="#{pedidoController.nuevo}">
+					<div class="col-sm-5 col-md-3" align="left">
+						<div class="panel panel-primary">
+							<!-- Default panel contents -->
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<span class="icon"> <i aria-hidden="true"
+										class="icon-forward"></i>
+									</span> <strong>NUEVO PEDIDO</strong>
+								</h3>
+							</div>
+							<div class="panel-body">
+
+								<h:panelGrid columns="3">
+									
+									
+									<h:outputLabel value="Cliente" for="clienteID" />
+									<p:autoComplete id="clienteID" maxResults="10"
+										value="#{pedidoController.nombreCliente}"
+										style="text-transform: uppercase" required="true"
+										disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}"
+										requiredMessage="Requerido."
+										validatorMessage="Nombre Invalido!" size="30"
+										completeMethod="#{pedidoController.completeDescripcionClientes}">
+										<p:ajax event="itemSelect"
+											listener="#{pedidoController.onItemSelectCliente}"
+											update=":formPedido:creditoID, :growl" />
+									</p:autoComplete>
+									<p:message for="clienteID" />
+									
+									<h:outputLabel value="Credito" for="creditoID" />
+									<p:selectBooleanCheckbox id="creditoID" 
+										disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA' or pedidoController.newPedido.cliente.credito=='false'}"
+										value="#{pedidoController.newPedido.credito}">
+										<p:ajax event="change"/>
+									</p:selectBooleanCheckbox>
+									<p:message for="creditoID" />
+
+									<h:outputLabel value="Descuento" for="desccuentoID" />
+									<p:inputText id="desccuentoID" styleClass="form-control"
+										disabled="true"
+										value="#{pedidoController.newPedido.totalDescuento}"
+										required="true" requiredMessage="Codigo Requerido." size="20">
+										<f:convertNumber pattern="#,##0.000" locale="en" />
+									</p:inputText>
+									<p:message for="desccuentoID" />
+
+									<h:outputLabel value="Observacion" for="observacionID" />
+									<p:inputText id="observacionID" styleClass="form-control"
+										disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}"
+										value="#{pedidoController.newPedido.observacion}"
+										required="false" requiredMessage="Requerido." size="40" />
+									<p:message for="observacionID" />
+
+									<h:outputLabel value="Estado" for="estadoACID" />
+									<p:inputText id="estadoACID" styleClass="form-control"
+										disabled="true" value="#{pedidoController.newPedido.estado=='AC'?'ACTIVA':'NULLA' or pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'?'PROCESADA':'NULLA' or pedidoController.newPedido.estado=='FA'?'FACTURADA':'NULLA'}" required="true"
+										requiredMessage="Requerido." size="40">
+									</p:inputText>
+									<p:message for="estadoACID"/>
+
+									<h:outputLabel value="Total Bs" for="totalID" />
+									<p:inputText id="totalID" styleClass="form-control"
+										disabled="true"
+										value="#{pedidoController.newPedido.importeTotal}"
+										required="true" requiredMessage="Codigo Requerido." size="40">
+										<f:convertNumber pattern="#,##0.00" locale="en" />
+									</p:inputText>
+									<p:message for="totalID" />
+								</h:panelGrid>
+								
+							</div>
+						</div>
+
+					</div>
+
+
+
+
+					<div class="panel-body">
+
+
+
+						<div class="col-sm-5 col-md-9" align="left">
+							
+							<div class="panel-body">
+							
+							<div class="panel panel-default">
+								<!-- Default panel contents -->
+								<div class="panel-heading">
+									<h3 class="panel-title">
+										<span class="icon"> <i aria-hidden="true"
+											class="glyphicon glyphicon-th-list"></i>
+										</span> <strong>DETALL DEL PEDIDO</strong>
+									</h3>
+																	</div>
+								
+									<!-- Table -->
+									<div class="table-responsive">
+
+										<div id="newdetalleMessages" class="update" />
+										<h:panelGroup rendered="#{empty pedidoController.listaDetallePedido}">
+											<em>No se encontraron Servicios en la Proforma.</em>
+										</h:panelGroup>
+
+										<p:dataTable
+											selection="#{pedidoController.selectedDetallePedido}"
+											selectionMode="single" rows="10" id="pedidoTableIDDetalle"
+											rowKey="#{_deta.id}" var="_deta" value="#{pedidoController.listaDetallePedido}"
+											rendered="#{not empty pedidoController.listaDetallePedido}"
+											emptyMessage="No existe Proformas registradas.">
+
+											<p:ajax event="rowDblselect" update=":formPedido"
+												listener="#{pedidoController.onRowSelectDetallePedidoClick}" />
+
+											<p:column width="3" headerText="#">
+												<p:commandLink id="quitarCompuestoID2"
+													disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}"
+													update=":formPedido"
+													action="#{pedidoController.removeDetalle(_deta)}">
+													<span class="badge alert-danger">x</span>
+												</p:commandLink>
+												<p:tooltip id="quitarToolTip2" for="quitarCompuestoID2"
+													value="Eliminar #{_deta.producto.nombreProducto}" />
+											</p:column>
+
+											<p:column headerText="ID" width="10%;">
+												<span class="badge">#{_deta.id}</span>
+											</p:column>
+											<p:column headerText="Descripcion">
+												<h:outputText value="#{_deta.producto.nombreProducto}" />
+											</p:column>
+
+											<p:column headerText="P. Unitario" width="10%;">
+												<h:outputText value="Bs.- " />
+												<p:inputText size="8" value="#{_deta.precio}"
+													disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}">
+													<f:convertNumber pattern="#,##0.00" locale="en" />
+													<p:ajax event="change" update=":formPedido"
+														listener="#{pedidoController.calcualteTotals()}" />
+												</p:inputText>
+											</p:column>
+											<p:column headerText="Cantidad" width="10%;">
+												<p:inputText size="5" value="#{_deta.cantidad}"
+													disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}">
+													<f:convertNumber pattern="#,##0.00" locale="en" />
+													<p:ajax event="change" update=":formPedido"
+														listener="#{pedidoController.calcualteTotals()}" />
+												</p:inputText>
+											</p:column>
+											<p:column headerText="Descuento" width="10%;">
+												<h:outputText value="% " />
+												<p:inputText size="5" value="#{_deta.descuento}"
+													disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}">
+													<f:convertNumber pattern="#,##0.00" locale="en" />
+													<p:ajax event="change" update=":formPedido"
+														listener="#{pedidoController.calcualteTotals()}" />
+												</p:inputText>
+											</p:column>
+											<p:column headerText="SubTotal" width="10%;">
+												<h:outputText value="Bs.- " />
+												<h:outputText value="#{_deta.total}">
+													<f:convertNumber pattern="#,##0.00" locale="en" />
+												</h:outputText>
+											</p:column>
+
+										</p:dataTable>
+
+									</div>
+									<div class="btn-group btn-group-sm">
+										<p:commandButton value="Eliminar Todo"
+											disabled="#{pedidoController.newPedido.estado=='PR' or pedidoController.newPedido.estado=='FA'}"
+											icon="ui-icon-arrowstop-1-w" update=":formPedido"
+											actionListener="#{pedidoController.removeDetalleAll()}" />
+									</div>
+							</div>
+							</div>
+							
+						</div>
+					</div>
+
+				</ui:fragment>
+
+			</div>
+
+		</h:form>
+
+		
+		<p:dialog showEffect="explode" header="[+] AGREGAR PANTALON"
+			widgetVar="dlgFarmaco" resizable="false" modal="true"
+			position="center" width="600" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}" id="modalFarmaco">
+
+			<h:form id="formModalFarmaco">
+
+				<script type="text/javascript">
+			    function handleDialogSubmit(xhr, status, args) {
+			        if (args.validationFailed) {
+			        	PF('dlgFarmaco').show();
+			        } else {
+			        	PF('dlgFarmaco').hide();
+			        	
+			        }
+			    }
+			</script>
+
+				<h:panelGrid columns="6">
+
+					<label for="nombrepID">Producto</label>
+					<p:inputText id="nombrepID"
+						value="#{pedidoController.selectedDetallePedido.producto.nombreProducto}"
+						disabled="true" />
+					<p:message for="nombrepID" />
+
+					<label for="idpID">Cantidad</label>
+					<p:inputText id="idpID" validatorMessage="Invalido."
+						value="#{pedidoController.selectedDetallePedido.cantidad}">
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+						<p:ajax event="change"
+							listener="#{pedidoController.calcualteTotals()}"
+							update="totalID" />
+					</p:inputText>
+					<p:message for="idpID" />
+
+					<label for="precioID">P.Venta</label>
+					<p:inputText id="precioID"
+						value="#{pedidoController.selectedDetallePedido.precio}"
+						disabled="true">
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+					</p:inputText>
+					<p:message for="precioID" />
+
+					<label for="descuentoID">Descuento</label>
+					<p:inputText id="descuentoID" validatorMessage="Invalido."
+						value="#{pedidoController.selectedDetallePedido.descuento}">
+						<p:ajax event="change"
+							listener="#{pedidoController.calcualteTotals()}"
+							update="totalID" />
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+					</p:inputText>
+					<p:message for="descuentoID" />
+
+					<label for="totalID">Total</label>
+					<p:inputText id="totalID"
+						value="#{pedidoController.selectedDetallePedido.total}"
+						disabled="true">
+						<p:ajax event="change" update=":formModalFarmaco" />
+						<f:convertNumber pattern="#,##0.00" locale="en" />
+						<f:validateDoubleRange minimum="0" />
+					</p:inputText>
+					<p:message for="totalID" />
+
+				</h:panelGrid>
+				<br />
+				<br />
+
+			</h:form>
+
+			<div class="modal-footer">
+				<div class="btn-group btn-group-sm">
+					<p:commandButton value="Cancelar" style="width: 150px;"
+						icon="ui-icon-minus" update=":formPedido" action="#"
+						oncomplete="PF('dlgFarmaco').hide()" />
+					<p:commandButton value="Agregar" icon="ui-icon-plusthick"
+						style="width: 150px;"
+						update=":formPedido, :formModalFarmaco"
+						action="#"
+						oncomplete="handleDialogSubmit(xhr, status, args)" />
+				</div>
+
+			</div>
+
+		</p:dialog>
+
+
+
+		<!--Producto  -->
+
+		<p:dialog showEffect="explode"
+			widgetVar="dlgModalServicios" resizable="false" modal="true"
+			position="center" width="600" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}" id="modalRecetas">
+			
+			<f:facet name="header">
+			        <strong>
+			        	<span class="glyphicon glyphicon-plus"/>
+			        	<h:outputText value="Agregar Producto" />
+			        </strong>
+			</f:facet>
+			
+			<div class="modal-body">
+				<h:form id="formModalServicios">
+				
+							<h:panelGrid columns="2" >
+					     		<p:outputLabel value="Producto: "   />									        
+						        <p:autoComplete id="servicioID" value="#{pedidoController.selectedDetallePedido.id}" completeMethod="#{pedidoController.completeSearhProducto}"
+						                        var="_varser" itemValue="#{_varser.id}"  label="#{_varser.nombreProducto}" forceSelection="true" size="80">  
+						            <p:ajax event="itemSelect" listener="#{pedidoController.onItemSelectProducto}" update=":formModalServicios:detalle"/>
+						            
+						            <p:column style="width: 10%;" >
+						                <h:outputText value="#{_varser.id}" />
+						            </p:column>
+						 
+						            <p:column style="width: 60%;">
+						                <h:outputText value="#{_varser.nombreProducto}"  />
+						            </p:column>
+						            
+						            <p:column style="width: 30%;">
+						                <h:outputText value="#{_varser.precio}">
+						                	<f:convertNumber pattern="#,##0.00" locale="es"/>
+						                </h:outputText>
+						            </p:column>
+						            
+						        </p:autoComplete>
+					     	</h:panelGrid>
+							
+							<h:panelGrid columns="4" id="detalle">
+						   		<h:panelGrid columns="2">	
+						   			<p:outputLabel value="Descripcion:" />
+							        <p:inputText id="nameServicioID" value="#{pedidoController.selectedProducto.nombreProducto} "
+							        disabled="true"  styleClass="form-control" size="30"/> 
+							        
+							        <p:outputLabel value="Cantidad:" />
+							        <p:spinner id="cantidadID" value="#{pedidoController.cantidadProducto}" type="number"
+							        	disabled="false" size="40" validatorMessage="La cantidad minima es 1!">
+							        	<f:convertNumber pattern="#,##0"  locale="es" />
+							        	<f:validateLongRange minimum="1" />
+							        	<p:ajax event="change" listener="#{pedidoController.actualizarMonto}" update=":formModalServicios:detalle"/>
+							        </p:spinner>
+							        
+							        <p:outputLabel value="Descuento %:" />
+							        <p:inputText id="descuentoID" value="#{pedidoController.totalDescuento}" 
+							        	disabled="false" styleClass="form-control" size="40">
+							        	<f:convertNumber pattern="#,##0"  locale="en" />
+							        	<p:ajax event="change" listener="#{pedidoController.actualizarMonto}" update=":formModalServicios:detalle"/>
+							        </p:inputText> 
+
+							        <p:outputLabel value="Precio Unitario:" />
+							        <p:inputText id="puID" value="#{pedidoController.selectedProducto.precio}"
+							        	disabled="false"  styleClass="form-control" size="40"> 
+							        	<f:convertNumber pattern="#,##0.00"  locale="en" />
+										<p:ajax event="change" listener="#{pedidoController.actualizarMonto}" update=":formModalServicios:detalle"/>
+							        </p:inputText>  
+							        
+							        <p:outputLabel value="Importe Total:" />
+							        <p:inputText id="importeID" value="#{pedidoController.totalProducto}"
+							        	disabled="true"  styleClass="form-control" size="40">
+							        	<f:convertNumber pattern="#,##0.00"  locale="en" />
+							        </p:inputText> 
+							        
+							</h:panelGrid>
+							
+					
+					
+				
+					</h:panelGrid>
+					
+					</h:form>
+					
+			</div>
+			<div class="modal-footer">
+					
+
+						<p:commandButton value="Cancelar" icon="ui-icon-minus"
+							action="#"
+							oncomplete="PF('dlgModalServicios').hide()" />
+
+						<p:commandButton value="Agregar" icon="ui-icon-plusthick"
+							update=":formPedido"
+							action="#{pedidoController.agregarProducto()}"
+							oncomplete="PF('dlgModalServicios').hide()" />
+
+			</div>
+
+		</p:dialog>
+		
+		
+
+
+		
+
+		<!-- VISTA PREVIA FACTURA -->
+		<p:dialog showEffect="explode" header="Vista Previa"
+			widgetVar="dlgVistaPrevia" resizable="false" modal="true"
+			position="center" width="750" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalVistaPrevia">
+
+			<div class="modal-body">
+
+				<h:form id="formModalVistaPrevia">
+
+					<p:media id="idReporteFactura" player="pdf"
+						value="#{pedidoController.urlFactura}" width="700px"
+						height="500px" />
+
+				</h:form>
+			</div>
+
+			<div class="modal-footer">
+
+				<div class="btn-group btn-group-sm">
+
+					<p:commandButton value="Cerrar" style="width: 150px;"
+						icon="ui-icon-minus" action="#" styleClass="btn btn-default"
+						oncomplete="PF('dlgVistaPrevia').hide()" />
+
+				</div>
+
+			</div>
+
+		</p:dialog>
+
+
+		<!-- REGISTRAR CLIENTE -->
+		<p:dialog showEffect="explode" header="Registrar Cliente"
+			widgetVar="dlgCliente" resizable="false" modal="true"
+			position="center" width="400" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}" id="modalCliente">
+			
+			<f:facet name="header">
+					<strong>
+			        	<span class="glyphicon glyphicon-user"/>
+			        	<h:outputText value="Registrar Cliente" />
+			        </strong>
+			</f:facet>
+			
+			<h:form id="formModalCliente">
+			
+			<div class="modal-body">
+
+				
+					<div class="col-sm-3 col-md-12" align="left">
+
+								<h:panelGrid columns="3">
+
+									<h:outputLabel value="Nombre" for="nombreID" />
+									<p:inputText id="nombreID" styleClass="form-control" size="40"
+										value="#{pedidoController.newCliente.nombreCompleto}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="nombreID" />
+
+									<h:outputLabel value="Direccion" for="direccionID" />
+									<p:inputText id="direccionID" styleClass="form-control"
+										size="40"
+										value="#{pedidoController.newCliente.direccion}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="direccionID" />
+
+									<h:outputLabel value="Telefono" for="telefonoID" />
+									<p:inputText id="telefonoID" styleClass="form-control"
+										size="40"
+										value="#{pedidoController.newCliente.telefono}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="telefonoID" />
+
+									<h:outputLabel value="Celular" for="celularID" />
+									<p:inputText id="celularID" styleClass="form-control" size="40"
+										value="#{pedidoController.newCliente.celular}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="celularID" />
+
+									<h:outputLabel value="Nº_Documento" for="documentoID" />
+									<p:inputText id="documentoID" styleClass="form-control"
+										value="#{pedidoController.newCliente.numeroDocumento}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="documentoID" />
+
+									<h:outputLabel value="Ciudad" for="ciudadID" />
+									<h:selectOneMenu id="ciudadID"
+										value="#{pedidoController.newCliente.ciudad.id}"
+										styleClass="form-control" required="true"
+										requiredMessage="Requerido.">
+										<f:selectItem itemValue="" itemLabel="-- Seleccione --" />
+										<f:selectItems
+											value="#{pedidoController.listaCiudad}" var="_pro"
+											itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+										<p:ajax event="change" />
+									</h:selectOneMenu>
+									<p:message for="ciudadID" />
+
+									<h:outputLabel value="Tipo" for="tipoID" />
+									<h:selectOneMenu id="tipoID"
+										value="#{pedidoController.newCliente.tipoCliente}"
+										styleClass="form-control" required="true"
+										requiredMessage="Requerido.">
+										<f:selectItem itemValue="" itemLabel="-- Seleccione --" />
+										<f:selectItem itemValue="NATURAL" itemLabel="NATURAL" />
+										<f:selectItem itemValue="JURIDICO" itemLabel="JURIDICO" />
+										<p:ajax event="change" />
+									</h:selectOneMenu>
+									<p:message for="tipoID" />
+
+									<h:outputLabel value="NIT" for="nitID" />
+									<p:inputText id="nitID" styleClass="form-control" size="40"
+										value="#{pedidoController.newCliente.nit}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="nitID" />
+
+									<h:outputLabel value="E-Mail" for="correoID" />
+									<p:inputText id="correoID" styleClass="form-control" size="40"
+										value="#{pedidoController.newCliente.correoElectronico}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="correoID" />
+
+									<h:outputLabel value="Nº Cuenta" for="cuentaID" />
+									<p:inputText id="cuentaID" styleClass="form-control" size="40"
+										value="#{pedidoController.newCliente.numeroCuenta}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="cuentaID" />
+
+									<h:outputLabel value="Permitir Credito" for="creditoID" />
+									<h:selectBooleanCheckbox
+										value="#{pedidoController.newCliente.credito}"
+										id="creditoID" required="true" requiredMessage="Requerido.">
+										<p:ajax event="change" update=":formPedido, :growl" />
+									</h:selectBooleanCheckbox>
+									<p:message for="creditoID" />
+
+									<h:outputLabel value="Porcentaje Credito"
+										for="porcentajeCreditoID"
+										rendered="#{pedidoController.newCliente.credito}" />
+									<p:inputText id="porcentajeCreditoID"
+										rendered="#{pedidoController.newCliente.credito}"
+										styleClass="form-control" size="40"
+										value="#{pedidoController.newCliente.porcentajeCredito}"
+										required="true" requiredMessage="Requerido."
+										validatorMessage="Invalido.">
+										<f:convertNumber pattern="#,##0.00" />
+									</p:inputText>
+									<p:message for="porcentajeCreditoID"
+										rendered="#{pedidoController.newCliente.credito}" />
+
+									<h:outputLabel value="Descuento" for="descuentoID" />
+									<p:inputText id="descuentoID" styleClass="form-control"
+										size="40"
+										value="#{pedidoController.newCliente.descuentos}"
+										required="true" requiredMessage="Requerido." />
+									<p:message for="descuentoID" />
+
+
+
+								</h:panelGrid>
+					
+					</div>
+					
+			</div>
+			<div style="width: 100%;" align="right">
+				<div class="btn-group btn-group-sm" style="width: 100%;" align="right">
+					<p:commandButton value="Cancelar" style="width: 40%;" immediate="true"
+						icon="ui-icon-minus" action="#" styleClass="btn btn-default"
+						oncomplete="PF('dlgCliente').hide()" />
+
+					<p:commandButton
+						action="#{pedidoController.registrarCliente()}"
+						icon="ui-icon-disk" style="width: 50%;"
+						styleClass="btn btn-default"
+						update=":formPedido, :growl" oncomplete="PF('dlgCliente').hide()"
+						value="Registrar" type="submit" />
+				</div>
+			</div>
+			</h:form>
+
+		</p:dialog>
+
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

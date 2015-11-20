@@ -1,0 +1,222 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateParametrizacions.xhtml">
+
+	<ui:define name="head">
+		<title>:: Tipo Producto ::</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li>
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li><a href="/buffalo/"> Inicio </a></li>
+					<li><a href="/buffalo/pages/parametrizacion/home.xhtml">Parametrizacion</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;"
+						href="/buffalo/pages/inventario/register-costos.xhtml">Gestión de Gastos</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+	<ui:define name="menu">
+		<h:form>
+			<ui:include src="/pages/parametrizacion/menuTemp.xhtml" />
+		</h:form>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formRegistroGastos" styleClass="form-horizontal">
+			<ui:fragment rendered="#{gastosController.nuevo=='true'}">
+			<div class="col-sm-12 col-md-3" align="left">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<strong>#{gastosController.tituloPanel}</strong>
+						</h3>
+					</div>
+					<div class="panel-body">
+
+						<h:panelGrid columns="3">
+							<h:outputLabel value="Descripcion" for="descripcionID" />
+							<p:inputText id="descripcionID" styleClass="form-control"
+								value="#{gastosController.newGastos.descripcion}"
+								required="true" requiredMessage="Requerido." />
+							<p:message for="descripcionID" />
+
+							<h:outputLabel value="Porcentaje(%)" for="porcentajeID" />
+							<p:inputText id="porcentajeID" styleClass="form-control"
+								value="#{gastosController.newGastos.porcentaje}"
+								required="true" requiredMessage="Requerido." >
+								<f:convertNumber type="number"/>
+								</p:inputText>
+							<p:message for="porcentajeID" />
+
+							<h:outputLabel value="Estado" for="estadoID" />
+							<h:selectOneMenu id="estadoID"
+								value="#{gastosController.newGastos.estado}"
+								styleClass="form-control" required="true"
+								requiredMessage="Estado Requerido.">
+								<f:selectItem itemValue="AC" itemLabel="Activo" />
+								<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+								<p:ajax event="change" update="estadoID" />
+							</h:selectOneMenu>
+							<p:message for="estadoID" />
+
+
+							<h:outputLabel value="Registro" for="usuarioRegistroID" />
+							<p:inputText id="usuarioRegistroID" styleClass="form-control"
+								value="#{gastosController.newGastos.usuarioRegistro}"
+								disabled="true" required="true"
+								requiredMessage="Usuario Registro Requerido." />
+							<p:message for="usuarioRegistroID" />
+
+							<h:outputLabel value="Fecha_Registro" for="fechaRegistroID" />
+							<p:calendar id="fechaRegistroID" showOn="button"
+								value="#{gastosController.newGastos.fechaRegistro}"
+								disabled="true" required="true"
+								requiredMessage="Fecha Registro Requerido.">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</p:calendar>
+							<p:message for="fechaRegistroID" />
+						</h:panelGrid>
+
+					</div>
+
+				</div>
+				</div>
+				<div class="col-sm-12 col-md-9" align="left">
+				</div>
+			</ui:fragment>
+
+			<div class="btn-group btn-group-md" style="width: 100%;">
+
+				<p:commandButton
+					rendered="#{gastosController.modificar=='true' or gastosController.nuevo=='true'}"
+					icon="ui-icon-minus"
+					action="#{gastosController.initNewGastos()}"
+					style="width: 8em;" update=":formRegistroGastos"
+					styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+				<p:commandButton
+					rendered="#{gastosController.nuevo=='true' and gastosController.modificar=='false'}"
+					action="#{gastosController.registrarGastos()}"
+					icon="ui-icon-disk" update=":formRegistroGastos"
+					style="width: 8em;" styleClass="btn btn-primary" value="Guardar"
+					type="submit" />
+
+				<p:commandButton
+					rendered="#{gastosController.modificar=='false' and gastosController.nuevo=='false'}"
+					icon="ui-icon-plus"
+					action="#{gastosController.crearGastos()}"
+					style="width: 8em;" update=":formRegistroGastos"
+					styleClass="btn btn-success" value="Crear" type="submit" />
+
+				<p:commandButton
+					action="#{gastosController.modificarEstado()}"
+					rendered="#{gastosController.nuevo=='false' and gastosController.modificar=='true'}"
+					icon="ui-icon-disk" value="Modificar" style="width: 8em;"
+					update=":formRegistroGastos"
+					styleClass="btn btn-primary btn-md" />
+
+				<p:commandButton
+					rendered="#{gastosController.modificar=='true' and gastosController.nuevo=='true'}"
+					icon="ui-icon-refresh"
+					action="#{gastosController.modificarGastos()}"
+					style="width: 8em;" update=":formRegistroGastos"
+					styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+				<p:commandButton
+					rendered="#{gastosController.modificar=='true'}"
+					icon="ui-icon-circle-close"
+					action="#{gastosController.eliminarGastos()}"
+					style="width: 8em;" update=":formRegistroGastos"
+					styleClass="btn btn-danger" value="Borrar" type="submit" />
+
+
+			</div>
+
+			<ui:fragment rendered="#{gastosController.nuevo=='false'}">
+				<div id="newGastossMessages" class="update" />
+
+				<h:panelGroup rendered="#{empty listaGastos}">
+					<em>No se encontraron registros.</em>
+				</h:panelGroup>
+
+
+				<div class="panel panel-default">
+					<!-- Default panel contents -->
+					<div class="panel-heading">
+						<center>
+							<strong>LISTA DE GASTOS</strong>
+						</center>
+					</div>
+
+					<!-- Table -->
+					<div class="table-responsive">
+
+						<p:dataTable
+							styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+							selection="#{gastosController.selectedGastos}"
+							selectionMode="single" rowKey="#{_tp.id}"
+							 id="gastosTable" var="_tp"
+							value="#{listaGastos}"
+							rendered="#{not empty listaGastos}">
+
+							<p:ajax event="rowSelect" update=":formRegistroGastos"
+								listener="#{gastosController.onRowSelectGastosClick}" />
+							<p:ajax event="rowDblselect" update=":formRegistroGastos"
+								listener="#{gastosController.onRowSelectGastosDBLClick}" />
+
+							<p:column headerText="ID">
+								<span class="label label-success">#{_tp.id}</span>
+							</p:column>
+							<p:column headerText="Descripcion">
+								<h:outputText value="#{_tp.descripcion}" />
+							</p:column>
+							
+							<p:column headerText="Porcentaje(%)">
+								<h:outputText value="#{_tp.porcentaje} %" />
+							</p:column>
+							
+							<p:column headerText="Fecha Registro">
+								<h:outputText value="#{_tp.fechaRegistro}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Usuario Registro">
+								<h:outputText value="#{_tp.usuarioRegistro}" />
+							</p:column>
+							<p:column headerText="Estado">
+								<span class="label label-success"><h:outputText
+										rendered="#{_tp.estado=='AC'}" value="Activo" /></span>
+								<span class="label label-danger"><h:outputText
+										rendered="#{_tp.estado=='IN'}" value="Inactivo" /></span>
+							</p:column>
+						</p:dataTable>
+
+					</div>
+				</div>
+			</ui:fragment>
+
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,228 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloCompras.xhtml">
+
+	<ui:define name="head">
+		<title>Linea Proveedor</title>
+	</ui:define>
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li>
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li><a href="/buffalo/"> Inicio </a></li>
+					<li><a href="/buffalo/pages/compra/home.xhtml">Modulo Compra</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;"
+						href="/buffalo/pages/compra/linea-proveedor.xhtml">Gestión
+							de Linea Proveedor</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+	<ui:define name="menu">
+		<h:form>
+			<ui:include src="/pages/parametrizacion/menuTemp.xhtml" />
+		</h:form>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formRegistroGrupoProducto" styleClass="form-horizontal">
+			<ui:fragment rendered="#{lineaProveedorController.nuevo=='true'}">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<strong>#{lineaProveedorController.tituloPanel}</strong>
+						</h3>
+					</div>
+					<div class="panel-body">
+
+						<h:panelGrid columns="6">
+							<h:outputLabel value="Codigo" for="codigoID" />
+							<p:inputText id="codigoID" styleClass="form-control"
+								value="#{lineaProveedorController.newLineasProveedor.nombre}"
+								required="true" requiredMessage="Requerido." />
+							<p:message for="codigoID" />
+
+							<h:outputLabel value="Proveedor" for="proveedorID" />
+							<h:selectOneMenu id="proveedorID"
+								value="#{lineaProveedorController.idProveedor}"
+								styleClass="form-control" effect="fade" required="true"
+								requiredMessage="Requerido.">
+								<f:selectItems
+									value="#{lineaProveedorController.listaProveedores}" var="_pro"
+									itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+								<p:ajax event="change" />
+							</h:selectOneMenu>
+							<p:message for="proveedorID" />
+
+							<h:outputLabel value="Nombre" for="nombreID" />
+							<p:inputText id="nombreID" styleClass="form-control"
+								value="#{lineaProveedorController.newLineasProveedor.nombre}"
+								required="true" requiredMessage="Requerido." />
+							<p:message for="nombreID" />
+
+
+							<h:outputLabel value="Estado" for="estadoID" />
+							<h:selectOneMenu id="estadoID"
+								value="#{lineaProveedorController.newLineasProveedor.estado}"
+								styleClass="form-control" required="true"
+								requiredMessage="Estado Requerido.">
+								<f:selectItem itemValue="AC" itemLabel="Activo" />
+								<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+								<p:ajax event="change" update="estadoID" />
+							</h:selectOneMenu>
+							<p:message for="estadoID" />
+
+							<h:outputLabel value="Fecha_Registro" for="fechaRegistroID" />
+							<p:calendar id="fechaRegistroID" showOn="button"
+								value="#{lineaProveedorController.newLineasProveedor.fechaRegistro}"
+								disabled="true" required="true"
+								requiredMessage="Fecha Registro Requerido.">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</p:calendar>
+							<p:message for="fechaRegistroID" />
+
+							<h:outputLabel value="Registro" for="usuarioRegistroID" />
+							<p:inputText id="usuarioRegistroID" styleClass="form-control"
+								value="#{lineaProveedorController.newLineasProveedor.usuarioRegistro}"
+								disabled="true" required="true"
+								requiredMessage="Usuario Registro Requerido." />
+							<p:message for="usuarioRegistroID" />
+
+						</h:panelGrid>
+
+					</div>
+
+				</div>
+			</ui:fragment>
+
+
+			<div class="btn-group btn-group-sm">
+
+				<p:commandButton
+					rendered="#{lineaProveedorController.modificar=='true' or lineaProveedorController.nuevo=='true'}"
+					icon="ui-icon-minus" immediate="true"
+					action="#{lineaProveedorController.initNewLineasProveedores()}"
+					style="width: 8em;" update=":formRegistroGrupoProducto"
+					styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+				<p:commandButton
+					rendered="#{lineaProveedorController.nuevo=='true' and lineaProveedorController.modificar=='false'}"
+					action="#{lineaProveedorController.registrarLineasProveedor()}"
+					icon="ui-icon-disk" update=":formRegistroGrupoProducto"
+					style="width: 8em;" styleClass="btn btn-primary" value="Guardar"
+					type="submit" />
+				<p:commandButton
+					rendered="#{lineaProveedorController.modificar=='false' and lineaProveedorController.nuevo=='false'}"
+					icon="ui-icon-plus"
+					action="#{lineaProveedorController.crearLineaProveedor()}"
+					style="width: 8em;" update=":formRegistroGrupoProducto"
+					styleClass="btn btn-success" value="Crear" type="submit" />
+				<p:commandButton
+					action="#{lineaProveedorController.modificarEstado()}"
+					rendered="#{lineaProveedorController.nuevo=='false' and lineaProveedorController.modificar=='true'}"
+					icon="ui-icon-disk" value="Modificar" style="width: 8em;"
+					update=":formRegistroGrupoProducto,:growl"
+					styleClass="btn btn-primary btn-md" />
+
+				<p:commandButton
+					rendered="#{lineaProveedorController.modificar=='true' and lineaProveedorController.nuevo=='true'}"
+					icon="ui-icon-refresh"
+					action="#{lineaProveedorController.modificarLineasProveedor()}"
+					style="width: 8em;" update=":formRegistroGrupoProducto"
+					styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+				<p:commandButton
+					rendered="#{lineaProveedorController.modificar=='true'}"
+					icon="ui-icon-circle-close"
+					action="#{lineaProveedorController.eliminarLineasProveedor()}"
+					style="width: 8em;" update=":formRegistroGrupoProducto"
+					styleClass="btn btn-danger" value="Borrar" type="submit" />
+
+
+			</div>
+			<ui:fragment rendered="#{lineaProveedorController.nuevo=='false'}">
+				<div id="newGrupoProductosMessages" class="update" />
+
+				<h:panelGroup rendered="#{empty listaLineasProveedores}">
+					<em>No se encontraron registros.</em>
+				</h:panelGroup>
+
+
+				<div class="panel panel-default">
+					<!-- Default panel contents -->
+					<div class="panel-heading">
+						<center>
+							<strong>LISTA GRUPOS DE PRODUCTO</strong>
+						</center>
+					</div>
+
+					<!-- Table -->
+					<div class="table-responsive">
+
+						<p:dataTable
+							styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+							selection="#{lineaProveedorController.selectedLineasProveedor}"
+							selectionMode="single" rowKey="#{_lineas.id}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true"
+							rows="10" id="grupoTable" var="_lineas"
+							value="#{listaLineasProveedores}"
+							rendered="#{not empty listaLineasProveedores}">
+
+							<p:ajax event="rowSelect" update=":formRegistroGrupoProducto"
+								listener="#{lineaProveedorController.onRowSelectLineasProveedorClick}" />
+							<p:ajax event="rowDblselect" update=":formRegistroGrupoProducto"
+								listener="#{lineaProveedorController.onRowSelectLineasProveedorBDLClick}" />
+
+							<p:column headerText="ID" width="50">
+								<span class="label label-success">#{_lineas.id}</span>
+							</p:column>
+							<p:column headerText="Nombre">
+								<h:outputText value="#{_lineas.nombre}" />
+							</p:column>
+							<p:column headerText="Proveedor">
+								<h:outputText value="#{_lineas.proveedor.nombre}" />
+							</p:column>
+
+							<p:column headerText="Fecha Registro" width="120">
+								<h:outputText value="#{_lineas.fechaRegistro}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Usuario Registro" width="120">
+								<h:outputText value="#{_lineas.usuarioRegistro}" />
+							</p:column>
+							<p:column headerText="Estado" width="100">
+								<span class="label label-success"><h:outputText
+										rendered="#{_lineas.estado=='AC'}" value="Activo" /></span>
+								<span class="label label-danger"><h:outputText
+										rendered="#{_lineas.estado=='IN'}" value="Inactivo" /></span>
+							</p:column>
+						</p:dataTable>
+
+					</div>
+				</div>
+			</ui:fragment>
+
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

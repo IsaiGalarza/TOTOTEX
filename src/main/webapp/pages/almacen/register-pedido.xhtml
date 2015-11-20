@@ -1,0 +1,530 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/template.xhtml">Parametrizacion.xhtml">
+
+	<ui:define name="head">
+		<title>:: Pedido ::</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="panel-body" style="padding: 0px 0px 0px 0px;">
+			<div class="row">
+				<div class="col-sm-6 col-md-3" align="left">
+					<div class="thumbnail">
+						<h:graphicImage sclass="thumbnail" name="logo.jpg" library="gfx"
+							width="60px;" height="50px;" />
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-3">
+					<h2>
+						<span class="label label-default">Gestion de Pedido</span>
+					</h2>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formRegistroPedidoMov" styleClass="form-horizontal">
+
+			<div class="panel panel-default">
+				<ui:fragment
+					rendered="#{pedidoController.nuevo=='true' or pedidoController.modificar=='true' }">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<strong>#{pedidoController.tituloPanel}</strong>
+						</h3>
+					</div>
+					<div class="panel-body">
+
+						<div class="row">
+
+							<div class="col-sm-4 col-md-4" align="center"
+								style="padding: 0px 0px 0px 0px;">
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										<h3 class="panel-title">
+											<span class="icon"> <i aria-hidden="true"
+												class="icon-list"></i>
+											</span> <strong>Datos del Pedido</strong>
+										</h3>
+									</div>
+
+									<h:panelGrid columns="3">
+										<h:outputLabel value="Tipo_Pedido" for="clienteID" />
+										<h:selectOneMenu id="clienteID"
+											value="#{pedidoController.newPedidoMov.tipoPedido}"
+											styleClass="form-control" effect="fade" required="true"
+											requiredMessage="Requerido."
+											disabled="#{pedidoController.newPedidoMov.estado=='AP'}">
+											<f:selectItem itemValue="NA" itemLabel="--Seleccione--" />
+											<f:selectItem itemValue="INT" itemLabel="Interno" />
+											<f:selectItem itemValue="EXT" itemLabel="Externo" />
+											<p:ajax event="change" update=":formRegistroPedidoMov" />
+										</h:selectOneMenu>
+										<p:message for="clienteID" />
+
+										<h:outputLabel value=""
+											rendered="#{pedidoController.newPedidoMov.tipoPedido=='INT' or pedidoController.newPedidoMov.tipoPedido=='EXT'}"
+											for="almacenID" />
+										<p:panel id="almacenID" header="Almacenes"
+											rendered="#{pedidoController.newPedidoMov.tipoPedido=='INT' or pedidoController.newPedidoMov.tipoPedido=='EXT'}">
+											<h:outputLabel value="Almacen:" for="almdID" />
+											<p:inputText id="almdID" styleClass="form-control" size="30"
+												value="#{pedidoController.newPedidoMov.almIn.nombre}"
+												disabled="true">
+											</p:inputText>
+											<p:message for="almdID" />
+
+											<ui:fragment
+												rendered="#{pedidoController.newPedidoMov.tipoPedido=='INT'}">
+												<h:outputLabel value="Pedir a:" for="almIID" />
+												<h:selectOneMenu id="almIID"
+													value="#{pedidoController.newPedidoMov.almOut.id}"
+													styleClass="form-control" effect="fade" required="true"
+													requiredMessage="Requerido."
+													disabled="#{pedidoController.newPedidoMov.estado=='AP'}">
+													<f:selectItem itemValue="" itemLabel="--Seleccione--" />
+													<f:selectItems var="va"
+														value="#{pedidoController.listAlmacen}"
+														itemValue="#{va.id}"
+														itemLabel="#{va.nombre}, #{va.direccion}, #{va.usuario.name}" />
+													<p:ajax event="change" update=":formRegistroPedidoMov" />
+												</h:selectOneMenu>
+
+
+												<p:message for="almIID" />
+											</ui:fragment>
+										</p:panel>
+										<p:message for="almacenID"
+											rendered="#{pedidoController.newPedidoMov.tipoPedido=='INT' or pedidoController.newPedidoMov.tipoPedido=='EXT'}" />
+										<h:outputLabel value="Observacion" for="descripcionID" />
+										<p:inputText id="descripcionID" styleClass="form-control"
+											size="30"
+											disabled="#{pedidoController.newPedidoMov.estado=='AP'}"
+											value="#{pedidoController.newPedidoMov.observacion}">
+											<p:ajax event="change" />
+										</p:inputText>
+										<p:message for="descripcionID" />
+
+										<h:outputLabel value="Total" for="totalID" />
+										<p:inputText id="totalID" styleClass="form-control"
+											disabled="true" size="30"
+											value="#{pedidoController.newPedidoMov.total} Bs."
+											required="true" requiredMessage="Requerido.">
+											<p:ajax event="change" />
+										</p:inputText>
+										<p:message for="totalID" />
+
+
+										<h:outputLabel value="Fecha_Registro" for="fechaRegistroID" />
+										<p:inputText id="fechaRegistroID" styleClass="form-control"
+											size="40"
+											value="#{pedidoController.newPedidoMov.fechaRegistro}"
+											disabled="true" required="true" requiredMessage="Requerido.">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</p:inputText>
+										<p:message for="fechaRegistroID" />
+
+										<h:outputLabel value="Registro" for="usuarioRegistroID" />
+										<p:inputText id="usuarioRegistroID" styleClass="form-control"
+											size="40"
+											value="#{pedidoController.newPedidoMov.usuarioRegistro}"
+											disabled="true" required="true"
+											requiredMessage="Usuario Registro Requerido." />
+										<p:message for="usuarioRegistroID" />
+
+										<h:outputLabel value="Estado" for="estadoID" />
+										<h:selectOneMenu id="estadoID"
+											value="#{pedidoController.newPedidoMov.estado}"
+											styleClass="form-control" required="true"
+											requiredMessage="Estado Requerido."
+											disabled="#{pedidoController.newPedidoMov.estado=='AP'}">
+											<f:selectItem itemValue="AC" itemLabel="Activo" />
+											<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+											<f:selectItem itemValue="AP" itemLabel="Aprobado" />
+											<p:ajax event="change" update="estadoID" />
+										</h:selectOneMenu>
+										<p:message for="estadoID" />
+
+									</h:panelGrid>
+								</div>
+							</div>
+							<div class="col-sm-5 col-md-8" align="left">
+								<div class="panel panel-success">
+
+
+
+									<div class="panel-heading">
+
+										<h3 class="panel-title">
+											<span class="icon"> <i aria-hidden="true"
+												class="icon-list"></i>
+											</span> <strong>LISTA DE DETALLE</strong>
+										</h3>
+									</div>
+
+									<div class="panel panel-default">
+										<div class="table-responsive">
+
+											<p:dataTable
+												styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+												selection="#{pedidoController.selectedDetallePedido}"
+												selectionMode="single" rowKey="#{_det}" id="detalleTableID"
+												var="_det"
+												emptyMessage="No se encontraron registros de preparados."
+												value="#{pedidoController.listaPedido}">
+												<p:ajax event="rowSelect" update=":formRegistroPedidoMov"
+													listener="#{pedidoController.onRowSelectDetalleClick}" />
+
+
+												<p:column headerText="Nombre">
+								                      #{_det.producto.nombreProducto}
+								                	</p:column>
+												<p:column headerText="Proveedor">
+								                      #{_det.proveedor.nombre}
+								                	</p:column>
+												<p:column headerText="Linea">
+								                      #{_det.lineasProveedor.nombre}
+								                	</p:column>
+												<p:column headerText="Cantidad">
+								                      #{_det.cantidad} Uds.
+								                	</p:column>
+												<p:column headerText="Precio">
+								                      #{_det.precioVenta} Bs.
+								                	</p:column>
+												<p:column headerText="Costo">
+								                      #{_det.total} Bs.
+								                	</p:column>
+												<p:columnGroup type="footer">
+													<p:row>
+														<p:column footerText="Totals: " colspan="5"
+															style="text-align:right" />
+														<p:column
+															footerText="#{pedidoController.newPedidoMov.total}" />
+													</p:row>
+												</p:columnGroup>
+
+											</p:dataTable>
+
+										</div>
+
+									</div>
+									<div class="panel-footer" align="right">
+										<p:commandButton value="Agregar" id="agregarID2"
+											disabled="#{pedidoController.newPedidoMov.estado=='AP'}"
+											oncomplete="dlgPreparado.show()" icon="ui-icon-plus"
+											style="width: 90px;" styleClass="btn btn-success btn-right"
+											update=":formModalDetalle" />
+										<p:tooltip id="agregarToolTip2" for="agregarID2"
+											value="Agregar Producto" />
+
+										<p:commandButton id="quitarCompuestoID2" value="Quitar"
+											update=":formRegistroPedidoMov"
+											disabled="#{pedidoController.newPedidoMov.estado=='AP'}"
+											actionListener="#{pedidoController.eliminarDetallePedido()}"
+											icon="ui-icon-trash" style="width: 90px; text-color: white;"
+											styleClass="btn btn-danger" />
+										<p:tooltip id="quitarToolTip2" for="quitarCompuestoID2"
+											value="Quitar Registro" />
+
+
+									</div>
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+				</ui:fragment>
+				<div class="panel-footer">
+
+					<div class="btn-group btn-group-sm">
+
+						<p:commandButton
+							rendered="#{pedidoController.modificar=='true' or pedidoController.nuevo=='true'}"
+							icon="ui-icon-minus"
+							action="#{pedidoController.initNewPedidoMov()}"
+							style="width: 150px;" update=":formRegistroPedidoMov"
+							styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+						<p:commandButton
+							rendered="#{pedidoController.modificar=='false' and pedidoController.nuevo=='false'}"
+							action="#{pedidoController.crearPredido()}" icon="ui-icon-disk"
+							update=":formRegistroPedidoMov" style="width: 150px;"
+							styleClass="btn btn-success" value="Crear" type="submit" />
+
+						<p:commandButton
+							rendered="#{pedidoController.modificar=='false' and pedidoController.nuevo=='true'}"
+							action="#{pedidoController.registrarPedidoMov()}"
+							icon="ui-icon-disk" update=":formRegistroPedidoMov"
+							style="width: 150px;" styleClass="btn btn-primary"
+							value="Guardar" type="submit" />
+
+						<p:commandButton rendered="#{pedidoController.modificar=='true'}"
+							icon="ui-icon-refresh"
+							action="#{pedidoController.modificarPedidoMov()}"
+							style="width: 150px;" update=":formRegistroPedidoMov"
+							styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+						<p:commandButton rendered="#{pedidoController.modificar=='true'}"
+							icon="ui-icon-circle-close"
+							disabled="#{pedidoController.newPedidoMov.estado=='AP'}"
+							action="#{pedidoController.eliminarPedidoMov()}"
+							style="width: 150px;" update=":formRegistroPedidoMov"
+							styleClass="btn btn-danger" value="Borrar" type="submit" />
+
+						<p:commandButton rendered="#{pedidoController.modificar=='true'}"
+							icon="ui-icon-print" action="#" style="width: 150px;"
+							update=":formRegistroPedidoMov" styleClass="btn btn-success"
+							value="Imprimir" type="submit" />
+
+					</div>
+
+				</div>
+			</div>
+
+			<ui:fragment
+				rendered="#{pedidoController.nuevo=='false' and pedidoController.modificar=='false' }">
+				<div id="newPedidoMovsMessages" class="update" />
+
+				<h:panelGroup rendered="#{empty listaPedidoMov}">
+					<em>No se encontraron registros.</em>
+				</h:panelGroup>
+
+
+				<div class="panel panel-default">
+					<!-- Default panel contents -->
+					<div class="panel-heading">
+						<center>
+							<strong>LISTA DE PEDIDOS</strong>
+						</center>
+					</div>
+
+					<!-- Table -->
+					<div class="table-responsive">
+
+						<p:dataTable
+							styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+							selection="#{pedidoController.selectedPedidoMov}"
+							selectionMode="single" rowKey="#{_pedido.id}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true"
+							rows="10" id="pedidoTable" var="_pedido"
+							value="#{listaPedidoMov}" rendered="#{not empty listaPedidoMov}">
+
+							<p:ajax event="rowSelect" update=":formRegistroPedidoMov"
+								listener="#{pedidoController.onRowSelectPedidoMovClick}" />
+
+							<p:column headerText="ID">
+								<span class="label label-success">#{_pedido.id}</span>
+							</p:column>
+							<p:column headerText="Descripcion">
+								<h:outputText value="#{_pedido.observacion}" />
+							</p:column>
+
+							<p:column headerText="Remitente/Remitido">
+								<h:outputText value="#{_pedido.usuario.name}" />
+								<h:outputText
+									value="#{_pedido.usuario.name} -> #{_pedido.usuarioOut.name}"
+									rendered="#{_pedido.tipoPedido=='INT'}" />
+								<h:outputText value="#{_pedido.usuario.name}"
+									rendered="#{_pedido.tipoPedido=='EXT'}" />
+							</p:column>
+
+							<p:column headerText="Alm 1/Alm 2">
+								<h:outputText
+									value="#{_pedido.almIn.nombre} -> #{_pedido.almOut.nombre}"
+									rendered="#{_pedido.tipoPedido=='INT'}" />
+								<h:outputText value="#{_pedido.almIn.nombre}"
+									rendered="#{_pedido.tipoPedido=='EXT'}" />
+							</p:column>
+
+							<p:column headerText="Total">
+								<h:outputText value="#{_pedido.total} Bs." />
+							</p:column>
+
+							<p:column headerText="Estado">
+								<span class="label label-primary"><h:outputText
+										rendered="#{_pedido.estado=='AC'}" value="Nuevo" /></span>
+								<span class="label label-success"><h:outputText
+										rendered="#{_pedido.estado=='AP'}" value="Aprobado" /></span>
+							</p:column>
+
+						</p:dataTable>
+
+					</div>
+				</div>
+			</ui:fragment>
+
+		</h:form>
+
+
+		<p:dialog showEffect="explode"
+			header="LISTA DE PRODUCTOS PARA HACER PEDIDO"
+			widgetVar="dlgPreparado" resizable="false" modal="true"
+			position="center" width="60%" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalPreparado">
+
+			<div class="modal-body">
+
+				<h:form id="formModalDetalle">
+
+					<div class="col-sm-5 col-md-12" align="left">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<span class="icon"> <i aria-hidden="true"
+										class="icon-list"></i>
+									</span> <strong>LISTA DE PRODUCTOS</strong>
+								</h3>
+							</div>
+							<div class="panel panel-default">
+								<div class="table-responsive">
+
+									<p:dataTable
+										styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+										selection="#{pedidoController.selectedProductoProveedor}"
+										selectionMode="single" rowKey="#{_proforma}"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										rowsPerPageTemplate="10 20 30 40 50" first="0"
+										paginator="true" rows="10" id="recetassTable" var="_proforma"
+										emptyMessage="No se encontraron registros de preparados."
+										value="#{pedidoController.listProducto}">
+										<p:ajax event="rowSelect" update=":formModalDetalle"
+											listener="#{pedidoController.onRowSelectProductoClick}" />
+
+
+										<p:column headerText="Nombre"
+											filterBy="#{_proforma.producto.nombreProducto}"
+											filterMatchMode="contains">
+								                      #{_proforma.producto.nombreProducto}
+								                	</p:column>
+
+										<p:column headerText="Presentacion"
+											filterBy="#{_proforma.producto.cantidadUnidadPresentacion.presentacion.descripcion.toUpperCase()} #{_proforma.producto.cantidadUnidadPresentacion.cantidad} #{_proforma.producto.cantidadUnidadPresentacion.unidadMedida.descripcion.toUpperCase()}"
+											filterMatchMode="contains">
+											<h:outputText
+												value="#{_proforma.producto.cantidadUnidadPresentacion.presentacion.descripcion.toUpperCase()} #{_proforma.producto.cantidadUnidadPresentacion.cantidad} #{_proforma.producto.cantidadUnidadPresentacion.unidadMedida.descripcion.toUpperCase()}" />
+
+										</p:column>
+										<p:column headerText="Linea"
+											filterBy="#{_proforma.lineasProveedor.nombre}}"
+											filterMatchMode="contains">
+											<h:outputText value="#{_proforma.lineasProveedor.nombre}" />
+
+										</p:column>
+										<p:column headerText="Provedor"
+											filterBy="#{_proforma.proveedor.nombre}"
+											filterMatchMode="contains">
+											<h:outputText value="#{_proforma.proveedor.nombre}" />
+
+										</p:column>
+										<p:column headerText="Precio Venta"
+											filterBy="#{_proforma.precioUnitarioVenta}"
+											filterMatchMode="contains">
+											<h:outputText value="#{_proforma.precioUnitarioVenta}" />
+
+										</p:column>
+
+
+
+
+									</p:dataTable>
+
+								</div>
+
+							</div>
+						</div>
+
+
+					</div>
+					<br />
+					<div class="col-sm-5 col-md-12" align="left">
+						<div class="panel panel-success">
+							<div class="panel-heading">
+								<strong>Datos del Producto</strong>
+							</div>
+							<div class="col-sm-5 col-md-6" align="left">
+								<h:panelGrid columns="2">
+									<p:outputLabel value="Producto:"></p:outputLabel>
+									<p:inputText styleClass="form-control" size="30"
+										value="#{pedidoController.selectedProductoProveedor.producto.nombreProducto}"
+										disabled="true" />
+
+									<p:outputLabel value="Presentacion:"></p:outputLabel>
+									<p:inputText styleClass="form-control" size="30"
+										value="#{pedidoController.selectedProductoProveedor.producto.cantidadUnidadPresentacion.presentacion.descripcion.toUpperCase()} #{pedidoController.selectedProductoProveedor.producto.cantidadUnidadPresentacion.cantidad} #{pedidoController.selectedProductoProveedor.producto.cantidadUnidadPresentacion.unidadMedida.descripcion.toUpperCase()}"
+										disabled="true" />
+
+									<h:outputLabel value="Total:" />
+									<p:inputText styleClass="form-control" size="30"
+										value="#{pedidoController.total}" disabled="true" />
+								</h:panelGrid>
+
+							</div>
+							<div class="col-sm-5 col-md-6" align="left">
+								<h:panelGrid columns="3">
+
+
+									<h:outputLabel value="Precio:" for="precioID" />
+									<p:inputText id="precioID" styleClass="form-control" size="30"
+										value="#{pedidoController.selectedProductoProveedor.precioUnitarioVenta}"
+										disabled="true" />
+									<p:message for="precioID" />
+
+									<h:outputLabel value="Cantidad:" for="cantidadID" />
+									<p:inputText id="cantidadID" styleClass="form-control"
+										size="30" value="#{pedidoController.cantidad}" rendered="true"
+										requiredMessage="Llenar este campo...">
+										<p:ajax event="change" update=":formModalDetalle"
+											listener="#{pedidoController.selectedDetalle()}" />
+									</p:inputText>
+									<p:message for="cantidadID" />
+
+								</h:panelGrid>
+							</div>
+							<div class="panel-footer">
+								<div class="btn-group btn-group-sm">
+									<p:commandButton action="#{pedidoController.agregarDetalle()}"
+										icon="ui-icon-plus"
+										update=":formRegistroPedidoMov, :formModalDetalle"
+										styleClass="btn btn-success" value="Agregar" />
+
+								</div>
+
+							</div>
+						</div>
+					</div>
+
+
+
+				</h:form>
+			</div>
+
+			<div class="modal-footer">
+				<div class="btn-group btn-group-sm">
+					<p:commandButton value="Cerrar" style="width: 8em;"
+						icon="ui-icon-minus"
+						update=":formRegistroPedidoMov, :formModalDetalle" action="#"
+						onclick="dlgPreparado.hide()" />
+				</div>
+
+			</div>
+
+		</p:dialog>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

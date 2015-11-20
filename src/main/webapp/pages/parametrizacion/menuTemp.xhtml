@@ -1,0 +1,63 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a="http://richfaces.org/a4j"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext">
+
+
+	
+
+			<p:growl id="messages" showDetail="true" />
+	<div class="panel panel-primary" style="background: #D8D8D8;">
+		<div class="panel-heading">
+			<h3 class="panel-title">
+				<strong>Menu</strong>
+			</h3>
+		</div>
+		<!-- Botón que activa el panel -->
+
+		<div class="panel-body">
+			<p:tree id="docs"  value="#{treeContextMenuView.root}"  style="font-size: 13px; background: #D8D8D8; width: 100%;" var="doc"
+				selectionMode="single"
+				selection="#{treeContextMenuView.selectedNode}" dynamic="true" >
+				<p:treeNode expandedIcon="ui-icon-folder-open"
+					collapsedIcon="ui-icon-folder-collapsed">
+					<span ><a href="#{doc.path}"><h:outputText value="#{doc.name}" /></a></span>
+				</p:treeNode>
+				<p:treeNode type="document" icon="ui-icon-document">
+					<a href="#{doc.path}"><h:outputText value="#{doc.name}" /></a>
+				</p:treeNode>
+				<p:treeNode type="print" icon="ui-icon-print">
+					<span style="color: blue;"><a href="#{doc.path}"><h:outputText value="#{doc.name}" /></a></span>
+				</p:treeNode>
+				<p:treeNode type="document" icon="ui-icon-document">
+					<a href="#{doc.path}"><h:outputText value="#{doc.name}" /></a>
+				</p:treeNode>
+				<p:treeNode type="picture" icon="ui-icon-image">
+					<a href="#{doc.path}"><h:outputText value="#{doc.name}" /></a>
+				</p:treeNode>
+				<p:treeNode type="mp3" icon="ui-icon-video">
+					<a href="#{doc.path}"><h:outputText value="#{doc.name}" /></a>
+				</p:treeNode>
+			</p:tree>
+
+			<p:contextMenu for="docs">
+				<p:menuitem value="View" update="messages"
+					actionListener="#{treeContextMenuView.displaySelectedSingle}"
+					icon="ui-icon-search" />
+				<p:menuitem value="Delete" update="docs"
+					actionListener="#{treeContextMenuView.deleteNode}"
+					icon="ui-icon-close" />
+			</p:contextMenu>
+			</div>
+			</div>
+			
+
+
+
+
+	
+		
+</ui:composition>

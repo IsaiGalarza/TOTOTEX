@@ -1,0 +1,105 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a="http://richfaces.org/a"
+    xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+    template="/WEB-INF/templates/template.xhtml">
+
+
+	<!-- test -->
+    <ui:define name="head">
+    	<title>:: Ventas ::</title>
+    </ui:define>
+    
+    <ui:define name="header">
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li>
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li><a href="/buffalo/"> Inicio </a></li>
+					<li><a href="/buffalo/pages/ventas/home.xhtml"> Modulo
+							Ventas </a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;"
+						href="/buffalo/pages/ventas/ventas-home.xhtml">Ventas</a></li>
+				</ol>
+			</div>
+		</div>
+	</ui:define>
+    
+    <ui:define name="content">
+		<h:form id="formGestionContable"  styleClass="form-horizontal">
+			 
+			
+			<div class="panel-body">
+				
+					<div class="row">
+						
+						<div class="col-lg-3">
+						  <center>
+					          
+					          <h2>
+					          <span class="icon">
+									<i aria-hidden="true" style="color: orange;" class="icon-forward"></i>
+							  </span>
+					          Proforma Venta</h2>
+					          <a href="/buffalo/pages/ventas/proforma-ventas.xhtml">
+					          	<h:graphicImage sclass="thumbnail" name="proforma.png" library="gfx" width="110" height="120"/>
+					          </a>
+					          <p>Proformas Procesadas para la Venta.</p>
+					          <p>
+					          <a class="btn btn-warning btn-sm" href="/buffalo/pages/ventas/proforma-ventas.xhtml" role="button">
+					          <span class="icon"> <i aria-hidden="true"
+										class="icon-forward"></i>
+									</span>
+					          
+					          Ingresar</a></p>
+				          </center>
+				        </div>
+						
+				        <div class="col-lg-3">
+				          <center>
+					          <h2>
+					          <span class="icon">
+									<i aria-hidden="true" style="color: orange;" class="icon-forward"></i>
+							  </span>
+					          Reporte Ventas</h2>
+					          <a href="/buffalo/pages/ventas/ventas.xhtml">
+					          	<h:graphicImage sclass="thumbnail" name="reporte-ventas.png" library="gfx" width="110" height="120"/>
+					          </a>
+					          <p>Reporte de Ventas Realizadas.</p>
+					          <p><a class="btn btn-warning btn-sm" href="/buffalo/pages/ventas/ventas.xhtml" role="button">
+					          <span class="icon"> <i aria-hidden="true"
+										class="icon-forward"></i>
+									</span>
+					          Ingresar</a></p>
+				          </center>
+				       </div>
+
+				       
+				        
+				      </div>
+					
+           			
+           			
+           			
+           		</div>
+			
+		   
+		  
+		</h:form>
+			
+	</ui:define>
+    
+    <ui:define name="footer">
+  
+    </ui:define>
+    
+</ui:composition>

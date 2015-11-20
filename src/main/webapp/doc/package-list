@@ -1,0 +1,8 @@
+bo.medipiel.controller
+bo.com.qbit.MediFact.data
+bo.com.qbit.MediFact.login
+bo.com.qbit.MediFact.model
+bo.com.qbit.MediFact.rest
+bo.com.qbit.MediFact.security
+bo.com.qbit.MediFact.service
+bo.com.qbit.MediFact.util

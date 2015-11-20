@@ -1,0 +1,339 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateCompra.xhtml">
+
+	<ui:define name="head">
+		<title>:: Registrar Compra::</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li>
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li><a href="/buffalo/"> Inicio </a></li>
+					<li><a href="/buffalo/pages/compra/home.xhtml">Modulo
+							Compra</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;"
+						href="/buffalo/pages/inventario/almacen/entrega-pedido.xhtml">Registro Compra</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+
+	<ui:define name="menu">
+		<h:form>
+			<ui:include src="/pages/parametrizacion/menuTemInventario1.xhtml" />
+		</h:form>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formRegistroPedidoMov" styleClass="form-horizontal">
+
+			<div class="panel panel-default">
+				<ui:fragment
+					rendered="#{entregaPedidoMovController.nuevo=='true' or entregaPedidoMovController.modificar=='true' }">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<strong>#{entregaPedidoMovController.tituloPanel}</strong>
+						</h3>
+					</div>
+					<div class="panel-body">
+
+						<div class="row">
+
+							<div class="col-sm-4 col-md-3" align="center">
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										<h3 class="panel-title">
+											<span class="icon"> <i aria-hidden="true"
+												class="glyphicon glyphicon-search"></i>
+											</span> <strong>Datos del Pedido</strong>
+										</h3>
+									</div>
+									<p:panel header="ALMACENES"
+										rendered="#{entregaPedidoMovController.newPedidoMov.tipoPedido=='INT' or entregaPedidoMovController.newPedidoMov.tipoPedido=='EXT'}">
+
+
+										<ui:fragment
+											rendered="#{entregaPedidoMovController.newPedidoMov.tipoPedido=='INT'}">
+											<h:outputLabel value="Origen:" />
+											<p:inputText styleClass="form-control" size="30"
+												value="Alm: #{entregaPedidoMovController.newPedidoMov.almOut.nombre},Dir: #{entregaPedidoMovController.newPedidoMov.almOut.direccion}, Eng: #{entregaPedidoMovController.newPedidoMov.almOut.usuario.name}"
+												disabled="true">
+												<p:ajax event="change" />
+											</p:inputText>
+										</ui:fragment>
+										<h:outputLabel value="Destino:" />
+										<p:inputText id="almdID" styleClass="form-control" size="30"
+											value="Alm: #{entregaPedidoMovController.newPedidoMov.almIn.nombre},Dir: #{entregaPedidoMovController.newPedidoMov.almIn.direccion}, Eng: #{entregaPedidoMovController.newPedidoMov.almIn.usuario.name}"
+											disabled="true">
+										</p:inputText>
+									</p:panel>
+									<h:panelGrid columns="2">
+
+
+
+										<h:outputLabel value="Observacion" />
+										<p:inputText styleClass="form-control" size="30"
+											value="#{entregaPedidoMovController.newPedidoMov.observacion}"
+											disabled="true">
+											<p:ajax event="change" />
+										</p:inputText>
+
+										<h:outputLabel value="Tipo_Pedido" />
+										<h:selectOneMenu id="clienteID"
+											value="#{entregaPedidoMovController.newPedidoMov.tipoIngreso}"
+											styleClass="form-control" effect="fade" required="true"
+											requiredMessage="Requerido."
+											disabled="#{entregaPedidoMovController.newPedidoMov.estado=='TE'}">
+											<f:selectItem itemValue="NA" itemLabel="--Seleccione--" />
+											<f:selectItem itemValue="CONTADO" itemLabel="Contado" />
+											<f:selectItem itemValue="CREDITO" itemLabel="Credito" />
+											<p:ajax event="change" update="clienteID" />
+										</h:selectOneMenu>
+
+										<h:outputLabel value="Tipo_Documento" />
+										<h:selectOneMenu id="documentoID"
+											value="#{entregaPedidoMovController.newPedidoMov.tipoDocumento}"
+											styleClass="form-control" effect="fade" required="true"
+											requiredMessage="Requerido."
+											disabled="#{entregaPedidoMovController.newPedidoMov.estado=='TE'}">
+											<f:selectItem itemValue="NA" itemLabel="Sin Documento" />
+											<f:selectItem itemValue="FACTURA" itemLabel="Factura" />
+											<f:selectItem itemValue="PROFORMA" itemLabel="Proforma" />
+											<f:selectItem itemValue="RECIBO" itemLabel="Recibo" />
+											<p:ajax event="change" update="facturaID" />
+										</h:selectOneMenu>
+
+										<h:outputLabel id="facturaID"
+											value="#{entregaPedidoMovController.newPedidoMov.tipoDocumento}" />
+										<p:inputText id="facturaIID" styleClass="form-control"
+											disabled="#{entregaPedidoMovController.newPedidoMov.estado=='TE'}"
+											size="30"
+											value="#{entregaPedidoMovController.newPedidoMov.numeroDocumento}">
+											<p:ajax event="change" update="facturaID" />
+										</p:inputText>
+
+										<h:outputLabel value="Total" />
+										<p:inputText styleClass="form-control" disabled="true"
+											size="30"
+											value="#{entregaPedidoMovController.newPedidoMov.total} Bs.">
+											<p:ajax event="change" />
+										</p:inputText>
+
+										<h:outputLabel value="Total_Entregado" />
+										<p:inputText styleClass="form-control" disabled="true"
+											size="30"
+											value="#{entregaPedidoMovController.newPedidoMov.totalEntregado} Bs.">
+											<p:ajax event="change" />
+										</p:inputText>
+
+
+										<h:outputLabel value="Fecha_Registro" />
+										<p:inputText styleClass="form-control" size="40"
+											value="#{entregaPedidoMovController.newPedidoMov.fechaRegistro}"
+											disabled="true">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</p:inputText>
+
+										<h:outputLabel value="Registro" />
+										<p:inputText styleClass="form-control" size="40"
+											value="#{entregaPedidoMovController.newPedidoMov.usuarioRegistro}"
+											disabled="true" />
+
+
+									</h:panelGrid>
+								</div>
+							</div>
+							<div class="col-sm-5 col-md-9" align="left">
+								<div class="panel panel-success">
+									<div class="panel-heading">
+
+										<h3 class="panel-title">
+											<span class="icon"> <i aria-hidden="true"
+												class="icon-list"></i>
+											</span> <strong>LISTA DE DETALLE</strong>
+										</h3>
+									</div>
+
+									<div class="panel panel-default">
+										<div class="table-responsive">
+
+											<p:dataTable
+												styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+												rowKey="#{_det}" id="detalleTableID" var="_det"
+												emptyMessage="No se encontraron registros de preparados."
+												value="#{entregaPedidoMovController.listaPedido}"
+												rowStyleClass="#{_det.estadoEntrega le 'COMPLETADO' ? 'old' : null}">
+
+
+												<p:column headerText="Prod. - Prov.- Linea">
+													<h:outputText value="- #{_det.producto.nombreProducto}" />
+													<h:outputText value="- #{_det.proveedor.nombre}" />
+													<h:outputText value=" - #{_det.lineasProveedor.nombre}" />
+
+												</p:column>
+
+
+												<p:column headerText="Cantidad">
+													<h:outputText value="#{_det.cantidadEntregado} Uds." />
+												</p:column>
+
+												<p:column headerText="Precio">
+													<h:outputText value="#{_det.precioVenta} Bs." />
+												</p:column>
+												<p:column headerText="Sub Total">
+													<h:outputText
+														value="#{_det.cantidadEntregado*_det.precioVenta} Bs." />
+													<span class="label label-primary"><h:outputText
+															value="Completado"
+															rendered="#{_det.estadoEntrega=='COMPLETADO'}" /></span>
+												</p:column>
+
+												<p:columnGroup type="footer">
+													<p:row>
+														<p:column footerText="Totals: " colspan="3"
+															style="text-align:right" />
+														<p:column
+															footerText="#{entregaPedidoMovController.totalEntrega} Bs."
+															rendered="#{entregaPedidoMovController.newPedidoMov.entrega!='COM'}" />
+														<span class="label label-warning"><p:column
+																footerText="Completado"
+																rendered="#{entregaPedidoMovController.newPedidoMov.entrega=='COM'}" /></span>
+													</p:row>
+												</p:columnGroup>
+
+											</p:dataTable>
+
+										</div>
+
+									</div>
+
+								</div>
+
+
+							</div>
+						</div>
+					</div>
+				</ui:fragment>
+
+
+			</div>
+			<div class="btn-group btn-group-md" style="width: 100%;">
+
+				<p:commandButton icon="ui-icon-minus"
+					action="#{entregaPedidoMovController.initNewPedidoMov()}"
+					update=":formRegistroPedidoMov" styleClass="btn btn-default"
+					value="Cancelar" type="submit" />
+
+				<p:commandButton icon="ui-icon-check"
+					disabled="#{entregaPedidoMovController.newPedidoMov.entrega=='COM'}"
+					rendered="#{entregaPedidoMovController.newPedidoMov.tipoPedido=='EXT' and entregaPedidoMovController.modificar=='true'}"
+					action="#{entregaPedidoMovController.modificarPedidoMov()}"
+					update=":formRegistroPedidoMov" styleClass="btn btn-success"
+					value="Registrar Compra" type="submit" />
+
+
+			</div>
+			<ui:fragment
+				rendered="#{entregaPedidoMovController.nuevo=='false' and entregaPedidoMovController.modificar=='false' }">
+				<div id="newPedidoMovsMessages" class="update" />
+
+				<h:panelGroup rendered="#{empty listaEntregaPedido}">
+					<em>No se encontraron registros.</em>
+				</h:panelGroup>
+
+
+				<div class="panel panel-default">
+					<!-- Default panel contents -->
+					<div class="panel-heading">
+						<span class="icon"> <i aria-hidden="true" class="icon-list"></i>
+						</span> <strong>LISTA DE ORDENES DE COMPRA</strong>
+
+					</div>
+
+					<!-- Table -->
+					<div class="table-responsive">
+
+						<p:dataTable
+							styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+							selection="#{entregaPedidoMovController.selectedPedidoMov}"
+							selectionMode="single" rowKey="#{_pedido.id}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true"
+							rows="10" id="pedidoTable" var="_pedido"
+							value="#{listaEntregaPedido}"
+							rendered="#{not empty listaEntregaPedido}">
+
+							<p:ajax event="rowSelect" update=":formRegistroPedidoMov"
+								listener="#{entregaPedidoMovController.onRowSelectPedidoMovClick}" />
+
+							<p:column headerText="ID">
+								<span class="label label-success">#{_pedido.id}</span>
+							</p:column>
+							<p:column headerText="Descripcion">
+								<h:outputText value="#{_pedido.observacion}" />
+							</p:column>
+
+							<p:column headerText="Encargado">
+								<h:outputText value="#{_pedido.usuario.name}"
+									rendered="#{_pedido.tipoPedido=='EXT'}" />
+							</p:column>
+
+							<p:column headerText="Almacen">
+
+								<h:outputText value="#{_pedido.almIn.nombre}"
+									rendered="#{_pedido.tipoPedido=='EXT'}" />
+							</p:column>
+							<p:column headerText="Fecha Registro">
+								<h:outputText value="#{_pedido.almIn.fechaRegistro}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</p:column>
+
+							<p:column headerText="Total">
+								<h:outputText value="#{_pedido.total} Bs." />
+
+							</p:column>
+
+
+							<p:column headerText="Estado">
+
+								<span class="label label-success"><h:outputText
+										rendered="#{_pedido.entrega=='NEW'}" value="Nuevo" /></span>
+								<span class="label label-warning"><h:outputText
+										rendered="#{_pedido.entrega=='PEN'}" value="Pendiente" /></span>
+								<span class="label label-primary"><h:outputText
+										rendered="#{_pedido.entrega=='COM'}" value="Completado" /></span>
+							</p:column>
+
+						</p:dataTable>
+
+					</div>
+				</div>
+			</ui:fragment>
+
+		</h:form>
+
+
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,241 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloInventario.xhtml">
+
+	<ui:define name="head">
+		<title>:: Presentacion ::</title>
+	</ui:define>
+
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li>
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li><a href="/buffalo/"> Inicio </a></li>
+					<li><a
+						href="/buffalo/pages/inventario/categoria-productos-home.xhtml">Categoria
+							Productos</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;"
+						href="/buffalo/pages/inventario/register-presentacion.xhtml">Gestion
+							Presentacion</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+	<ui:define name="menu">
+		<h:form>
+			<ui:include src="/pages/parametrizacion/menuTemp.xhtml" />
+		</h:form>
+	</ui:define>
+	<ui:define name="content">
+		<h:form id="formRegistroPresentacion" styleClass="form-horizontal">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong>#{presentacionController.tituloPanel}</strong>
+					</h3>
+				</div>
+				<div class="panel-body">
+
+					<div class="row">
+
+						<div class="col-sm-4 col-md-4" align="left"
+							style="padding: 0px 0px 0px 0px;">
+
+							<h:panelGrid columns="3">
+								<h:outputLabel value="Presentacion" for="descripcionID" />
+								<p:inputText id="descripcionID" styleClass="form-control"
+									size="40"
+									value="#{presentacionController.newPresentacion.descripcion}"
+									required="true" requiredMessage="Requerido.">
+									<p:ajax event="change" />
+								</p:inputText>
+								<p:message for="descripcionID" />
+
+								<h:outputLabel value="Estado" for="estadoID" />
+								<h:selectOneMenu id="estadoID"
+									value="#{presentacionController.newPresentacion.estado}"
+									styleClass="form-control" required="true"
+									requiredMessage="Estado Requerido.">
+									<f:selectItem itemValue="AC" itemLabel="Activo" />
+									<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+									<p:ajax event="change" update="estadoID" />
+								</h:selectOneMenu>
+								<p:message for="estadoID" />
+
+							</h:panelGrid>
+						</div>
+
+						<div class="col-sm-4 col-md-4" align="left"
+							style="padding: 0px 0px 0px 0px;">
+							<h:panelGrid columns="3">
+								<p:outputLabel value="Caja?: " for="verCajaID" />
+								<p:selectBooleanCheckbox id="verCajaID"
+									value="#{presentacionController.newPresentacion.showCantidad}">
+									<p:ajax event="change"
+										listener="#{presentacionController.updatedCantidad}"
+										update=":formRegistroPresentacion" />
+								</p:selectBooleanCheckbox>
+								<p:message for="verCajaID" />
+
+								<h:outputLabel value="Unidades" for="cantidadID" />
+								<p:inputText id="cantidadID" styleClass="form-control"
+									value="#{presentacionController.newPresentacion.cantidadCaja}"
+									disabled="#{presentacionController.newPresentacion.showCantidad=='false'}"
+									required="true" requiredMessage="Requerido."
+									validatorMessage="Invalido." size="40">
+									<f:convertNumber pattern="#,##0.00"  locale="en" />
+								</p:inputText>
+								<p:message for="cantidadID" />
+							</h:panelGrid>
+						</div>
+
+						<div class="col-sm-4 col-md-4" align="left"
+							style="padding: 0px 0px 0px 0px;">
+							<h:panelGrid columns="3">
+								<h:outputLabel value="Fecha_Registro" for="fechaRegistroID" />
+								<p:inputText id="fechaRegistroID" styleClass="form-control"
+									size="40"
+									value="#{presentacionController.newPresentacion.fechaRegistro}"
+									disabled="true" required="true" requiredMessage="Requerido.">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</p:inputText>
+								<p:message for="fechaRegistroID" />
+
+								<h:outputLabel value="Registro" for="usuarioRegistroID" />
+								<p:inputText id="usuarioRegistroID" styleClass="form-control"
+									size="40"
+									value="#{presentacionController.newPresentacion.usuarioRegistro}"
+									disabled="true" required="true"
+									requiredMessage="Usuario Registro Requerido." />
+								<p:message for="usuarioRegistroID" />
+
+							</h:panelGrid>
+						</div>
+					</div>
+
+
+
+
+				</div>
+
+			</div>
+
+			<div class="btn-group btn-group-md" style="width: 100%;">
+
+				<p:commandButton
+					rendered="#{presentacionController.modificar=='true'}"
+					icon="ui-icon-minus"
+					action="#{presentacionController.initNewPresentacion()}"
+					style="width: 8em;" update=":formRegistroPresentacion"
+					styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+				<p:commandButton
+					rendered="#{presentacionController.modificar=='false'}"
+					action="#{presentacionController.registrarPresentacion()}"
+					icon="ui-icon-disk" update=":formRegistroPresentacion"
+					style="width: 8em;" styleClass="btn btn-primary" value="Guardar"
+					type="submit" />
+
+				<p:commandButton
+					rendered="#{presentacionController.modificar=='true'}"
+					icon="ui-icon-refresh"
+					action="#{presentacionController.modificarPresentacion()}"
+					style="width: 8em;" update=":formRegistroPresentacion"
+					styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+				<p:commandButton
+					rendered="#{presentacionController.modificar=='true'}"
+					icon="ui-icon-circle-close"
+					action="#{presentacionController.eliminarPresentacion()}"
+					style="width: 8em;" update=":formRegistroPresentacion"
+					styleClass="btn btn-danger" value="Borrar" type="submit" />
+
+			</div>
+
+
+
+
+			<div id="newPresentacionsMessages" class="update" />
+
+			<h:panelGroup rendered="#{empty listaPresentacion}">
+				<em>No se encontraron registros.</em>
+			</h:panelGroup>
+
+
+			<div class="panel panel-default">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<strong>LISTA UNIDADES MEDIDA</strong>
+				</div>
+
+				<!-- Table -->
+				<div class="table-responsive">
+
+					<p:dataTable
+						styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+						selection="#{presentacionController.selectedPresentacion}"
+						selectionMode="single" rowKey="#{_presentacion.id}"
+						id="presentacionTable" var="_presentacion"
+						value="#{listaPresentacion}"
+						rendered="#{not empty listaPresentacion}">
+
+						<p:ajax event="rowSelect" update=":formRegistroPresentacion"
+							listener="#{presentacionController.onRowSelectPresentacionClick}" />
+
+						<p:column headerText="ID">
+							<span class="label label-success">#{_presentacion.id}</span>
+						</p:column>
+						<p:column headerText="Descripcion" width="50%">
+							<h:outputText value="#{_presentacion.descripcion}" />
+						</p:column>
+						<p:column headerText="Unidades/Caja">
+							<h:outputText value="N/A"
+								rendered="#{_presentacion.showCantidad=='false'}" />
+							<h:outputText value="#{_presentacion.cantidadCaja}"
+								rendered="#{_presentacion.showCantidad}">
+								<f:convertNumber pattern="#,##0.00"  locale="en" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Estado">
+							<span class="label label-success"><h:outputText
+									rendered="#{_presentacion.estado=='AC'}" value="Activo" /></span>
+							<span class="label label-danger"><h:outputText
+									rendered="#{_presentacion.estado=='IN'}" value="Inactivo" /></span>
+						</p:column>
+						<p:column headerText="Fecha">
+							<h:outputText value="#{_presentacion.fechaRegistro}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Registro">
+							<h:outputText value="#{_presentacion.usuarioRegistro}" />
+						</p:column>
+					</p:dataTable>
+
+				</div>
+			</div>
+
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,83 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" 
+          "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui">
+
+<h:head>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+	<link href="#{request.contextPath}/resources/css/style-master.css" rel="stylesheet" type="text/css" />
+	<link href="#{request.contextPath}/resources/css/style-icons.css" rel="stylesheet" type="text/css" />
+	<title>Template Web</title>
+</h:head>
+
+<h:body>
+
+	<p:layout fullPage="true">
+		
+		<p:layoutUnit position="west" header="Menu del Sistema" collapsible="true" resizable="true" size="230" minSize="230" maxSize="260">
+			<h:form>
+			
+				<div style="text-align: center;">
+				    <h:link title="Inicio" outcome="/view/index.xhtml">
+				    	<h:graphicImage value="/resources/img/master/logo_158x88.png" />
+				    </h:link>
+				    
+				    <div class="title_system">MODULO DE USUARIO</div>
+				    
+				    <div class="title_usuario">Bienvenido: <i style="color: #0000ff;"><u><h:outputLabel value="Administrador" /></u></i> </div>
+				    
+				    <p:inputText placeholder="Buscar" styleClass="title_buscar"/>
+				</div>
+				
+				<p:panelMenu style="width: 100%">
+					<p:submenu label="Administracion del Sistema">
+						<p:menuitem value="Inicio" url="/view/index.xhtml"/>
+						<p:menuitem value="Roles" url="/view/mu/rol.xhtml"/>
+						<p:menuitem value="Menu 3" url="/view/index3.xhtml"/>
+					</p:submenu>
+					<p:submenu label="Opcion 1">
+						<p:menuitem value="Inicio" url="/view/index.xhtml"/>
+						<p:menuitem value="Menu 2" url="/view/index2.xhtml"/>
+						<p:menuitem value="Menu 3" url="/view/index3.xhtml"/>
+					</p:submenu>
+					<p:submenu label="Opcion 2">
+						<p:menuitem value="Inicio" url="/view/index.xhtml"/>
+						<p:menuitem value="Menu 2" url="/view/index2.xhtml"/>
+						<p:menuitem value="Menu 3" url="/view/index3.xhtml"/>
+					</p:submenu>
+					<p:submenu label="Opcion 3">
+						<p:menuitem value="Inicio" url="/view/index.xhtml"/>
+						<p:menuitem value="Menu 2" url="/view/index2.xhtml"/>
+						<p:menuitem value="Menu 3" url="/view/index3.xhtml"/>
+					</p:submenu>
+					<p:submenu label="Opcion 4">
+						<p:menuitem value="Inicio" url="/view/index.xhtml"/>
+						<p:menuitem value="Menu 2" url="/view/index2.xhtml"/>
+						<p:menuitem value="Menu 3" url="/view/index3.xhtml"/>
+					</p:submenu>
+					<p:submenu label="Opciones">
+						<p:menuitem value="Manual de Usuario" url="/view/index2.xhtml"/>
+						<p:menuitem value="Cerrar Sesion" url="/view/index3.xhtml"/>
+					</p:submenu>
+				</p:panelMenu>
+				
+				<div class="footer_text">CCC © Copyright Santa Cruz Bolivia - 2015</div>
+				
+			</h:form>
+		</p:layoutUnit>
+
+		<p:layoutUnit position="center">
+			
+			<div id="container">
+				<ui:insert name="content" />
+			</div>
+			
+		</p:layoutUnit>
+
+	</p:layout>
+
+</h:body>
+
+</html>

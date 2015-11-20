@@ -1,0 +1,226 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloParametrizacion.xhtml">
+
+	<ui:define name="head">
+		<title>Gestion de Servicios</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+					<li class="fuente-link-sidebar"><a href="/buffalo/"> Inicio </a></li>
+					<li class="fuente-link-sidebar"><a href="/buffalo/pages/administracion/home.xhtml">Config. del Sistema
+						</a>
+					</li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/produccion/register-servicio.xhtml">Gestion de Servicios</a></li>
+				</ol>
+			</div>
+		</div>
+		
+	</ui:define>
+
+	<ui:define name="content">
+	
+	
+		<h:form id="formRegistroServicio" styleClass="form-horizontal">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+					<strong> <span class="glyphicon glyphicon-floppy-save" />
+									#{servicioController.tituloPanel}
+								</strong>
+					</h3>
+				</div>
+				<div class="panel-body">
+
+					<div class="row">
+						<div class="col-sm-6 col-md-3" align="left">
+
+							<h:panelGrid columns="3">
+								<h:outputLabel value="Nombre" for="nombreID" />
+								<p:inputText id="nombreID" styleClass="form-control" size="20"
+									value="#{servicioController.newServicio.nombreServicio}"
+									required="true" requiredMessage="Nombre Requerido." />
+								<p:message for="nombreID" />
+
+								<h:outputLabel value="Precio Venta" for="precioID" />
+								<p:inputText id="precioID" size="20"
+									value="#{servicioController.newServicio.precioUnitarioVenta}"
+									required="true" requiredMessage="Requerido." validatorMessage="Invalido.">
+									<f:convertNumber pattern="#,##0.00"/>
+								</p:inputText>
+								<p:message for="precioID" />
+
+								
+
+							</h:panelGrid>
+
+						</div>
+
+						<div class="col-sm-6 col-md-3" align="left">
+							<h:panelGrid columns="3">
+								
+								<h:outputLabel value="Estado" for="estadoID" />
+								<h:selectOneMenu id="estadoID"
+									value="#{servicioController.newServicio.estado}"
+									styleClass="form-control" required="true"
+									requiredMessage="Estado Requerido.">
+									<f:selectItem itemValue="AC" itemLabel="Activo" />
+									<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+									<p:ajax event="change" update="estadoID" />
+								</h:selectOneMenu>
+								<p:message for="estadoID" />
+
+							</h:panelGrid>
+
+						</div>
+						
+						<div class="col-sm-6 col-md-3" align="left">
+							<h:panelGrid columns="3">
+								
+								<h:outputLabel value="Fecha Registro" for="fechaRegistroID" />
+								<p:calendar id="fechaRegistroID" showOn="button"
+									value="#{servicioController.newServicio.fechaRegistro}"
+									pattern="dd/MM/yyyy" size="10" disabled="true" required="true"
+									requiredMessage="Fecha Registro Requerido." />
+								<p:message for="fechaRegistroID" />
+
+								<h:outputLabel value="Registro" for="usuarioRegistroID" />
+								<p:inputText id="usuarioRegistroID" styleClass="form-control"
+									value="#{servicioController.newServicio.usuarioRegistro}"
+									disabled="true" required="true" size="20"
+									requiredMessage="Usuario Registro Requerido." />
+								<p:message for="usuarioRegistroID" />
+								
+							</h:panelGrid>
+						</div>
+					</div>
+
+
+				</div>
+				<div class="panel-footer">
+
+					<div class="btn-group btn-group-sm">
+
+						<p:commandButton
+							rendered="#{servicioController.modificar=='true'}"
+							icon="ui-icon-minus"
+							action="#{servicioController.initNewServicio()}"
+							style="width: 150px;" update=":formRegistroServicio"
+							styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+						<p:commandButton
+							rendered="#{servicioController.modificar=='false'}"
+							action="#{servicioController.registrarServicio()}"
+							icon="ui-icon-disk" update=":formRegistroServicio"
+							style="width: 150px;" styleClass="btn btn-primary"
+							value="Guardar" type="submit" />
+
+						<p:commandButton
+							rendered="#{servicioController.modificar=='true'}"
+							icon="ui-icon-refresh"
+							action="#{servicioController.modificarServicio()}"
+							style="width: 150px;" update=":formRegistroServicio"
+							styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+						<p:commandButton
+							rendered="#{servicioController.modificar=='true'}"
+							icon="ui-icon-circle-close"
+							action="#{servicioController.eliminarServicio()}"
+							style="width: 150px;" update=":formRegistroServicio"
+							styleClass="btn btn-danger" value="Borrar" type="submit" />
+
+					</div>
+
+				</div>
+			</div>
+
+
+			<div id="newServiciosMessages" class="update" />
+
+			<h:panelGroup rendered="#{empty servicios}">
+				<em>No se encontraron Servicios Registrados.</em>
+			</h:panelGroup>
+
+
+			<div class="panel panel-primary">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<center>
+						<strong>LISTA DE SERVICIOS</strong>
+					</center>
+				</div>
+
+				<!-- Table -->
+				<div class="table-responsive">
+					
+					<p:dataTable
+						styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+						selection="#{servicioController.selectedServicio}"
+						selectionMode="single" rowKey="#{_servicio.id}"
+						id="serviciosTable" var="_servicio" value="#{servicios}"
+						emptyMessage="No se encontraron servicios."
+						rendered="#{not empty servicios}">
+
+						<p:ajax event="rowSelect" update=":formRegistroServicio"
+							listener="#{servicioController.onRowSelectServicioClick}" />
+
+						<p:column headerText="ID" width="5%" filterBy="#{_servicio.id}" filterMatchMode="contains">
+							<span class="label label-success"><h:outputText
+									value="SER-#{_servicio.id}" /></span>
+						</p:column>
+						<p:column headerText="Nombre" filterBy="#{_servicio.nombreServicio}" filterMatchMode="contains">
+							<h:outputText value="#{_servicio.nombreServicio}" />
+						</p:column>
+						
+						<p:column headerText="P. Venta" width="10%" filterBy="#{_servicio.precioUnitarioVenta}" filterMatchMode="contains">
+							<h:outputText value="Bs.- " />
+							<h:outputText value="#{_servicio.precioUnitarioVenta}" >
+								<f:convertNumber pattern="#,##0.00"/>
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Estado" width="10%" filterBy="#{_servicio.estado}" filterMatchMode="contains">
+							<center>
+								<span class="label label-success"><h:outputText
+									rendered="#{_servicio.estado=='AC'}" value="Activo" /></span>
+							<span class="label label-danger"><h:outputText
+									rendered="#{_servicio.estado=='IN'}" value="Inactivo" /></span>
+							</center>
+						</p:column>
+						<p:column headerText="Fecha" width="10%" filterBy="#{servicioController.obtenerFecha(_servicio.fechaRegistro)}" filterMatchMode="contains">
+							<h:outputText value="#{_servicio.fechaRegistro}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Registro" width="10%" filterBy="#{_servicio.usuarioRegistro}" filterMatchMode="contains">
+							<h:outputText value="#{_servicio.usuarioRegistro}" />
+						</p:column>
+					</p:dataTable>
+
+				</div>
+			</div>
+
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

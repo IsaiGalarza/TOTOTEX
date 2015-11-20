@@ -1,0 +1,303 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateParametrizacions.xhtml">
+
+	<ui:define name="head">
+		<title>:: Registrar Usuario ::</title>
+	</ui:define>
+
+	<ui:define name="header">
+		<h:outputStylesheet name="app.css" library="css" />
+		<h:outputScript target="head" name="showMessage.js" library="js" />
+
+		<div class="panel-body" style="padding: 0px 0px 0px 0px;">
+			<div class="row">
+				<div class="col-sm-6 col-md-3" align="left">
+					<div class="thumbnail">
+						<h:graphicImage sclass="thumbnail" name="logo.jpg" library="gfx"
+							width="60px;" height="50px;" />
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-3">
+					<h2>
+						<span class="label label-default">Gestion de Usuarios</span>
+					</h2>
+				</div>
+			</div>
+		</div>
+
+	</ui:define>
+		<ui:define name="menu">
+		<h:form>
+			<ui:include src="/pages/parametrizacion/menuTemp.xhtml" />
+		</h:form>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formRegistroUsuario" styleClass="form-horizontal">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong>#{usuarioController.tituloPanel}</strong>
+					</h3>
+				</div>
+				<div class="panel-body">
+
+					<div class="row">
+						<div class="col-sm-6 col-md-3" align="left"
+							style="padding: 0px 0px 0px 0px;">
+
+							<h:panelGrid columns="3">
+								<h:outputLabel for="name" value="Nombre" />
+								<p:inputText id="name"
+									value="#{usuarioController.newUsuario.name}"
+									styleClass="form-control" required="true"
+									requiredMessage="Nombre Requerido.">
+
+								</p:inputText>
+								<p:message for="name" errorClass="invalid" />
+
+								<h:outputLabel for="login" value="Login" />
+								<p:inputText id="login"
+									value="#{usuarioController.newUsuario.login}"
+									styleClass="form-control" required="true"
+									requiredMessage="Login es Requerido.">
+
+								</p:inputText>
+								<p:message for="login" errorClass="invalid" />
+
+								<h:outputLabel for="password" value="Password" />
+								<p:inputText type="password" id="password"
+									value="#{usuarioController.newUsuario.password}"
+									styleClass="form-control" required="true"
+									requiredMessage="Password Requerido.">
+
+								</p:inputText>
+								<p:message for="password" errorClass="invalid" />
+
+								<h:outputLabel for="email" value="Email" />
+								<p:inputText id="email"
+									value="#{usuarioController.newUsuario.email}"
+									styleClass="form-control" required="true"
+									requiredMessage="Email es Requerido.">
+
+								</p:inputText>
+								<p:message for="email" errorClass="invalid" />
+
+
+
+							</h:panelGrid>
+
+
+						</div>
+						<div class="col-sm-6 col-md-3" align="left"
+							style="padding: 0px 0px 0px 0px;">
+
+							<h:panelGrid columns="3">
+
+								<h:outputLabel for="sucursal" value="Sucursal" />
+								<h:selectOneMenu id="sucursal"
+									value="#{usuarioController.sucursalID}"
+									styleClass="form-control" effect="fade" required="true"
+									requiredMessage="Sucursal es Requerido.">
+									<f:selectItems value="#{sucursalesActivas}" var="_sucursales"
+										itemLabel="#{_sucursales.nombre}"
+										itemValue="#{_sucursales.id}" />
+								</h:selectOneMenu>
+								<p:message for="sucursal" />
+
+								<h:outputLabel value="Estado" for="estadoID" />
+								<h:selectOneMenu id="estadoID"
+									value="#{usuarioController.newUsuario.estado}"
+									styleClass="form-control" required="true"
+									requiredMessage="Estado Requerido.">
+									<f:selectItem itemValue="AC" itemLabel="Activo" />
+									<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+									<p:ajax event="change" update="estadoID" />
+								</h:selectOneMenu>
+								<p:message for="estadoID" />
+
+								<h:outputLabel value="Fecha_Registro" for="fechaRegistroID" />
+								<p:calendar id="fechaRegistroID" showOn="button"
+									value="#{usuarioController.newUsuario.fechaRegistro}"
+									datePattern="dd/MM/yyyy" disabled="true" required="true"
+									requiredMessage="Fecha Registro Requerido." />
+								<p:message for="fechaRegistroID" />
+
+								<h:outputLabel value="Registro" for="usuarioRegistroID" />
+								<p:inputText id="usuarioRegistroID" styleClass="form-control"
+									value="#{usuarioController.newUsuario.usuarioRegistro}"
+									disabled="true" required="true"
+									requiredMessage="Usuario Registro Requerido." />
+								<p:message for="usuarioRegistroID" />
+
+
+							</h:panelGrid>
+
+
+						</div>
+
+						<div class="col-sm-6 col-md-3" align="left"
+							style="padding: 0px 0px 0px 0px;">
+
+							<h:panelGrid columns="3">
+
+								<h:outputLabel for="roles" value="Roles" />
+								<h:selectManyListbox style="width:200px; height:120px;"
+									required="false" requiredMessage="Rol es Requerido." id="roles"
+									value="#{usuarioController.arrayRoles}" layout="pageDirection">
+									<f:selectItems value="#{usuarioController.rolesValue}" />
+								</h:selectManyListbox>
+								<p:message for="roles" errorClass="invalid" />
+
+							</h:panelGrid>
+
+						</div>
+					</div>
+
+
+
+
+				</div>
+
+
+
+			</div>
+			<div class="btn-group btn-group-md" style="width: 100%;">
+
+				<p:commandButton rendered="#{usuarioController.modificar=='true'}"
+					icon="ui-icon-minus" action="#{usuarioController.initNewUsuario()}"
+					style="width: 8em;" update=":formRegistroUsuario"
+					styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+				<p:commandButton rendered="#{usuarioController.modificar=='false'}"
+					icon="ui-icon-disk"
+					action="#{usuarioController.registrarUsuario()}"
+					style="width: 8em;" update=":formRegistroUsuario"
+					styleClass="btn btn-primary" value="Guardar" type="submit" />
+
+				<p:commandButton rendered="#{usuarioController.modificar=='true'}"
+					icon="ui-icon-refresh"
+					action="#{usuarioController.modificarUsuario()}"
+					style="width: 8em;" update=":formRegistroUsuario"
+					styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+				<p:commandButton rendered="#{usuarioController.modificar=='true'}"
+					icon="ui-icon-circle-close"
+					action="#{usuarioController.eliminarUsuario()}"
+					style="width: 8em;" update=":formRegistroUsuario"
+					styleClass="btn btn-danger" value="Borrar" type="submit" />
+
+			</div>
+
+
+
+			<div id="newUserMessages" class="update" />
+
+			<h:panelGroup rendered="#{empty usuarios}">
+				<em>No se encontraron Usuarios Registrados.</em>
+			</h:panelGroup>
+
+			<div class="panel panel-default">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<center>
+						<strong>LISTA DE USUARIOS</strong>
+					</center>
+				</div>
+
+				<!-- Table -->
+				<div class="table-responsive">
+
+					<p:dataTable
+						styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+						selection="#{usuarioController.selectedUsuario}"
+						selectionMode="single" rowKey="#{_usuario.id}"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true"
+						rows="10" id="usuariosTable" var="_usuario" value="#{usuarios}"
+						rendered="#{not empty usuarios}">
+
+						<p:ajax event="rowSelect" update=":formRegistroUsuario"
+							listener="#{usuarioController.onRowSelectUsuarioClick}" />
+
+
+						<p:column id="usuario_id">
+							<f:facet name="header">Id</f:facet>
+                      #{_usuario.id}
+                   </p:column>
+
+						<p:column id="usuario_nombre">
+							<f:facet name="header">Nombre Completo</f:facet>
+							<h:graphicImage value="/resources/icons/user2.png" width="15px"
+								height="15px" />
+                      #{_usuario.name}
+                   </p:column>
+
+						<p:column id="usuario_login">
+							<f:facet name="header">Login</f:facet>
+							<h:graphicImage value="/resources/icons/key2.png" width="20px"
+								height="20px" />
+                      #{_usuario.login}
+                   </p:column>
+
+						<p:column id="usuario_email">
+							<f:facet name="header">Email</f:facet>
+                      #{_usuario.email}
+                   </p:column>
+
+						<p:column id="usuario_sucursal">
+							<f:facet name="header">Sucursal</f:facet>
+							<h:graphicImage value="/resources/icons/home.png" width="20px"
+								height="20px" />
+							<span class="label label-primary">#{_usuario.sucursal.nombre}</span>
+						</p:column>
+
+						<p:column id="usuario_roles">
+							<f:facet name="header">Roles</f:facet>
+                      #{'Roles: '}
+                      <ui:repeat var="_rol"
+								value="#{usuarioController.listarRoles(_usuario.email)}">
+								<lu> <span class="label label-default">#{_rol.roles.name}</span>
+								<h:outputText value=" | "
+									rendered="#{_rol.roles.name=='security-role'}" /> </lu>
+							</ui:repeat>
+						</p:column>
+
+						<p:column headerText="Estado">
+							<span class="label label-success"><h:outputText
+									rendered="#{_usuario.estado=='AC'}" value="Activo" /></span>
+							<span class="label label-danger"><h:outputText
+									rendered="#{_usuario.estado=='IN'}" value="Inactivo" /></span>
+						</p:column>
+						<p:column headerText="Fecha Registro">
+							<h:outputText value="#{_usuario.fechaRegistro}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Usuario Registro">
+							<h:outputText value="#{_usuario.usuarioRegistro}" />
+						</p:column>
+
+					</p:dataTable>
+
+
+				</div>
+			</div>
+
+
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

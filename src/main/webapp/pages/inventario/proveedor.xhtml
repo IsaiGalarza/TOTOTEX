@@ -1,0 +1,590 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateParametrizacions.xhtml">
+
+	<ui:define name="head">
+		<title>:: Proveedor ::</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li>
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li><a href="/buffalo/"> Inicio </a></li>
+					<li><a href="/buffalo/pages/parametrizacion/home.xhtml">Parametrizacion</a></li>
+					<li><a
+						href="/buffalo/pages/parametrizacion/home-inventario.xhtml">Inventario</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;"
+						href="/buffalo/pages/inventario/proveedor.xhtml">Gestión de
+							Proveedor</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+	<ui:define name="menu">
+		<h:form>
+			<ui:include src="/pages/parametrizacion/menuTemp.xhtml" />
+		</h:form>
+	</ui:define>
+	<ui:define name="content">
+		<h:form id="formRegistroGrupoProducto" styleClass="form-horizontal">
+			<ui:fragment rendered="#{proveedorController.nuevo=='true'}">
+				<div class="col-sm-12 col-md-3" align="left">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								<strong>#{proveedorController.tituloPanel}</strong>
+							</h3>
+						</div>
+						<div class="panel-body">
+
+							<h:panelGrid columns="3">
+								<h:outputLabel value="Codigo" for="codigoID" />
+								<p:inputText id="codigoID" styleClass="form-control"
+									value="#{proveedorController.newProveedor.codigo}"
+									required="true" requiredMessage="Requerido." size="40" />
+								<p:message for="codigoID" />
+
+								<h:outputLabel value="Nombre" for="nombreID" />
+								<p:inputText id="nombreID" styleClass="form-control"
+									value="#{proveedorController.newProveedor.nombre}"
+									required="true" requiredMessage="Requerido." size="40" />
+								<p:message for="nombreID" />
+
+
+								<h:outputLabel value="Direccion" for="direccionID" />
+								<p:inputText id="direccionID" styleClass="form-control"
+									value="#{proveedorController.newProveedor.direccion}"
+									required="true" requiredMessage="Requerido." size="40" />
+								<p:message for="direccionID" />
+
+								<h:outputLabel value="Nacionalidad" for="nacionalidadID" />
+								<h:selectOneMenu id="nacionalidadID"
+									value="#{proveedorController.newProveedor.nacionalidad}"
+									styleClass="form-control" required="true"
+									requiredMessage="Estado Requerido.">
+									<f:selectItem itemValue="NACIONAL" itemLabel="Nacional" />
+									<f:selectItem itemValue="EXTRANJERO" itemLabel="Extranjero" />
+									<p:ajax event="change" update="nacionalidadID" />
+								</h:selectOneMenu>
+								<p:message for="nacionalidadID" />
+
+								<h:outputLabel value="Pais" for="paisID" />
+								<p:inputText id="paisID" styleClass="form-control"
+									value="#{proveedorController.newProveedor.pais}"
+									required="true" requiredMessage="Requerido." size="40" />
+								<p:message for="paisID" />
+
+								<h:outputLabel value="Ciudad" for="ciudadID" />
+								<p:inputText id="ciudadID" styleClass="form-control"
+									value="#{proveedorController.newProveedor.ciudad}"
+									required="true" requiredMessage="Requerido." />
+								<p:message for="ciudadID" />
+
+
+
+								<h:outputLabel value="Telefono" for="telefonoID" />
+								<p:inputText id="telefonoID" styleClass="form-control"
+									value="#{proveedorController.newProveedor.telefono}"
+									required="true" requiredMessage="Requerido." />
+								<p:message for="telefonoID" />
+								
+								
+								<h:outputLabel value="M._Util._Min(%)" for="minID" />
+								<p:inputText id="minID" styleClass="form-control"
+									value="#{proveedorController.newProveedor.utilidadMin}"
+									required="true" requiredMessage="Requerido.">
+									<p:ajax event="change" />
+								</p:inputText>
+								<p:message for="minID" />
+
+								<h:outputLabel value="M._Util._Max(%)" for="maxID" />
+								<p:inputText id="maxID" styleClass="form-control"
+									value="#{proveedorController.newProveedor.utilidadMax}"
+									required="true" requiredMessage="Requerido.">
+									<p:ajax event="change" />
+								</p:inputText>
+								<p:message for="maxID" />
+
+								<h:outputLabel value="Estado" for="estadoID" />
+								<h:selectOneMenu id="estadoID"
+									value="#{proveedorController.newProveedor.estado}"
+									styleClass="form-control" required="true"
+									requiredMessage="Estado Requerido.">
+									<f:selectItem itemValue="AC" itemLabel="Activo" />
+									<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+									<p:ajax event="change" update="estadoID" />
+								</h:selectOneMenu>
+								<p:message for="estadoID" />
+
+								<h:outputLabel value="Fecha_Registro" for="fechaRegistroID" />
+								<p:calendar id="fechaRegistroID" showOn="button"
+									value="#{proveedorController.newProveedor.fechaRegistro}"
+									disabled="true" required="true"
+									requiredMessage="Fecha Registro Requerido.">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</p:calendar>
+								<p:message for="fechaRegistroID" />
+
+								<h:outputLabel value="Registro" for="usuarioRegistroID" />
+								<p:inputText id="usuarioRegistroID" styleClass="form-control"
+									value="#{proveedorController.newProveedor.usuarioRegistro}"
+									disabled="true" required="true"
+									requiredMessage="Usuario Registro Requerido." />
+								<p:message for="usuarioRegistroID" />
+								
+								
+
+							</h:panelGrid>
+								<p:commandButton
+									icon="ui-icon-plus" update=":formModalAgregarContacto"
+									oncomplete="dlgAddContacto.show()" 
+									styleClass="btn btn-info" value="agregar datos Contacto" type="submit" />
+
+						</div>
+
+					</div>
+				</div>
+				<div class="col-sm-12 col-md-9">
+					<div id="newGastossMessages" class="update" />
+
+					<h:panelGroup
+						rendered="#{empty proveedorController.listGastosProveedor}">
+						<em>No se encontraron registros.</em>
+					</h:panelGroup>
+
+
+					<div class="panel panel-default" align="left">
+						<!-- Default panel contents -->
+						<div class="panel-heading">
+							<center>
+								<strong>LISTA DE GASTOS</strong>
+							</center>
+						</div>
+
+						<!-- Table -->
+						<div class="table-responsive">
+
+							<p:dataTable
+								styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+								rowKey="#{_gastosProveedor}" id="gastosProveedorTableID"
+								var="_gastosProveedor"
+								value="#{proveedorController.listGastosProveedor}"
+								rendered="#{not empty proveedorController.listGastosProveedor}">
+
+
+								<p:column headerText="" width="5%">
+									<p:commandLink id="quitarCompuestoID2"
+										update=":formRegistroGrupoProducto:gastosProveedorTableID"
+										action="#{proveedorController.eliminarGastosProveedor(_gastosProveedor)}">
+										<span class="badge alert-danger">x</span>
+									</p:commandLink>
+									<p:tooltip id="quitarToolTip2" for="quitarCompuestoID2"
+										value="Quitar : #{_gastosProveedor.descripcion}" />
+								</p:column>
+								<p:column headerText="ID" width="15%">
+									<span class="label label-success">#{_gastosProveedor.gastos.id}</span>
+								</p:column>
+								<p:column headerText="Descripcion" width="60%">
+									<h:outputText value="#{_gastosProveedor.descripcion}" />
+								</p:column>
+
+								<p:column headerText="Porcentaje(%)" width="5%">
+									<p:inputText value="#{_gastosProveedor.porcentaje}" size="5">
+										<f:convertNumber type="number" />
+									</p:inputText>
+								</p:column>
+										<p:column>
+									<f:facet name="header" filterBy="#{_gastosProveedor.fechaRegistro}"
+										filterMatchMode="contains">Fecha Registro</f:facet>
+		                      #{_gastosProveedor.fechaRegistro}
+		                   </p:column>
+
+
+								<p:column>
+									<f:facet name="header" filterBy="#{_gastosProveedor.usuarioRegistro}"
+										filterMatchMode="contains">Usuario Registro</f:facet>
+		                     #{_gastosProveedor.usuarioRegistro}
+		                   </p:column>
+
+							</p:dataTable>
+
+							<div class="btn-group btn-group-md" align="right"
+								style="width: 100%;">
+								<p:commandButton
+									action="#{proveedorController.cargarListaCostos()}"
+									icon="ui-icon-disk" update=":formModalAgregarComponente"
+									oncomplete="dlgAddComponente.show()" style="width: 8em;"
+									styleClass="btn btn-success" value="Agregar" type="submit" />
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-9" align="left">
+					<div id="newUserMessages" class="update" />
+
+					<h:panelGroup
+						rendered="#{empty proveedorController.margenUtilidad}">
+						<em>No se encontraron Utilidades Registrados.</em>
+					</h:panelGroup>
+
+					<div class="panel panel-default">
+						<!-- Default panel contents -->
+						<div class="panel-heading">
+							<center>
+								<strong>HISTORIAS DE MARGEN DE UTILIDAD</strong>
+							</center>
+						</div>
+
+						<!-- Table -->
+						<div class="table-responsive">
+
+							<p:dataTable
+								styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+								rowKey="#{_utilidad.id}"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true"
+								rows="10" id="medicosTable" var="_utilidad"
+								value="#{proveedorController.margenUtilidad}"
+								rendered="#{not empty proveedorController.margenUtilidad}">
+
+								<p:column id="id">
+									<f:facet name="header">ID</f:facet>
+		                      #{_utilidad.id}
+		                   </p:column>
+
+								<p:column>
+									<f:facet name="header" filterBy="#{_utilidad.utilidadMin}"
+										filterMatchMode="contains">U. Minimo</f:facet>
+		                      #{_utilidad.utilidadMin}%
+		                   </p:column>
+								<p:column>
+									<f:facet name="header" filterBy="#{_utilidad.utilidadMax}"
+										filterMatchMode="contains">U. Maximo</f:facet>
+		                      #{_utilidad.utilidadMax}%
+		                   </p:column>
+
+
+								<p:column>
+									<f:facet name="header" filterBy="#{_utilidad.fechaRegistro}"
+										filterMatchMode="contains">Fecha Registro</f:facet>
+		                      #{_utilidad.fechaRegistro}
+		                   </p:column>
+
+
+								<p:column>
+									<f:facet name="header" filterBy="#{_utilidad.usuarioRegistro}"
+										filterMatchMode="contains">Usuario Registro</f:facet>
+		                     #{_utilidad.usuarioRegistro}
+		                   </p:column>
+							</p:dataTable>
+
+
+						</div>
+					</div>
+				</div>
+			</ui:fragment>
+
+			<div class="btn-group btn-group-sm">
+
+				<p:commandButton
+					rendered="#{proveedorController.modificar=='true' or proveedorController.nuevo=='true'}"
+					icon="ui-icon-minus"
+					action="#{proveedorController.initNewProveedores()}"
+					style="width: 8em;" update=":formRegistroGrupoProducto"
+					styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+				<p:commandButton
+					rendered="#{proveedorController.nuevo=='true' and proveedorController.modificar=='false'}"
+					action="#{proveedorController.registrarProveedor()}"
+					icon="ui-icon-disk" update=":formRegistroGrupoProducto"
+					style="width: 8em;" styleClass="btn btn-primary" value="Guardar"
+					type="submit" />
+
+				<p:commandButton
+					rendered="#{proveedorController.modificar=='false' and proveedorController.nuevo=='false'}"
+					icon="ui-icon-plus"
+					action="#{proveedorController.crearProveedor()}"
+					style="width: 8em;" update=":formRegistroGrupoProducto"
+					styleClass="btn btn-success" value="Crear" type="submit" />
+
+				<p:commandButton action="#{proveedorController.modificarEstado()}"
+					rendered="#{proveedorController.nuevo=='false' and proveedorController.modificar=='true'}"
+					icon="ui-icon-disk" value="Modificar" style="width: 8em;"
+					update=":formRegistroGrupoProducto,:growl"
+					styleClass="btn btn-primary btn-md" />
+
+				<p:commandButton
+					rendered="#{proveedorController.modificar=='true' and proveedorController.nuevo=='true'}"
+					icon="ui-icon-refresh"
+					action="#{proveedorController.modificarProveedor()}"
+					style="width: 8em;" update=":formRegistroGrupoProducto"
+					styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+				<p:commandButton rendered="#{proveedorController.modificar=='true'}"
+					icon="ui-icon-circle-close"
+					action="#{proveedorController.eliminarProveedor()}"
+					style="width: 8em;" update=":formRegistroGrupoProducto"
+					styleClass="btn btn-danger" value="Borrar" type="submit" />
+
+			</div>
+
+			<ui:fragment rendered="#{proveedorController.nuevo=='false'}">
+				<div id="newGrupoProductosMessages" class="update" />
+
+				<h:panelGroup rendered="#{empty listaProveedores}">
+					<em>No se encontraron registros.</em>
+				</h:panelGroup>
+
+
+				<div class="panel panel-default">
+					<!-- Default panel contents -->
+					<div class="panel-heading">
+						<center>
+							<strong>LISTA DE PROVEEDORES</strong>
+						</center>
+					</div>
+
+					<!-- Table -->
+					<div class="table-responsive">
+
+						<p:dataTable
+							styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+							selection="#{proveedorController.selectedProveedor}"
+							selectionMode="single" rowKey="#{_proveedor.id}"
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+							rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true"
+							rows="10" id="grupoTable" var="_proveedor"
+							value="#{listaProveedores}"
+							rendered="#{not empty listaProveedores}">
+
+							<p:ajax event="rowSelect" update=":formRegistroGrupoProducto"
+								listener="#{proveedorController.onRowSelectProveedorClick}" />
+							<p:ajax event="rowDblselect" update=":formRegistroGrupoProducto"
+								listener="#{proveedorController.onRowSelectProveedorDBLClick}" />
+
+							<p:column headerText="ID">
+								<span class="label label-success">#{_proveedor.id}</span>
+							</p:column>
+							<p:column headerText="Nombre">
+								<h:outputText value="#{_proveedor.nombre}" />
+							</p:column>
+							<p:column headerText="Direccion">
+								<h:outputText value="#{_proveedor.direccion}" />
+							</p:column>
+							<p:column headerText="Pais">
+								<h:outputText value="#{_proveedor.pais}" />
+							</p:column>
+							<p:column headerText="Ciudad">
+								<h:outputText value="#{_proveedor.ciudad}" />
+							</p:column>
+							<p:column headerText="Utilidad_Min">
+								<h:outputText value="#{_proveedor.utilidadMin}%" />
+							</p:column>
+							<p:column headerText="Utilidad_Max">
+								<h:outputText value="#{_proveedor.utilidadMax}%" />
+							</p:column>
+
+							<p:column headerText="Fecha Registro">
+								<h:outputText value="#{_proveedor.fechaRegistro}">
+									<f:convertDateTime pattern="dd/MM/yyyy" />
+								</h:outputText>
+							</p:column>
+							<p:column headerText="Usuario Registro">
+								<h:outputText value="#{_proveedor.usuarioRegistro}" />
+							</p:column>
+							<p:column headerText="Estado">
+								<span class="label label-success"><h:outputText
+										rendered="#{_proveedor.estado=='AC'}" value="Activo" /></span>
+								<span class="label label-danger"><h:outputText
+										rendered="#{_proveedor.estado=='IN'}" value="Inactivo" /></span>
+							</p:column>
+						</p:dataTable>
+
+					</div>
+				</div>
+			</ui:fragment>
+
+		</h:form>
+
+
+		<!--   MODAL CARGAR COMPONENTE -->
+		<p:dialog showEffect="explode" header="LISTA DE GASTOS"
+			widgetVar="dlgAddComponente" resizable="false" modal="true"
+			position="center" width="30%" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalFacturaID">
+
+			<div class="modal-body">
+				<h:form id="formModalAgregarComponente">
+
+					<br />
+					<!-- Default panel contents -->
+					<div class="panel panel-default">
+						<!-- Default panel contents -->
+						<div class="panel-heading">GASTOS</div>
+
+						<p:dataTable
+							styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+							selection="#{proveedorController.selectedGastos}"
+							selectionMode="single" rowKey="#{_gastos}"
+							id="tablaProductosParaCargar"
+							value="#{proveedorController.listGastos}" var="_gastos">
+
+							<p:ajax event="rowSelect" update=":formModalAgregarComponente"
+								listener="#{proveedorController.onRowSelectGastosClick}" />
+
+							<p:column headerText="ID">
+								<span class="label label-warning"><h:outputText
+										value="#{_gastos.id}" /></span>
+							</p:column>
+
+
+							<p:column headerText="Descripcion">
+								<h:outputText value="#{_gastos.descripcion}" />
+							</p:column>
+
+							<p:column headerText="Porcentaje(%)">
+								<h:outputText value="#{_gastos.porcentaje}" />
+							</p:column>
+
+							<p:column headerText="Agregar">
+								<p:commandButton value="agregar" icon="ui-icon-close"
+									actionListener="#{proveedorController.agregarGastos(_gastos)}"
+									update=":formRegistroGrupoProducto, :formModalAgregarComponente" />
+							</p:column>
+						</p:dataTable>
+					</div>
+
+
+					<!-- Default panel contents -->
+					<div class="panel panel-default">
+						<!-- Default panel contents -->
+
+					</div>
+
+
+				</h:form>
+			</div>
+
+
+			<div class="modal-footer">
+				<p:commandButton value="Cerrar" icon="ui-icon-close"
+					oncomplete="dlgAddComponente.hide()"
+					update=":formRegistroGrupoProducto, :formModalAgregarComponente" />
+
+
+			</div>
+
+		</p:dialog>
+		
+		
+				<!--   MODAL CARGAR COMPONENTE -->
+		<p:dialog showEffect="explode" header="DATOS CONTACTO"
+			widgetVar="dlgAddContacto" resizable="false" modal="true"
+			position="center" width="30%" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalContactoID">
+
+			<div class="modal-body">
+				<h:form id="formModalAgregarContacto">
+
+					<br />
+					<!-- Default panel contents -->
+					<div class="panel panel-default">
+						<!-- Default panel contents -->
+						<div class="panel-heading">CONTACTO</div>
+						<p:panelGrid columns="3">
+
+							<h:outputLabel value="Contacto" for="contactoID" />
+							<p:inputText id="contactoID" styleClass="form-control"
+								value="#{proveedorController.newProveedor.nombreContacto}"
+								required="true" requiredMessage="Requerido." />
+							<p:message for="contactoID" />
+
+							<h:outputLabel value="Cargo" for="cargoID" />
+							<p:inputText id="cargoID" styleClass="form-control"
+								value="#{proveedorController.newProveedor.cargo}"
+								required="true" requiredMessage="Requerido." />
+							<p:message for="cargoID" />
+
+							<h:outputLabel value="E-mail" for="emailID" />
+							<p:inputText id="emailID" styleClass="form-control"
+								value="#{proveedorController.newProveedor.email}"
+								required="true" requiredMessage="Requerido." />
+							<p:message for="emailID" />
+
+							<h:outputLabel value="Casilla_Postal" for="postalID" />
+							<p:inputText id="postalID" styleClass="form-control"
+								value="#{proveedorController.newProveedor.postal}"
+								required="true" requiredMessage="Requerido." />
+							<p:message for="postalID" />
+
+							<h:outputLabel value="Celular" for="celularID" />
+							<p:inputText id="celularID" styleClass="form-control"
+								value="#{proveedorController.newProveedor.celular}"
+								required="true" requiredMessage="Requerido." />
+							<p:message for="celularID" />
+
+							<h:outputLabel value="Fax" for="faxID" />
+							<p:inputText id="faxID" styleClass="form-control"
+								value="#{proveedorController.newProveedor.fax}" required="true"
+								requiredMessage="Requerido." />
+							<p:message for="faxID" />
+
+							<h:outputLabel value="Notas" for="notasID" />
+							<p:inputText id="notasID" styleClass="form-control"
+								value="#{proveedorController.newProveedor.nota}" required="true"
+								requiredMessage="Requerido." />
+
+							<p:message for="notasID" />
+
+						</p:panelGrid>
+					</div>
+
+
+					<!-- Default panel contents -->
+					<div class="panel panel-default">
+						<!-- Default panel contents -->
+
+					</div>
+
+
+				</h:form>
+			</div>
+
+
+			<div class="modal-footer">
+				<p:commandButton value="Cerrar" icon="ui-icon-close"
+					oncomplete="dlgAddContacto.hide()"
+					update=":formRegistroGrupoProducto, formModalAgregarContacto" />
+
+
+			</div>
+
+		</p:dialog>						
+								
+								
+		
+	</ui:define>
+	
+	
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

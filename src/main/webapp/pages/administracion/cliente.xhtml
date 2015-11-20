@@ -1,0 +1,245 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateParametrizacion.xhtml">
+
+	<ui:define name="head">
+		<title>:: Cliente ::</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="panel-body" style="padding: 0px 0px 0px 0px;">
+			<div class="row">
+				<div class="col-sm-6 col-md-3" align="left">
+					<div class="thumbnail">
+						<h:graphicImage sclass="thumbnail" name="logo.jpg" library="gfx"
+							width="60px;" height="50px;" />
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-3">
+					<h2>
+						<span class="label label-default">Gestion de Clientes</span>
+					</h2>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formRegistroCliente" styleClass="form-horizontal">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong>#{clienteController.tituloPanel}</strong>
+					</h3>
+				</div>
+				<div class="panel-body">
+
+					<h:panelGrid columns="12">
+
+
+						<h:outputLabel value="Nombre" for="nombreID" />
+						<p:inputText id="nombreID" styleClass="form-control"
+							value="#{clienteController.newCliente.nombreCompleto}"
+							required="true" requiredMessage="Requerido." />
+						<p:message for="nombreID" />
+
+						<h:outputLabel value="Direccion" for="direccionID" />
+						<p:inputText id="direccionID" styleClass="form-control"
+							value="#{clienteController.newCliente.direccion}" required="true"
+							requiredMessage="Requerido." />
+						<p:message for="direccionID" />
+
+						<h:outputLabel value="Nº_Documento" for="documentoID" />
+						<p:inputText id="documentoID" styleClass="form-control"
+							value="#{clienteController.newCliente.numeroDocumento}"
+							required="true" requiredMessage="Requerido." />
+						<p:message for="documentoID" />
+
+						<h:outputLabel value="Ciudad" for="ciudadID" />
+						<h:selectOneMenu id="ciudadID"
+							value="#{clienteController.newCliente.ciudad.id}"
+							styleClass="form-control" effect="fade" required="true"
+							requiredMessage="Requerido.">
+							<f:selectItems
+								value="#{clienteController.listaCiudad}" var="_pro"
+								itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+							<p:ajax event="change" />
+						</h:selectOneMenu>
+						<p:message for="ciudadID" />
+
+						<h:outputLabel value="Numero Cuenta" for="cuentaID" />
+						<p:inputText id="cuentaID" styleClass="form-control"
+							value="#{clienteController.newCliente.numeroCuenta}"
+							required="true" requiredMessage="Requerido." />
+						<p:message for="cuentaID" />
+
+						<h:outputLabel value="Celular" for="celularID" />
+						<p:inputText id="celularID" styleClass="form-control"
+							value="#{clienteController.newCliente.celular}" required="true"
+							requiredMessage="Requerido." />
+						<p:message for="celularID" />
+
+						<h:outputLabel value="Telefono" for="telefonoID" />
+						<p:inputText id="telefonoID" styleClass="form-control"
+							value="#{clienteController.newCliente.telefono}" required="true"
+							requiredMessage="Requerido." />
+						<p:message for="telefonoID" />
+
+						<h:outputLabel value="Descuento" for="descuentoID" />
+						<p:inputText id="descuentoID" styleClass="form-control"
+							value="#{clienteController.newCliente.descuentos}"
+							required="true" requiredMessage="Requerido." />
+						<p:message for="descuentoID" />
+
+						<h:outputLabel value="Estado" for="estadoID" />
+						<h:selectOneMenu id="estadoID"
+							value="#{clienteController.newCliente.estado}"
+							styleClass="form-control" required="true"
+							requiredMessage="Estado Requerido.">
+							<f:selectItem itemValue="AC" itemLabel="Activo" />
+							<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+							<p:ajax event="change" update="estadoID" />
+						</h:selectOneMenu>
+						<p:message for="estadoID" />
+
+						<h:outputLabel value="Fecha_Registro" for="fechaRegistroID" />
+						<p:calendar id="fechaRegistroID" showOn="button"
+							value="#{clienteController.newCliente.fechaRegistro}"
+							disabled="true" required="true"
+							requiredMessage="Fecha Registro Requerido.">
+							<f:convertDateTime pattern="dd/MM/yyyy" />
+						</p:calendar>
+						<p:message for="fechaRegistroID" />
+
+						<h:outputLabel value="Registro" for="usuarioRegistroID" />
+						<p:inputText id="usuarioRegistroID" styleClass="form-control"
+							value="#{clienteController.newCliente.usuarioRegistro}"
+							disabled="true" required="true"
+							requiredMessage="Usuario Registro Requerido." />
+						<p:message for="usuarioRegistroID" />
+
+					</h:panelGrid>
+
+				</div>
+				<div class="panel-footer">
+
+					<div class="btn-group btn-group-sm">
+
+						<p:commandButton rendered="#{clienteController.modificar=='true'}"
+							icon="ui-icon-minus"
+							action="#{clienteController.initNewClientes()}"
+							style="width: 150px;" update=":formRegistroCliente"
+							styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+						<p:commandButton
+							rendered="#{clienteController.modificar=='false'}"
+							action="#{clienteController.registrarCliente()}"
+							icon="ui-icon-disk" update=":formRegistroCliente"
+							style="width: 150px;" styleClass="btn btn-primary"
+							value="Guardar" type="submit" />
+
+						<p:commandButton rendered="#{clienteController.modificar=='true'}"
+							icon="ui-icon-refresh"
+							action="#{clienteController.modificarCliente()}"
+							style="width: 150px;" update=":formRegistroCliente"
+							styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+						<p:commandButton rendered="#{clienteController.modificar=='true'}"
+							icon="ui-icon-circle-close"
+							action="#{clienteController.eliminarCliente()}"
+							style="width: 150px;" update=":formRegistroCliente"
+							styleClass="btn btn-danger" value="Borrar" type="submit" />
+
+					</div>
+
+				</div>
+			</div>
+
+
+			<div id="newGrupoProductosMessages" class="update" />
+
+			<h:panelGroup rendered="#{empty listaClientes}">
+				<em>No se encontraron registros.</em>
+			</h:panelGroup>
+
+
+			<div class="panel panel-default">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<center>
+						<strong>LISTA DE CLIENTES</strong>
+					</center>
+				</div>
+
+				<!-- Table -->
+				<div class="table-responsive">
+
+					<p:dataTable
+						styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+						selection="#{clienteController.selectedCliente}"
+						selectionMode="single" rowKey="#{_cliente.id}"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true"
+						rows="10" id="grupoTable" var="_cliente" value="#{listaClientes}"
+						rendered="#{not empty listaClientes}">
+
+						<p:ajax event="rowSelect" update=":formRegistroCliente"
+							listener="#{clienteController.onRowSelectClienteClick}" />
+
+						<p:column headerText="ID">
+							<span class="label label-success">#{_cliente.id}</span>
+						</p:column>
+						<p:column headerText="Nombre">
+							<h:outputText value="#{_cliente.nombreCompleto}" />
+						</p:column>
+						<p:column headerText="Direccion">
+							<h:outputText value="#{_cliente.direccion}" />
+						</p:column>
+						<p:column headerText="Documento">
+							<h:outputText value="#{_cliente.numeroDocumento}" />
+						</p:column>
+						<p:column headerText="Telefonos">
+							<h:outputText value="#{_cliente.telefono}  #{_cliente.celular}" />
+						</p:column>
+						<p:column headerText="Cuenta">
+							<h:outputText value="#{_cliente.numeroCuenta}" />
+						</p:column>
+						<p:column headerText="Descuentos">
+							<h:outputText value="#{_cliente.descuentos}" />
+						</p:column>
+
+						<p:column headerText="Estado">
+							<span class="label label-success"><h:outputText
+									rendered="#{_cliente.estado=='AC'}" value="Activo" /></span>
+							<span class="label label-danger"><h:outputText
+									rendered="#{_cliente.estado=='IN'}" value="Inactivo" /></span>
+						</p:column>
+						<p:column headerText="Fecha Registro">
+							<h:outputText value="#{_cliente.fechaRegistro}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Usuario Registro">
+							<h:outputText value="#{_cliente.usuarioRegistro}" />
+						</p:column>
+					</p:dataTable>
+
+				</div>
+			</div>
+
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

@@ -1,0 +1,50 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a="http://richfaces.org/a4j"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext">
+
+	<h:outputStylesheet name="tree.css" library="css" />
+
+	
+
+	
+
+ <div class="panel panel-success">
+ <div class="panel-heading">
+						<h3 class="panel-title">
+							<strong>Menu</strong>
+						</h3>
+					</div>
+    <ul class="nav nav-list-main" >
+   
+        <li class="nav-divider" ></li>
+         <li><label class="nav-toggle nav-header"><span style="color: orange;">Catalogo</span></label>
+            <ul class="nav nav-list nav-left-ml">
+                <li><a href="/buffalo/pages/inventario/almacen/catalogo.xhtml">Catalogo</a></li>
+                <li><a href="/buffalo/pages/inventario/almacen/almacen-stock-list.xhtml">Listar Producto</a></li>            
+              
+            </ul>
+        </li>        
+     
+    </ul>
+    </div>
+	<script>
+
+$(function () {
+	$('ul.nav-left-ml').toggle();
+	$('label.nav-toggle span').click(function () {
+	  $(this).parent().parent().children('ul.nav-left-ml').toggle(300);
+	  var cs = $(this).attr("class");
+	  if(cs == 'nav-toggle-icon glyphicon glyphicon-chevron-right') {
+	    $(this).removeClass('glyphicon-chevron-right').addClass('glyphicon-chevron-down');
+	  }
+	  if(cs == 'nav-toggle-icon glyphicon glyphicon-chevron-down') {
+	    $(this).removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-right');
+	  }
+	});
+});
+</script>
+</ui:composition>

@@ -1,0 +1,1098 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a="http://richfaces.org/a4j"
+    xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+    template="/WEB-INF/templates/templateModuloVentas.xhtml">
+
+    <ui:define name="head">
+    	<title>Facturacion</title>
+    </ui:define>
+    
+    <ui:define name="header">
+			
+			
+			
+   	</ui:define>
+   
+    <ui:define name="content">
+   				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+					
+					<li class="fuente-link-sidebar">
+						<a href="/buffalo/">
+							Inicio
+						</a>
+					</li>
+					<li class="fuente-link-sidebar">
+						<a href="/buffalo/pages/ventas/home.xhtml">
+							Modulo Ventas
+						</a>
+					</li>
+					<li><a
+						class="fuente-link-sidebar"
+						href="/buffalo/pages/ventas/facturacion-home.xhtml">Seleccionar Facturación</a></li>
+					<li class="active" style="color: orange;">
+						<a class="fuente-link-sidebar" style="color: orange;" href="/buffalo/pages/ventas/facturacion.xhtml">Facturación Proforma</a>
+					</li>
+				</ol>
+   	
+   		<h:form id="formHearder">
+		  	
+		    <div class="row" style="padding: 0px 0px 0px 0px;">
+				  
+				  <div class="col-sm-6 col-md-3" align="left" >
+				      
+				    <p:commandButton action="#{facturacionController.cargarProformasVenta}" 
+			  		rendered="#{facturacionController.showButtonImpresion=='false'}"
+			  		icon="ui-icon-plusthick"
+			  		style="cursor: pointer;
+							    display: inline-block;
+							    margin-right: 0.1em;
+							    overflow: visible;
+							    padding: 0;
+							    color: white;
+							    position: relative;
+							    text-align: center;
+							    text-decoration: none !important;"
+					value="Buscar Proforma" update=":formModalAgregarProformaVenta" 
+					oncomplete="PF('dlgProformaVenta').show()"  styleClass="btn btn-success btn-lg btn-block"/>
+				
+				      
+				      <h:panelGrid columns="2" style="border: 0px;">
+				      	<h:column>
+							
+					  <p:graphicImage rendered="#{facturacionController.showButtonImpresion}" 
+							value="#{facturacionController.urlCodeQR}" 
+							width="150px;" height="150px;"/>
+							
+				      	</h:column>
+				      	
+				      	<h:column>
+				    
+				      		<a:region rendered="#{facturacionController.showButtonImpresion and facturacionController.newFactura.estado=='V'}">
+				      			<span class="label label-success">Factura Valida</span>
+				      			<br/>
+				      		</a:region>
+				      		<a:region rendered="#{facturacionController.showButtonImpresion and facturacionController.newFactura.estado=='E'}">
+				      			<span class="label label-warning">Factura Extraviada</span>
+				      			<br/>
+				      		</a:region>
+				      		<a:region rendered="#{facturacionController.showButtonImpresion and facturacionController.newFactura.estado=='A'}">
+				      			<span class="label label-danger">Factura Anulada</span>
+				      			<br/>
+				      		</a:region>
+				      		<a:region rendered="#{facturacionController.showButtonImpresion and facturacionController.newFactura.estado=='C'}">
+				      			<span class="label label-danger">Factura Emitida Contingencia</span>
+				      			<br/>
+				      		</a:region>
+				      		<a:region rendered="#{facturacionController.showButtonImpresion and facturacionController.newFactura.estado=='N'}">
+				      			<span class="label label-default">Factura No Utilizada</span>
+				      			<br/>
+				      		</a:region>
+				      		<h:outputText value="NIT: " rendered="#{facturacionController.showButtonImpresion}"  />
+							<h:outputText value="#{facturacionController.usuarioSession.sucursal.nit}" rendered="#{facturacionController.showButtonImpresion}"  />
+					  		<br/>
+							<h:outputText value="Nro. Factura:" rendered="#{facturacionController.showButtonImpresion}"  />
+							<h:outputText value="#{facturacionController.newFactura.numeroFactura}" rendered="#{facturacionController.showButtonImpresion}"  />
+						  	<br/>
+						  	<h:outputText value="Nro. Autorizacion:" rendered="#{facturacionController.showButtonImpresion}"  />
+							<h:outputText value="#{facturacionController.usuarioSession.sucursal.numeroAutorizacion}" rendered="#{facturacionController.showButtonImpresion}"  />
+					  	
+				      	</h:column>
+				      </h:panelGrid>
+				      
+				      
+				  </div>
+				
+				  <div class="col-sm-6 col-md-3">
+<!-- 				    	<button type="button" data-toggle="modal" data-target="#myModalProcesarFactura" class="btn btn-warning btn-lg btn-block">Procesar</button> -->
+				    	<p:commandButton action="#{facturacionController.showModalProcesarFactura()}" 
+				    		rendered="#{facturacionController.showButtonImpresion=='false'}"
+				    		disabled="#{facturacionController.listaConcepto.size()>0? 'false' : 'true'}"
+							icon="ui-icon-cart"
+							style="cursor: pointer;
+							    display: inline-block;
+							    margin-right: 0.1em;
+							    overflow: visible;
+							    padding: 0;
+							    color: white;
+							    position: relative;
+							    text-align: center;
+							    text-decoration: none !important;"
+							value="Procesar" update=":formModalProcesar" oncomplete="PF('dlgProcesar').show()"  styleClass="btn btn-warning btn-lg btn-block" />
+						
+						
+						<p:commandButton action="#{facturacionController.vistaPreviaFactura}" 
+							rendered="#{facturacionController.showButtonImpresion and facturacionController.usuarioSession.impresionSilencionsa}"
+							icon="ui-icon-print"
+							style="cursor: pointer;
+							    display: inline-block;
+							    margin-right: 0.1em;
+							    overflow: visible;
+							    padding: 0;
+							    color: white;
+							    position: relative;
+							    text-align: center;
+							    text-decoration: none !important;" oncomplete="PF('dlgVistaPrevia').show()"
+								update=":formModalVistaPrevia"
+							value="Imprimir Factura" styleClass="btn btn-warning btn-lg btn-block" >
+						</p:commandButton>
+						
+						
+			
+						<br/><br/>
+<!-- 						<p:inputTextarea id="respuestaRapidaID" styleClass="form-control" rendered="#{facturacionController.showButtonImpresion}"  -->
+<!-- 							value="#{facturacionController.newFactura.codigoRespuestaRapida}" required="true" requiredMessage="Respuesta Rapida es Requerido." disabled="true"> -->
+<!-- 							<p:ajax event="change" /> -->
+<!-- 						</p:inputTextarea> -->
+						
+						<h:panelGrid  columns="4" rendered="#{facturacionController.showButtonImpresion}" >
+					 
+										 <div class="form-group" align="left">
+										 <label for="facturaNitID" class="col-lg-2 control-label">NIT/CI</label>
+										    <div class="col-lg-8">
+										      <p:inputText id="facturaNitID" styleClass="form-control" value="#{facturacionController.newFactura.nitCi}" required="true" requiredMessage="NIT es Requerido." disabled="true">
+												    	<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="NIT / CI"  for="facturaNitID"/>
+											  <p:message for="facturaNitID"/>
+										    </div>
+										  </div>
+										  
+										  <div class="form-group" align="left">
+										    <label for="nombreClienteID" class="col-lg-2 control-label">CLIENTE</label>
+										    <div class="col-lg-8">
+										      <p:inputText id="nombreClienteID" styleClass="form-control" value="#{facturacionController.newFactura.nombreFactura}" size="40" required="true" requiredMessage="Cliente es Requerido." disabled="true">
+												    	<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="Nombre de Cliente"  for="nombreClienteID"/>
+											  <p:message for="nombreClienteID"/>
+										    </div>
+										  </div>
+						</h:panelGrid>
+							
+								
+						
+				  </div>
+				  
+				  <div class="col-sm-6 col-md-3">
+
+				    	<p:commandButton action="#{facturacionController.buscarUltimas100Facturas()}" rendered="#{facturacionController.showButtonImpresion=='false'}"
+							icon="ui-icon-search"
+							style="cursor: pointer;
+							    display: inline-block;
+							    margin-right: 0.1em;
+							    overflow: visible;
+							    padding: 0;
+							    color: white;
+							    position: relative;
+							    text-align: center;
+							    text-decoration: none !important;"
+							value="Buscar Factura" update=":formModalBuscarFactura" oncomplete="PF('dlgBuscarFactura').show()"  
+							styleClass="btn btn-primary btn-lg btn-block" />
+						
+						
+						<p:commandButton action="#{facturacionController.anularFactura()}" 
+							rendered="#{facturacionController.showButtonImpresion}"
+							disabled="#{facturacionController.newFactura.estado=='A'}"
+				    		onclick="return confirm('Esta seguro de anular esta Factura?');"
+							icon="ui-icon-document"
+							style="cursor: pointer;
+							    display: inline-block;
+							    margin-right: 0.1em;
+							    overflow: visible;
+							    padding: 0;
+							    color: white;
+							    position: relative;
+							    text-align: center;
+							    text-decoration: none !important;"
+							value="Anular Factura" update=":formFacturacion, :growl" oncomplete="PF('dlgBuscarPedido').show()"  styleClass="btn btn-danger btn-lg btn-block" />
+				  		
+						
+						
+						<br/><br/>
+						
+						<h:panelGrid columns="4" rendered="#{facturacionController.showButtonImpresion}" >
+					 	
+										 <div class="form-group" align="left">
+										 <label for="facturaCCID" class="col-lg-6 control-label">CONTROL</label>
+										    <div class="col-lg-4">
+										      <p:inputText id="facturaCCID" styleClass="form-control" value="#{facturacionController.newFactura.codigoControl}" required="true" requiredMessage="NIT es Requerido." disabled="true">
+												    	<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="NIT / CI"  for="facturaCCID"/>
+											  <p:message for="facturaCCID"/>
+										    </div>
+										  </div>
+										  
+										  <div class="form-group" align="left">
+										    <label for="facturaFechaEmisionID" class="col-lg-6 control-label">FECHA</label>
+										    <div class="col-lg-4">
+										      <p:inputText id="facturaFechaEmisionID" styleClass="form-control" value="#{facturacionController.newFactura.fechaFactura}" size="40" required="true" requiredMessage="Fecha Emision es Requerido." disabled="true">
+												    <f:convertDateTime pattern="dd/MM/yyyy H:mm"/>
+												    <p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="Fecha Emision"  for="facturaFechaEmisionID"/>
+											  <p:message for="facturaFechaEmisionID"/>
+										    </div>
+										  </div>
+						</h:panelGrid>
+					
+				  </div>
+				  <div class="col-sm-6 col-md-3">
+<!-- 				    	<button type="button" data-toggle="modal" data-target="#modalNuevaFactura"  class="btn btn-success btn-lg btn-block">Nueva Factura</button> -->
+				    	<p:commandButton action="#{facturacionController.nuevaFactura}" 
+				    		onclick="return confirm('Desea salir y crear una nueva Factura?');"
+				    		disabled="#{facturacionController.listaConcepto.size()>0? 'false' : 'true'}"
+							icon="ui-icon-document"
+							style="cursor: pointer;
+							    display: inline-block;
+							    margin-right: 0.1em;
+							    overflow: visible;
+							    padding: 0;
+							    color:white;
+							    position: relative;
+							    text-align: center;
+							    text-decoration: none !important;"
+							value="Nueva Factura" update=":formFacturacion" oncomplete="PF('dlgBuscarPedido').show()"  styleClass="btn btn-success btn-lg btn-block" />
+				  		
+				  		<br/><br/>
+				  		
+				  		<h:panelGrid  columns="4" rendered="#{facturacionController.showButtonImpresion}" >
+										 <div class="form-group" align="left">
+										 <label for="efectivoID" class="col-lg-2 control-label">EFECTIVO</label>
+										    <div class="col-lg-8">
+										      <p:inputText id="efectivoID" styleClass="form-control" value="#{facturacionController.efectivoFactura} Bs.-" required="true" requiredMessage="Efectivo es Requerido." disabled="true">
+												    	<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="Efectivo"  for="efectivoID"/>
+											  <p:message for="efectivoID"/>
+										    </div>
+										  </div>
+										  
+										  <div class="form-group" align="left">
+										    <label for="tarjetaID" class="col-lg-2 control-label">C/TARJETA</label>
+										    <div class="col-lg-8">
+										      <p:inputText id="tarjetaID" styleClass="form-control" value="#{facturacionController.newFactura.totalPagoDebito} Bs.-" size="40" disabled="true">
+												    	<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="Tarjeta Credito"  for="tarjetaID"/>
+										    </div>
+										  </div>
+								</h:panelGrid>
+				  		
+				  		
+				  		
+				  	
+				  </div>
+		    </div>
+		    
+		    </h:form>
+   		
+   		
+   		
+   	
+   	
+   	 	
+<!--     	<h:commandButton id="printCmdBtn" value="Print" type="button" icon="ui-icon-print" style="width:50px;float:right">   -->
+<!--                     <p:printer  target="testBtn"  /> -->
+<!--                 </h:commandButton>  -->
+    	
+<!--     	<p:commandButton value="Test Print" action="#" id="testBtn"></p:commandButton> -->
+    	
+<!--     	<p:media id="idReporteFactura" -->
+<!-- 		    	 player="pdf" -->
+<!-- 		    	 value="http://localhost:8080/buffalo/factura2?idFactura=39" width="500px" height="950px"/> -->
+    	
+		<h:form id="formFacturacion">
+		
+
+			<style type="text/css">
+				.ui-datatable-data-empty .ui-dt-c {
+				    width: 100% !important;
+				    color: red;
+				  }
+			</style>
+
+		  	<div class="panel panel-default">
+		      <!-- Default panel contents -->
+		      <div class="panel-heading">
+		      	<center><strong>DETALLE FACTURA</strong></center> 
+		      </div>
+		
+		      <!-- Table -->
+		      <div class="table-responsive">
+		      			
+		      			
+		      			<p:dataTable rendered="#{facturacionController.showButtonImpresion=='false'}" styleClass="table table-condensed table-hover table-responsive table-striped table-bordered" 
+		      				selection="#{facturacionController.selectedConcepto}" selectionMode="single" rowKey="#{_concepto.id}"
+				        	emptyMessage="No hay elementos para poder facturar."
+				        	id="tablaProductos" value="#{facturacionController.listaConcepto}" var="_concepto" >
+				        	
+				        	<p:ajax event="rowDblselect" oncomplete="PF('dlgModificarConcepto').show()"
+				        		listener="#{facturacionController.onRowSelectConcepto}"
+				        		update=":formModalConcepto"/>
+				        		
+				        	<p:ajax  event="rowSelect"
+				        		listener="#{facturacionController.onRowSelectConceptoClick}" />	
+				        	
+				        	<p:column headerText="Item" >
+				        		<a:region rendered="#{_concepto.tipo=='REPUESTO'}">
+				        			<span class="badge"><h:outputText value="#{_concepto.codigo}" /></span>
+				        		</a:region>
+				        		<a:region rendered="#{_concepto.tipo=='SERVICIO'}">
+				        			<span class="badge"><h:outputText value="#{_concepto.codigo}" /></span>
+				        		</a:region>
+				        		
+				        	</p:column>
+				        	<p:column headerText="Detalle">
+				        		<h:outputText value="#{_concepto.concepto}" />
+				        	</p:column>
+				        	<p:column headerText="Cantidad" style="text-align: center;" >
+				        		<span class="badge"><h:outputText value="#{_concepto.cantidad}" /></span>
+				        	</p:column>
+				        	<p:column headerText="P. Unitario">
+				        		<h:outputText value="Bs.- "/>
+				        		<h:outputText value="#{_concepto.precioUnitario}">
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</p:column>
+				        	<p:column headerText="Descuento" >
+				        	<h:outputText value="Bs.- "/>
+				        	<a:region rendered="#{_concepto.descuento>0}">
+				        			<h:outputText value="#{_concepto.descuento}" >
+				        				<f:convertNumber pattern="#,##0.00"/>
+				        			</h:outputText>
+				        	</a:region>
+				        	<a:region rendered="#{_concepto.descuento==0}">
+				        		<h:outputText value="#{_concepto.descuento}" >
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</a:region>
+				        	</p:column>
+				        	<p:column headerText="SubTotal" >
+				        		<h:outputText value="Bs.- " style="text-align: right;"/>
+				        		<h:outputText value="#{_concepto.precioTotal}" style="text-align: right;">
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</p:column>
+				        </p:dataTable>
+				       
+				        
+				        
+				        <p:hotkey bind="Del" update=":formFacturacion, :growl, :formTotales" actionListener="#{facturacionController.quitarSeleccionadoListaConcepto()}"/>
+				        
+				        <p:dataTable rendered="#{facturacionController.showButtonImpresion}" styleClass="table table-condensed table-hover table-responsive table-striped table-bordered" 
+		      				selection="#{facturacionController.selectedConcepto}" selectionMode="single" rowKey="#{_concepto.id}"
+		      				emptyMessage="No hay elementos para poder facturar."
+				        	id="tablaProductosFactura" value="#{facturacionController.listaConcepto}" var="_concepto" >
+				        	
+				        	<p:column headerText="Item">
+				        		<a:region rendered="#{_concepto.tipo=='REPUESTO'}">
+				        			<span class="label label-primary"><h:outputText value="#{_concepto.codigo}" /></span>
+				        		</a:region>
+				        		<a:region rendered="#{_concepto.tipo=='SERVICIO'}">
+				        			<span class="label label-success"><h:outputText value="#{_concepto.codigo}" /></span>
+				        		</a:region>
+				        	</p:column>
+				        	<p:column headerText="Detalle">
+				        		<h:outputText value="#{_concepto.concepto}" />
+				        	</p:column>
+				        	<p:column headerText="Cantidad" style="text-align: center;" >
+				        		<span class="badge">
+				        			<h:outputText value="#{_concepto.cantidad}" >
+				        				<f:convertNumber pattern="#,##0.00"/>
+				        			</h:outputText>
+				        		</span>
+				        	</p:column>
+				        	<p:column headerText="P. Unitario" >
+				        		<h:outputText value="Bs.- "/>
+				        		<h:outputText value="Bs.- #{_concepto.precioUnitario}">
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</p:column>
+				        	<p:column headerText="Descuento" >
+				        	<h:outputText value="Bs.- "/>
+				        	<a:region rendered="#{_concepto.descuento>0}">
+				        		<h:outputText value="#{_concepto.descuento}" >
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</a:region>
+				        	<a:region rendered="#{_concepto.descuento==0}">
+				        		<h:outputText value="#{_concepto.descuento}" >
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</a:region>
+				        	</p:column>
+				        	<p:column headerText="SubTotal">
+				        		<h:outputText value="Bs.- " style="text-align: right;"/>
+				        		<h:outputText value="#{_concepto.precioTotal}" style="text-align: right;">
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</p:column>
+				        </p:dataTable>
+		      </div>
+		      
+		      
+		    </div>
+		    
+		    <div class="row" style="padding: 0px 0px 0px 0px;">
+				  <div class="col-sm-12 col-md-0" align="left" >
+					<a:region rendered="#{facturacionController.showButtonImpresion}">
+						<h1><strong>SON: #{facturacionController.newFactura.totalLiteral}</strong></h1>
+					</a:region>		  
+				  </div>
+			</div>
+		    
+		    
+		    
+		   
+			
+		</h:form>
+		
+		
+		<h:form id="formTotales">
+    	<a:outputPanel ajaxRendered="true">
+    	<div class="row">
+	    	<div class="col-sm-6 col-md-3">
+			    <div class="well">
+					<center><h1>Cambio Bs</h1></center>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+			    <div class="well">
+					<center>
+						<h1><strong>
+							<h:outputText value="#{facturacionController.newFactura.cambio}" >
+								<f:convertNumber pattern="#,##0.00"/>
+							</h:outputText>
+					</strong></h1>
+					</center>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+			    <div class="well">
+					<center>
+						<h1>Total Bs</h1>
+					</center>
+				</div>
+			</div>
+			<div class="col-sm-6 col-md-3">
+			    <div class="well">
+					<center>
+						<h1><strong>
+						<h:outputText value="#{facturacionController.totalBolivianos}" >
+							<f:convertNumber pattern="#,##0.00"/>
+						</h:outputText>
+					</strong></h1>
+					</center>
+				</div>
+			</div>
+		</div>
+		</a:outputPanel>
+		
+		
+<!-- 		<p:lightBox>   -->
+<!-- 		    <h:outputLink value="#">   -->
+<!-- 		        <p:commandButton action="#" -->
+<!-- 							value="Imprimir Factura" styleClass="btn btn-danger btn-lg btn-block" /> -->
+<!-- 		    </h:outputLink>   -->
+		
+<!-- 		    <f:facet name="inline">   -->
+<!-- 		    	<p:media value="/resources/other/factura.pdf" width="450px" height="700px"/> -->
+		       
+<!-- 		    </f:facet>   -->
+<!-- 		</p:lightBox>   -->
+<!-- 		<p:lightBox>   -->
+<!-- 		    <h:outputLink value="#">   -->
+<!-- 		        <p:commandButton action="#" -->
+<!-- 							value="Imprimir Factura 2 #{facesContext.externalContext.requestContextPath}" styleClass="btn btn-default btn-lg btn-block" /> -->
+<!-- 		    </h:outputLink>   -->
+		
+<!-- 		    <f:facet name="inline">   -->
+<!-- 		    	<p:media id="idReporteFactura" -->
+<!-- 		    	 player="pdf" -->
+<!-- 		    	 value="http://localhost:8080/buffalo/factura2?idFactura=39" width="500px" height="950px"/> -->
+		       
+<!-- 		    </f:facet>   -->
+<!-- 		</p:lightBox>   -->
+		
+		</h:form>
+		
+		
+		   
+		   
+		   <!-- MODAL MODIFICAR CONCEPTO -->	 	 
+		   <p:dialog showEffect="explode" header="Modificar Concepto" widgetVar="dlgModificarConcepto" 
+		   		resizable="false" modal="true"  position="center"
+		   		styleClass="customDialog"
+		   		visible="#{not empty facesContext.maximumSeverity}" id="modalConceptoID">  
+			     	
+			      	<h:form id="formModalConcepto" >
+					
+					<h:panelGrid columns="6">	
+					
+					    <label for="conceptoID">Concepto</label>
+					    <p:inputText id="conceptoID" value="#{facturacionController.selectedConcepto.concepto}">
+					    	<p:ajax event="change" />
+					    </p:inputText>
+					  	<p:message for="conceptoID"/>
+						
+						<label for="cantidadID">Cantidad</label>
+					   	<p:spinner id="cantidadID" value="#{facturacionController.selectedConcepto.cantidad}">
+					   		<p:ajax event="change" update="subTotalID"/>
+					   	</p:spinner>
+						<p:message for="cantidadID"/>
+						
+						<label for="pUnitarioID">P. Unitario</label>
+					   	<p:spinner id="pUnitarioID" value="#{facturacionController.selectedConcepto.precioUnitario}" disabled="true"/>
+						<p:message for="pUnitarioID"/>
+						
+						<label for="subTotalID">SubTotal</label>
+					    <p:spinner id="subTotalID" value="#{facturacionController.selectedConcepto.precioTotal}" disabled="true"/>
+					    <p:message for="subTotalID"/>
+						
+					</h:panelGrid>
+					
+					
+		            </h:form>
+				
+		    	  <div class="modal-footer">
+		    	  	<p:commandButton value="Cancelar" 
+				    			icon="ui-icon-minus"
+				    			onclick="PF('dlgModificarConcepto').hide()" action="#" />
+			        <p:commandButton value="Guardar"
+			        			icon="ui-icon-disk"
+					      		update="formFacturacion:tablaProductos, formTotales" action="#{facturacionController.modificarConcepto()}" 
+					      		oncomplete="PF('dlgModificarConcepto').hide()"/>
+			      </div>
+		    	
+		   </p:dialog>
+		   
+		   
+		   
+		   
+		   <!-- MODAL PROCESAR -->	 	 
+		   <p:dialog showEffect="explode" header="FACTURACIÓN" widgetVar="dlgProcesar" 
+		   		resizable="false" modal="true"  position="center"
+		   		width="700" styleClass="customDialog" 
+		   		visible="#{not empty facesContext.maximumSeverity}" id="modalProcesarID">  
+				
+				<h:form id="formModalProcesar">		   
+		   
+		   
+		   
+	    	<script type="text/javascript">
+			    function handleDialogSubmit(xhr, status, args) {
+			        if (args.validationFailed) {
+			        	dlgProcesar.show();
+			        } else {
+			        	dlgProcesar.hide();
+			        }
+			    }
+			</script>
+						
+						<p:outputPanel autoUpdate="true">
+						<h:panelGrid columns="4">
+					 
+										 <div class="form-group" align="left">
+										 <label for="nitID" class="col-lg-2 control-label">NIT/CI</label>
+										    <div class="col-lg-8">
+										      <p:inputText id="nitID" styleClass="form-control" value="#{facturacionController.newFactura.nitCi}" 
+										      	required="true" requiredMessage="NIT es Requerido." validatorMessage="NIT Invalido.">
+										      		<f:validateLength maximum="13"/>
+										      		<f:validateRegex pattern="[0-9]+" />
+												    <p:ajax event="change" listener="#{facturacionController.recordarDatosCliente()}" />
+											  </p:inputText>
+											  <p:watermark value="NIT / CI"  for="nitID"/>
+											  <p:message for="nitID"/>
+										    </div>
+										  </div>
+										  
+										  <div class="form-group" align="left">
+										    <label for="nombreClienteID" class="col-lg-2 control-label">CLIENTE</label>
+										    <div class="col-lg-8">
+										      <p:inputText  id="nombreClienteID" styleClass="form-control" value="#{facturacionController.newFactura.nombreFactura}" size="40" required="true" requiredMessage="Cliente es Requerido.">
+												    	<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="Nombre de Cliente"  for="nombreClienteID"/>
+											  <p:message for="nombreClienteID"/>
+										    </div>
+										  </div>
+						</h:panelGrid>
+						</p:outputPanel>
+						<br/>
+					
+						<div class="tabbable tabs-left">
+							  <ul class="nav nav-tabs span2">
+							    <li class="active"><a href="#tabs5-pane1" data-toggle="tab"><STRONG>Pago Efectivo</STRONG></a></li>
+							    <li><a href="#tabs5-pane2" data-toggle="tab"><STRONG>Pago Tarjeta</STRONG></a></li>
+							  </ul>
+							  <div class="tab-content span5">
+							    <div id="tabs5-pane1" class="tab-pane active">
+							      	<br/>
+							      	<h:panelGrid columns="4">
+					  					  
+										  <div class="form-group" align="left" >
+											    <label for="totalBSID" class="col-lg-2 control-label"><span class="label label-default">PAGAR BS</span></label>
+											    <div class="col-lg-8">
+											      <p:inputText id="totalBSID" styleClass="form-control" value="#{facturacionController.totalBolivianos}" size="30" disabled="true">
+													    	<p:ajax event="change" />
+													    	<f:convertNumber pattern="#,##0.00"/>
+												  </p:inputText>
+												  <p:watermark value="Total Bs"  for="totalBSID"/>
+												  <p:message for="totalBSID"/>
+											    </div>
+										  </div>
+										 
+										  <div class="form-group" align="left">
+										    <label for="entregadoID" class="col-lg-2 control-label"><span class="label label-primary">EFECTIVO BS</span></label>
+										    <div class="col-lg-8">
+										      <p:inputText id="entregadoID" styleClass="form-control" value="#{facturacionController.totalEntregadoString}" size="30" 
+										      		validatorMessage="Monto Invalido.">
+												    <p:ajax event="change" update="cambioID, cambio2ID" listener="#{facturacionController.calcularCambioDevolucionString}"/>
+												    <f:convertNumber pattern="#,##0.00"/>
+										      		<f:validateDoubleRange minimum="0"/>
+										      		<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="Total Entregado BS"  forElement="entregadoID" for="entregadoID"/>
+											  <p:message for="entregadoID"/>
+										    </div>
+										  </div>
+										  
+										  <div class="form-group" align="left">
+										    <label for="entregadoUSDID" class="col-lg-2 control-label"><span class="label label-success">EFECTIVO USD</span></label>
+										    <div class="col-lg-8">
+										      <p:inputText id="entregadoUSDID" styleClass="form-control" value="#{facturacionController.totalEntregadoDolaresString}" size="30" validatorMessage="Monto Invalido.">
+												    <p:ajax event="change" update="cambioID, cambio2ID" listener="#{facturacionController.calcularCambioDevolucionString}"/>
+												    <f:convertNumber pattern="#,##0.00"/>
+										      		<f:validateDoubleRange minimum="0"/>
+										      		<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="Total Entregado USD" forElement="entregadoUSDID" for="entregadoUSDID"/>
+											  <p:message for="entregadoUSDID"/>
+										    </div>
+										  </div>
+										  
+										  
+										  <div class="form-group" align="left">
+										    <label for="cambioID" class="col-lg-2 control-label"><span class="label label-warning">CAMBIO</span></label>
+										    <div class="col-lg-8">
+											  <p:inputText id="cambioID" styleClass="form-control" value="#{facturacionController.totalCambioString}" 
+										      	size="30" required="true" requiredMessage="Falta Ingresar Pago." validatorMessage="Saldo Pendiente.">
+										      		<f:convertNumber pattern="#,##0.00"  />
+										      		<f:validateDoubleRange minimum="0"/>
+											  		<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="Cambio"  for="cambioID"/>
+											  <p:message for="cambioID"/>
+										    </div>
+										  </div>
+										  
+										  </h:panelGrid>
+							      		<br/>
+							    </div>
+							    <div id="tabs5-pane2" class="tab-pane">
+							    		<br/>
+							    		<h:panelGrid columns="4">
+					  						
+					  					  <div class="form-group" align="left" >
+											    <label for="total2BSID" class="col-lg-2 control-label"><span class="label label-default">PAGAR BS</span></label>
+											    <div class="col-lg-8">
+											      <p:inputText id="total2BSID" styleClass="form-control" value="#{facturacionController.totalBolivianos}" size="30" disabled="true">
+													    	<p:ajax event="change" />
+													    	<f:convertNumber pattern="#,##0.00"/>
+												  </p:inputText>
+												  <p:watermark value="Total Bs"  for="total2BSID"/>
+												  <p:message for="total2BSID"/>
+											    </div>
+										  </div>
+					  						
+					  						
+										  <div class="form-group" align="left">
+										    <label for="entregadoID" class="col-lg-2 control-label"><span class="label label-primary">NRO COMPROBANTE</span></label>
+										    <div class="col-lg-8">
+										      <p:inputText id="comprobanteID" styleClass="form-control" value="#{facturacionController.newFactura.comprobanteDebito}" size="30">
+												    	<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="Numero de Comprobante"  for="comprobanteID"/>
+											  <p:message for="comprobanteID"/>
+										    </div>
+										  </div>
+										  
+										  <div class="form-group" align="left">
+										    <label for="entregadoDebitoID" class="col-lg-2 control-label"><span class="label label-success">DEBITO BS</span></label>
+										    <div class="col-lg-8">
+										      <p:inputText id="entregadoDebitoID" styleClass="form-control" value="#{facturacionController.totalEntregadoDebito}" size="30">
+												    	<p:ajax event="change" update="cambio2ID, cambioID" listener="#{facturacionController.calcularCambioDevolucionString}"/>
+											  </p:inputText>
+											  <p:watermark value="Total Debitado"  for="entregadoDebitoID"/>
+											  <p:message for="entregadoDebitoID"/>
+										    </div>
+										  </div>
+										  
+										  <div class="form-group" align="left">
+										    <label for="cambio2ID" class="col-lg-2 control-label"><span class="label label-warning">CAMBIO</span></label>
+										    <div class="col-lg-8">
+										      <p:inputText id="cambio2ID" styleClass="form-control" value="#{facturacionController.totalCambioString}" 
+										      	size="30" required="true"  requiredMessage="Falta Ingresar Pago." validatorMessage="Saldo Pendiente.">
+										      		<f:convertNumber pattern="#,##0.00"/>
+										      		<f:validateDoubleRange minimum="0"/>
+											  		<p:ajax event="change" />
+											  </p:inputText>
+											  <p:watermark value="Cambio"  for="cambio2ID"/>
+											  <p:message for="cambio2ID"/>
+										    </div>
+										  </div>
+										  
+										  
+										  </h:panelGrid>
+										  <br/>
+										  
+							    </div>
+							    
+							   </div>
+							   
+							</div>
+							
+						 <div class="modal-footer">
+					        <p:commandButton value="Cancelar" 
+				    			icon="ui-icon-minus"
+				    			onclick="PF('dlgProcesar').hide()" action="#" />
+					        <p:commandButton value="Facturar" ajax="true"
+					        			icon="ui-icon-cart"
+							      		update=":formTotales, :formHearder, :formFacturacion, :formModalProcesar, :growl" 
+							      		action="#{facturacionController.registrarFactura()}" 
+							      		oncomplete="handleDialogSubmit(xhr, status, args)"/>
+							      		
+					     </div>
+					     
+					     </h:form>
+		   </p:dialog>
+		    
+			
+		   <!-- MODAL BUSCAR FACTURA -->	 	 
+		   <p:dialog showEffect="explode" header="Buscar Factura" widgetVar="dlgBuscarFactura" 
+		   		resizable="false" modal="true"  position="center"
+		   		width="900" styleClass="customDialog"
+		   		visible="#{not empty facesContext.maximumSeverity}" id="modalFacturaID">  
+				
+				<div class="modal-body">
+			    	<h:form id="formModalBuscarFactura">
+			    		<div class="panel-body" style="padding: 0px 0px 0px 0px;">
+			        	<div class="row">
+			        		  <div class="col-sm-12 col-md-12" align="left" >
+						  <h:panelGrid columns="3">
+						  		<h:inputText size="40" id="razonSocialID" value="#{facturacionController.criterioBusquedaFactura}" styleClass="form-control" >
+					      		
+					      		</h:inputText>
+					      		<p:watermark value="CI/NIT o Nombre Cliente"  for="razonSocialID"/>
+					      		<p:commandButton value="Buscar Factura" styleClass="btn btn-default" 
+					      			icon="ui-icon-search"
+					      			update="tablaFacturas" action="#{facturacionController.buscarFactura}" />
+						</h:panelGrid>
+					        </div>	
+					    </div>					    
+					   </div>
+					<br/>
+					<!-- Default panel contents -->
+		      		<div class="panel panel-default">
+				    <!-- Default panel contents -->
+				    <div class="panel-heading">Ultimas Facturas</div>
+					
+					
+					<p:dataTable styleClass="table table-condensed table-hover table-responsive table-striped table-bordered" 
+							paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+	       					rowsPerPageTemplate="5 10" first="0"
+		      				selection="#{facturacionController.selectedFactura}" selectionMode="single" rowKey="#{_fact.id}"
+				        	id="tablaFacturas" value="#{facturacionController.listaUltimasFacturas}" var="_fact" 
+				        	paginator="true" rows="5">
+				        
+				        		
+				        	<p:ajax  event="rowSelect"
+				        		listener="#{facturacionController.onRowSelectFacturaClick}" />
+				        	
+				        	<p:column headerText="#Factura">
+				        		<span class="label label-warning"><h:outputText value="#{_fact.numeroFactura}" /></span>
+				        	</p:column>
+				        	<p:column headerText="NIT/CI">
+				        		<h:outputText value="#{_fact.nitCi}" />
+				        	</p:column>
+				        	<p:column headerText="Nombre Cliente" style="text-align: left;">
+				        		<h:outputText value="#{_fact.nombreFactura}"/>
+				        	</p:column>
+				        	<p:column headerText="Fecha Factura" style="text-align: center;">
+				        		<h:outputText value="#{_fact.fechaFactura}" >
+				        			<f:convertDateTime locale="ES" pattern="dd/MM/yyyy H:mm"/>
+				        		</h:outputText>
+				        	</p:column>
+				        	<p:column headerText="Total">
+				        		<h:outputText value="Bs.- #{_fact.totalPagar}" style="text-align: right;"/>
+				        	</p:column>
+				        	<p:column headerText="Estado" style="text-align: left;">
+				        		<a:region rendered="#{_fact.estado=='V'}">
+				        			<span class="label label-success">Valida</span>
+				        		</a:region>
+				        		<a:region rendered="#{_fact.estado=='A'}">
+				        			<span class="label label-danger">Anulada</span>
+				        		</a:region>
+				        		
+				        		<a:region rendered="#{_fact.estado=='E'}">
+				        			<span class="label label-warning">Extraviada</span>
+				        		</a:region>
+				        		<a:region rendered="#{_fact.estado=='C'}">
+				        			<span class="label label-danger">Emitida Contingencia</span>
+				        		</a:region>
+				        		<a:region rendered="#{_fact.estado=='N'}">
+				        			<span class="label label-default">No Utilizada</span>
+				        		</a:region>
+				        		
+				        		
+				        	</p:column>
+				        </p:dataTable>
+						</div>
+		
+				        
+				
+				</h:form>
+				</div>
+				
+		    	
+		    	<div class="modal-footer">
+		    		<p:commandButton value="Cancelar" 
+		    			icon="ui-icon-minus"
+		    			onclick="PF('dlgBuscarFactura').hide()" action="#" />
+			        <p:commandButton value="Cargar Factura" 
+			        			icon="ui-icon-plus"
+					      		update=":formHearder, :formFacturacion, :formTotales" action="#{facturacionController.cargarFactura}" 
+					      		oncomplete="PF('dlgBuscarFactura').hide()"/>
+			      </div>
+				
+		   </p:dialog>
+		   
+		   
+		 <!-- VISTA PREVIA FACTURA -->
+		<p:dialog showEffect="explode" header="Vista Previa" widgetVar="dlgVistaPrevia" 
+		   		resizable="false" modal="true"  position="center"
+		   		width="750" styleClass="customDialog"
+		   		visible="#{not empty facesContext.maximumSeverity}" id="modalVistaPrevia">  
+			
+				<div class="modal-body">
+					
+					<h:form id="formModalVistaPrevia">
+					
+					<p:media id="idReporteFactura" player="pdf" 
+							value="#{facturacionController.urlFactura}"
+							width="700px" height="500px" />
+					
+					</h:form>
+				</div>				
+
+				<div class="modal-footer">
+				
+					<div class="btn-group btn-group-sm">
+					
+						<p:commandButton value="Cerrar"  style="width: 150px;"
+					    			icon="ui-icon-minus"
+					    			action="#" styleClass="btn btn-default"
+					    			onclick="PF('dlgVistaPrevia').hide()" />
+						
+					</div>	
+				
+				</div>
+
+		</p:dialog>	
+		   
+		   
+		   <!-- AGREGAR PROFORMA DE VENTA -->
+		   <p:dialog showEffect="explode" widgetVar="dlgProformaVenta" 
+		   		resizable="false" modal="true"  position="center"
+		   		width="900" styleClass="customDialog"
+		   		visible="#{not empty facesContext.maximumSeverity}" id="modalProformaVentaID">  
+				
+				<f:facet name="header">
+			        <strong>
+			        	<span class="glyphicon glyphicon-search"/>
+			        	<h:outputText value="BUSCAR PROFORMA" />
+			        </strong>
+			    </f:facet>
+				
+				<div class="modal-body">
+			    	<h:form id="formModalAgregarProformaVenta">
+			    		
+			    		<div class="panel-body" style="padding: 0px 0px 0px 0px;">
+				    		<div class="row">
+								
+								<div class="col-sm-8 col-md-8" align="left">
+									
+									<h:panelGrid columns="3">
+										<h:inputText id="proformaVentaClienteID" size="40" value="#{facturacionController.criterioBusquedaPV}" styleClass="form-control" >
+											<p:ajax event="change" />
+										</h:inputText>
+							      		<p:watermark value="Nombre Cliente"  for="proformaVentaClienteID"/>
+							      		<p:commandButton value="Buscar" styleClass="btn btn-default" 
+							      			icon="ui-icon-search" immediate="true"
+							      			update=":formModalAgregarProformaVenta" action="#{facturacionController.buscarProformaVenta()}" />
+									</h:panelGrid>
+									
+									<BR />
+									<!-- Default panel contents -->
+						      		<div class="panel panel-default">
+								    <!-- Default panel contents -->
+								    <div class="panel-heading"><STRONG>
+								    <i aria-hidden="true"
+											class="glyphicon glyphicon-th-list"></i>
+								    		LISTADO DE PROFORMAS</STRONG></div>
+									
+									<p:dataTable styleClass="table table-condensed table-hover table-responsive table-striped table-bordered" 
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+					       					rowsPerPageTemplate="5 10" first="0"
+						      				selection="#{facturacionController.selectedProformaVenta}" selectionMode="single" rowKey="#{_pro.id}"
+								        	id="tablaProformas" value="#{facturacionController.listaModalProformasVenta}" var="_pro" 
+								        	paginator="true" rows="5">
+								        	
+								        	<p:ajax event="rowSelect" 
+								        		listener="#{facturacionController.onRowSelectProformaVenta}" update=":formModalAgregarProformaVenta"/>
+								        	
+								        	<p:column headerText="Proforma" style="background-color: #32A465;">
+								        		<STRONG><center><h:outputText style="color: white;" value="#{_pro.id}" /></center></STRONG>
+								        	</p:column>
+								        	<p:column width="50%" headerText="Cliente" style="text-align: left;">
+								        		<h:outputText value="#{_pro.cliente.nombreCompleto}" />
+								        	</p:column>
+								        	
+								        	<p:column headerText="Tipo" style="text-align: left;">
+								        		<h:outputText value="#{_pro.tipoProforma}" />
+								        	</p:column>
+								        	
+								        	<p:column headerText="Importe Total" style="text-align: left;">
+								        		<h:outputText value="Bs.- "/>
+								        		<h:outputText value="#{_pro.total}">
+								        			<f:convertNumber pattern="#,##0.00"/>
+								        		</h:outputText>
+								        	</p:column>
+								        	
+								        	<p:column headerText="Estado">
+												<span class="label label-success"><h:outputText rendered="#{_pro.estado=='PR'}" value="Nueva" /></span>
+								        	</p:column>
+								        	
+								       	</p:dataTable>
+								       	</div>
+								    
+								</div>
+								
+								<div class="col-sm-4 col-md-4" align="left">
+								
+								
+								<a:region rendered="#{facturacionController.selectedProformaVenta!=null}">
+								<!-- Default panel contents -->
+								<div class="panel panel-primary">
+									<!-- Default panel contents -->
+									<div class="panel-heading">
+										<strong> <i aria-hidden="true"
+											class="glyphicon glyphicon-check"></i>#{' '} DATOS PROFORMA
+										</strong>
+									</div>
+									<div class="panel-body">
+										
+										<h:panelGrid columns="3" columnClasses="titleCell" width="100%">
+											
+											<h:outputLabel value="Proforma" for="proformaID"/>
+											<p:inputText id="proformaID" value="#{facturacionController.selectedProformaVenta.id}" 
+												styleClass="form-control" disabled="true"/>
+											<p:message for="proformaID"/>
+											
+											<h:outputLabel value="Cliente" for="clienteID"/>
+											<p:inputText id="clienteID" value="#{facturacionController.selectedProformaVenta.cliente.nombreCompleto}" 
+												styleClass="form-control" disabled="true" />
+											<p:message for="clienteID"/>
+											
+											<h:outputLabel value="Tipo Proforma" for="tipoID"/>
+											<p:inputText id="tipoID" value="#{facturacionController.selectedProformaVenta.tipoProforma}" 
+												styleClass="form-control" disabled="true" />
+											<p:message for="tipoID"/>
+											
+											<h:outputLabel style="color: green;" value="Importe Total" for="montoProformaID"/>
+											<p:inputText id="montoProformaID" value="#{facturacionController.selectedProformaVenta.total}" styleClass="form-control"
+												disabled="true" >
+												<f:convertNumber pattern="#,##0.00"/>
+											</p:inputText>
+											<p:message for="montoProformaID"/>
+											
+											<h:outputLabel value="Descuento" for="descuentoProformaID"/>
+											<p:inputText id="descuentoProformaID" value="#{facturacionController.selectedProformaVenta.totalDescuento}" styleClass="form-control"
+												disabled="true" >
+												<f:convertNumber pattern="#,##0.00"/>
+											</p:inputText>
+											<p:message for="descuentoProformaID"/>
+											
+											<h:outputLabel style="color: red;" value="Saldo Pendiente" for="saldoProformaID" />
+											<p:inputText id="saldoProformaID" value="#{facturacionController.selectedProformaVenta.total - facturacionController.selectedProformaVenta.totalPagado}" styleClass="form-control"
+												disabled="true">
+												<f:convertNumber pattern="#,##0.00"/>
+											</p:inputText>
+											<p:message for="saldoProformaID" />
+											
+											<h:outputLabel style="color: green;" value="Monto a Pagar" for="montoPagarID" />
+											<p:inputText id="montoPagarID" value="#{facturacionController.montoPagar}" 
+												styleClass="form-control" disabled="#{facturacionController.selectedProformaVenta.credito=='false'}"
+												required="true" requiredMessage="Requerido." validatorMessage="Requerido." >
+												<f:convertNumber pattern="#,##0.00"/>
+												<f:validateLongRange minimum="1" />
+												<p:ajax event="change" />
+											</p:inputText>
+											<p:message for="montoPagarID" />
+											
+											<h:outputLabel value="Tiene Credito:" for="creditoID" />
+											<h:selectBooleanCheckbox value="#{facturacionController.selectedProformaVenta.credito}" id="creditoID" disabled="true"/>
+											<p:message for="creditoID" />
+											
+										</h:panelGrid>
+										
+										</div>
+										</div>
+										
+										</a:region>
+										
+										</div>
+							</div>
+			    		</div>
+						
+			    		
+				        
+				
+				</h:form>
+				</div>
+				
+		    	
+		    	<div class="modal-footer">
+		    		<p:commandButton value="Cancelar" 
+				    			icon="ui-icon-minus"
+				    			onclick="PF('dlgProformaVenta').hide()" action="#" />
+			        <p:commandButton value="Agregar Proforma" 
+			        			icon="ui-icon-plusthick"
+					      		update=":formHearder, formFacturacion:tablaProductos, formTotales" action="#{facturacionController.cargarProformaVenta()}" 
+					      		oncomplete="PF('dlgProformaVenta').hide()"/>
+			      </div>
+				
+		   </p:dialog>
+		   
+    </ui:define>
+    
+    
+    <ui:define name="footer">
+    	
+		
+		
+    </ui:define>
+    
+    
+   
+    
+    
+</ui:composition>

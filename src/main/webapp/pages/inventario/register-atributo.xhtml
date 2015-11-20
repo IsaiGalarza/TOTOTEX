@@ -1,0 +1,257 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloInventario.xhtml">
+
+	<ui:define name="head">
+		<title>Atributos Tipo Producto</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+		
+					<li class="fuente-link-sidebar"><a href="/buffalo/"> Inicio
+					</a></li>
+					<li><a href="categoria-productos-home.xhtml" class="fuente-link-sidebar">Categoria Productos</a></li>
+					<li class="active" style="color: orange;"><a
+						class="fuente-link-sidebar" style="color: orange;"
+						href="/buffalo/pages/inventario/register-atributo.xhtml">Atributos</a></li>
+				</ol>
+				
+			</div>
+		</div>
+
+	</ui:define>
+	
+	<ui:define name="content">
+		
+			<div class="col-sm-12 col-md-3" align="left">
+			<h:form id="frm" styleClass="form-horizontal">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<strong>#{atributoController.accion}</strong>
+						</h3>
+					</div>
+					<div class="panel-body">
+						<h:panelGrid columns="3" id="data">
+							<h:outputLabel value="Nombre" for="nombreID" />
+							<p:inputText id="nombreID" styleClass="form-control"
+								style="text-transform: uppercase"
+								value="#{atributoController.entity.nombre}"
+								required="true" requiredMessage="Ingrese un nombre." />
+							<p:message for="nombreID" />
+
+							<h:outputLabel value="Descripcion" for="descripcionID" />
+							<p:inputTextarea id="descripcionID" styleClass="form-control"
+								style="text-transform: uppercase"
+								value="#{atributoController.entity.descripcion}"
+								required="true" requiredMessage="Ingrese una descripcion." />
+							<p:message for="descripcionID" />
+
+
+							<h:outputLabel value="Fecha_Registro" for="fechaRegistroID" />
+							<p:calendar id="fechaRegistroID" showOn="button"
+								value="#{atributoController.entity.fechaRegistro}"
+								disabled="true" required="true"
+								requiredMessage="Fecha Registro Requerido.">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</p:calendar>
+							<p:message for="fechaRegistroID" />
+
+							<h:outputLabel value="Registro" for="usuarioRegistroID" />
+							<p:inputText id="usuarioRegistroID" styleClass="form-control"
+								value="#{atributoController.entity.usuarioRegistro.login}"
+								disabled="true" required="true"
+								requiredMessage="Usuario Registro Requerido." />
+							<p:message for="usuarioRegistroID" />
+
+						</h:panelGrid>
+						<p:panelGrid ></p:panelGrid>
+
+					</div>
+					<div class="btn-group btn-group-sm" style="width: 100%;">
+						<p:commandButton
+							rendered="#{atributoController.accion==atributoController.modificar}"
+							icon="ui-icon-minus"
+							action="#{atributoController.clear()}"
+							style="width: 33%;" update="frm frm_list growl"
+							styleClass="btn btn-default" value="Cancelar" immediate="true" type="submit" />
+
+						<p:commandButton
+							rendered="#{atributoController.accion==atributoController.guardar}"
+							action="#{atributoController.register()}"
+							icon="ui-icon-disk" update="growl"
+							style="width: 100%;" styleClass="btn btn-success"
+							value="Registrar Atributo" type="submit" />
+
+
+						<p:commandButton
+							rendered="#{atributoController.accion==atributoController.modificar}"
+							icon="ui-icon-refresh"
+							action="#{atributoController.update()}"
+							style="width: 33%;" update="growl"
+							styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+						<p:commandButton
+							rendered="#{atributoController.accion==atributoController.modificar}"
+							icon="ui-icon-circle-close"
+							oncomplete="dlgEliminar.show()"
+							style="width: 33%;" update="growl"
+							styleClass="btn btn-danger" value="Borrar" type="submit" />
+						
+						
+
+						<p:dialog header="Desea Eliminar Tipo Producto?"
+							widgetVar="dlgEliminar" minHeight="40" modal="true">
+							<h:panelGrid columns="2" cellpadding="5">
+
+								<p:outputLabel value="ID" />
+								<p:outputLabel value="#{tipoProductoController.newTipoProducto.id}"
+									style="text-transform: uppercase" required="true" size="20">
+								</p:outputLabel>
+
+								<p:outputLabel value="Nombre" />
+								<p:outputLabel style="text-transform: uppercase" size="20"
+									value="#{tipoProductoController.newTipoProducto.descripcion}" required="true"
+									requiredMessage="Requerido.">
+								</p:outputLabel>
+
+							</h:panelGrid>
+							<p:commandButton value="Si"
+								actionListener="#{tipoProductoController.eliminarTipoProducto()}"
+								icon="ui-icon-trash" style="width: 90px; text-color: white;"
+								update="frm frm_list growl" oncomplete="dlgEliminar.hide()"
+								styleClass="btn btn-default" immediate="true" />
+							<p:commandButton value="No"
+								style="width: 90px; text-color: white;"
+								update="frm frm_list growl" oncomplete="dlgEliminar.hide()"
+								styleClass="btn btn-default" immediate="true" />
+						</p:dialog>
+					</div>
+				</div>
+				</h:form>
+			</div>
+			<div class="col-sm-12 col-md-9" align="left">
+			<h:form id="frm_list" styleClass="form-horizontal">
+				<div id="newTipoProductosMessages" class="update" />
+
+				<h:panelGroup rendered="#{empty atributoController.root}">
+					<em>No se encontraron registros.</em>
+				</h:panelGroup>
+
+
+				<div class="panel panel-default">
+					<!-- Default panel contents -->
+					<div class="panel-heading">
+						<strong>LISTA DE ATRIBUTOS</strong>
+					</div>
+
+					<!-- Table -->
+					<div class="table-responsive">
+						<p:treeTable value="#{atributoController.root}" var="atributo" widgetVar="table"
+						selectionMode="single" selection="#{atributoController.selectNode}"
+						>
+
+					        <p:column headerText="Nombre">
+					        	#{atributo.nombre}
+					        </p:column>
+							
+							<p:column headerText="Descripcion" width="70%">
+					        	#{atributo.descripcion}
+					        </p:column>
+					        
+					        <p:column style="width:24px">
+					            <p:commandLink immediate="true" update="documentPanel" oncomplete="PF('documentDialog').show()" title="View Detail"  styleClass="ui-icon ui-icon-plusthick">
+					                <f:setPropertyActionListener value="#{atributo}" target="#{atributoController.padre}" />
+					            </p:commandLink>
+
+					        </p:column>
+					        
+					    </p:treeTable>
+					    
+					    <p:commandButton value="Editar" update="growl" icon="fa fa-edit" 
+                        			actionListener="#{atributoController.editar}"/>
+
+					</div>
+				</div>
+			</h:form>
+			</div>
+		
+		
+		<p:dialog id="dialog" header="AGREGAR HIJOS" showEffect="fade" widgetVar="documentDialog" modal="true" resizable="false">
+	        <h:form id="documentPanel" >
+	            <h:panelGrid  columns="2" rendered="#{not empty atributoController.padre}">
+	                <h:outputLabel value="Padre" for="padreID" />
+					<p:inputText id="padreID" styleClass="form-control" 
+						style="text-transform: uppercase" disabled="true"
+						value="#{atributoController.padre.nombre}"/>
+	                
+	                <h:outputLabel value="Nombre" for="nombreID" />
+					<p:inputText id="nombreID" styleClass="form-control"
+						style="text-transform: uppercase"
+						value="#{atributoController.entity.nombre}"
+						required="true" requiredMessage="Ingrese un nombre." />
+
+
+					<h:outputLabel value="Descripcion" for="descripcionID" />
+					<p:inputTextarea id="descripcionID" styleClass="form-control"
+						style="text-transform: uppercase"
+						value="#{atributoController.entity.descripcion}"
+						required="true" requiredMessage="Ingrese una descripcion." />
+
+
+
+					<h:outputLabel value="Fecha Registro" for="fechaRegistroID" />
+					<p:calendar id="fechaRegistroID" showOn="button"
+						value="#{atributoController.entity.fechaRegistro}"
+						disabled="true" required="true"
+						requiredMessage="Fecha Registro Requerido.">
+						<f:convertDateTime pattern="dd/MM/yyyy" />
+					</p:calendar>
+
+
+					<h:outputLabel value="Registro" for="usuarioRegistroID" />
+					<p:inputText id="usuarioRegistroID" styleClass="form-control"
+						value="#{atributoController.entity.usuarioRegistro.login}"
+						disabled="true" required="true"
+						requiredMessage="Usuario Registro Requerido." />
+
+	                
+	                <f:facet name="footer">
+			            <div class="btn-group btn-group-sm" style="width: 100%;">
+
+							<p:commandButton
+								icon="ui-icon-minus" oncomplete="PF('documentDialog').hide()"
+								action="#{atributoController.clear()}"
+								 update="growl"
+								styleClass="btn btn-default" value="Cancelar" immediate="true" type="submit" />
+	
+							<p:commandButton
+								action="#{atributoController.registerHijo()}"
+								icon="ui-icon-disk" update="growl"
+								styleClass="btn btn-success"
+								value="Registrar Atributo" type="submit" />
+						</div>
+			        </f:facet>
+	            </h:panelGrid>
+	        </h:form>
+	    </p:dialog>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

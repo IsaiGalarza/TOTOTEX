@@ -1,0 +1,149 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloVentas.xhtml">
+
+
+
+	<ui:define name="head">
+		<title>Seleccionar Facturación</title>
+	</ui:define>
+
+	<ui:define name="header">
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+					<li class="fuente-link-sidebar"><a href="/buffalo/"> Inicio </a></li>
+					<li class="fuente-link-sidebar"><a href="/buffalo/pages/ventas/home.xhtml"> Modulo
+							Ventas </a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/ventas/facturacion-home.xhtml">Seleccionar Facturación</a></li>
+				</ol>
+			</div>
+		</div>
+	</ui:define>
+
+
+	<ui:define name="content">
+		
+		<h:form id="formGestionContable" styleClass="form-horizontal">
+
+
+			<div class="panel-body">
+
+				<div class="row">
+					
+					<div class="col-sm-4 col-md-3">
+				    <div class="thumbnail">
+				      <h:graphicImage
+							sclass="thumbnail" name="facturas.png" library="gfx" width="122" />
+				      <div class="caption">
+				        <h3>Facturación Manual</h3>
+				        <p>Se ingresa el concepto de forma manual.</p>
+				        <p>
+				        
+				        <a class="btn btn-primary btn-sm"
+									href="/buffalo/pages/ventas/facturacion-manual.xhtml"
+									role="button"> 
+									<span class="glyphicon glyphicon-plus"/>
+									Ingresar
+						</a>
+						
+				        </p>
+				      </div>
+				    </div>
+				  </div>
+				  
+				  <div class="col-sm-4 col-md-3">
+				    <div class="thumbnail">
+				      <h:graphicImage
+							sclass="thumbnail" name="der.png" library="gfx" width="135" />
+				      <div class="caption">
+				        <h3>Facturación Nota Venta</h3>
+				        <p>Ventas a partir de Nota de Ventas.</p>
+				        <p>
+				        
+				        <a class="btn btn-primary btn-sm"
+									href="/buffalo/pages/ventas/facturacion.xhtml"
+									role="button"> 
+									<span class="glyphicon glyphicon-plus"/>
+									Ingresar
+								</a>
+				        </p>
+				      </div>
+				    </div>
+				  </div>
+				  
+				</div>
+
+
+			</div>
+
+
+
+		</h:form>
+		<script>
+
+	(function($){
+		  var $contenido = $(".contenido").hide(),
+		      $tab = $('#tab'),
+		      $tab_interna = $('#tab_interna'),
+		      $panell = $('#panell')
+		      $abre_tab = $('a#abre_tab');
+		     
+		  $abre_tab.on('click',function(e){ e.preventDefault();});
+		   
+		  $tab.toggle(
+		    function(){
+		      $tab
+		        .stop()
+		        .animate({
+		          right: "400px"
+		        },500, function(){
+		          $tab_interna.addClass('expandida');
+		        });
+		      $panell
+		        .stop()
+		        .animate({
+		          width: "400px",
+		          opacity: 0.8
+		        }, 500, function(){
+		          $contenido.fadeIn('slow');
+		        });
+		    },
+		    function(){
+		      $contenido.fadeOut('slow', function() {
+		        $tab
+		          .stop()
+		          .animate({
+		            right: "0"
+		          },500, function(){
+		            $tab_interna.removeClass();
+		          });
+		        $panell
+		          .stop()
+		          .animate({
+		            width: "0",
+		            opacity: 0.1
+		          }, 500);
+		      });
+		    }
+		  );
+		})(jQuery);
+</script>
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

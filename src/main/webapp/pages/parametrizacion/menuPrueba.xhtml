@@ -1,0 +1,157 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:a="http://richfaces.org/a4j"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext">
+
+	<h:outputStylesheet name="tree.css" library="css" />
+
+
+
+	<div class="panel panel-primary" style="background: #D8D8D8;">
+		<div class="panel-heading">
+			<h3 class="panel-title">
+				<strong>Menu</strong>
+			</h3>
+		</div>
+
+
+		<div class="acidjs-css3-treeview">
+			<ul>
+				<li><input type="checkbox" id="node-0" checked="checked" /><label><input
+						type="checkbox" /><span></span></label><label
+					style="color: orange; font-size: 12px; " for="node-0"> 
+									<i aria-hidden="true" class="glyphicon glyphicon-gift"></i>
+								Compra</label>
+					<ul>
+						<li><input type="checkbox" id="node-0-0" checked="checked" /><label><input
+								type="checkbox" /><span></span></label><label for="node-0-0"><i aria-hidden="true" class="glyphicon glyphicon-th-list"></i>Pedido</label>
+							<ul>
+								<li><input type="checkbox" id="node-0-0-0"
+									checked="checked" /><label><input type="checkbox" /><span></span></label><label
+									for="node-0-0-0"><i aria-hidden="true" class="glyphicon glyphicon-book"></i>My Documents</label>
+									<ul>
+										<li><input type="checkbox" id="node-0-0-0-0" /><label><input
+												type="checkbox" /><span></span></label><label for="node-0-0-0-0"><i aria-hidden="true" class="glyphicon glyphicon-download"></i>Downloads</label>
+										</li>
+										<li><input type="checkbox" id="node-0-0-0-1" /><label><input
+												type="checkbox" /><span></span></label><label for="node-0-0-0-1"><i aria-hidden="true" class="glyphicon glyphicon-folder-open"></i>Projects</label>
+										</li>
+										<li><input type="checkbox" id="node-0-0-0-0-0"
+											checked="checked" /><label><input type="checkbox" /><span></span></label><label
+											for="node-0-0-0-0-0"><i aria-hidden="true" class="glyphicon glyphicon-gift"></i>Otros</label>
+											<ul>
+												<li><input type="checkbox" id="node-0-0-0-0-0-1" /><label><input
+														type="checkbox" /><span></span></label><label
+													for="node-0-0-0-0-0-1">Downloads</label></li>
+												<li><input type="checkbox" id="node-0-0-0-0-0-2" /><label><input
+														type="checkbox" /><span></span></label><label
+													for="node-0-0-0-0-0-2">Projects</label></li>
+											</ul></li>
+									</ul></li>
+							</ul></li>
+						<li><input type="checkbox" id="node-0-1" /><label><input
+								type="checkbox" /><span></span></label><label for="node-0-1">Venta</label>
+							<ul>
+								<li><input type="checkbox" id="node-0-1-0" /><label><input
+										type="checkbox" /><span></span></label><label for="node-0-1-0">Traspaso</label></li>
+								<li><input type="checkbox" id="node-0-1-1" /><label><input
+										type="checkbox" /><span></span></label><label for="node-0-1-1">Proveedores</label></li>
+							</ul></li>
+						<li><input type="checkbox" id="node-0-2" /><label><input
+								type="checkbox" /><span></span></label><label for="node-0-2">Pictures</label>
+							<ul>
+								<li><input type="checkbox" id="node-0-2-0" /><label><input
+										type="checkbox" /><span></span></label><label for="node-0-2-0">My
+										Pictures</label></li>
+								<li><input type="checkbox" id="node-0-2-1" /><label><input
+										type="checkbox" /><span></span></label><label for="node-0-2-1">Public
+										Pictures</label></li>
+							</ul></li>
+						<li><input type="checkbox" id="node-0-3" checked="checked" /><label><input
+								type="checkbox" checked="checked" /><span></span></label><label
+							for="node-0-3"><a href="#">Video</a></label>
+							<ul>
+								<li><input type="checkbox" id="node-0-3-0" /><label><input
+										type="checkbox" checked="checked" /><span></span></label><label
+									for="node-0-3-0"><a href="#">My Videos</a></label></li>
+								<li><input type="checkbox" id="node-0-3-1" /><label><input
+										type="checkbox" checked="checked" /><span></span></label><label
+									for="node-0-3-1">Public Videos</label></li>
+							</ul></li>
+					</ul></li>
+					
+					<li><input type="checkbox" id="node-1" checked="checked" /><label><input
+						type="checkbox" /><span></span></label><label
+					style="color: orange; " for="node-1">Venta</label>
+						<ul>
+								<li><input type="checkbox" id="node-1-0"
+									checked="checked" /><label><input type="checkbox" /><span></span></label><label
+									for="node-1-0"><i aria-hidden="true" class="glyphicon glyphicon-book"></i>Facturacion</label>
+									<ul>
+										<li><input type="checkbox" id="node-1-0-0" /><label><input
+												type="checkbox" /><span></span></label><label for="node-1-0-0"><i aria-hidden="true" class="glyphicon glyphicon-download"></i>Downloads</label>
+										</li>
+										<li><input type="checkbox" id="node-1-0-1" /><label><input
+												type="checkbox" /><span></span></label><label for="node-1-0-1"><i aria-hidden="true" class="glyphicon glyphicon-folder-open"></i>Projects</label>
+										</li>
+										<li><input type="checkbox" id="node-1-0-2"
+											checked="checked" /><label><input type="checkbox" /><span></span></label><label
+											for="node-1-0-2"><i aria-hidden="true" class="glyphicon glyphicon-gift"></i>Otros</label>
+											<ul>
+												<li><input type="checkbox" id="node-1-0-2-0" /><label><input
+														type="checkbox" /><span></span></label><label
+													for="node-1-0-2-0">Downloads</label></li>
+												<li><input type="checkbox" id="node-1-0-2-1" /><label><input
+														type="checkbox" /><span></span></label><label
+													for="node-1-0-2-1">Projects</label></li>
+											</ul>
+											</li>
+									</ul></li>
+									<li><input type="checkbox" id="node-1-2"
+									checked="checked" /><label><input type="checkbox" /><span></span></label><label
+									for="node-1-2"><i aria-hidden="true" class="glyphicon glyphicon-book"></i>Cuentas/Cobrar</label>
+									</li>
+							</ul>
+							</li>
+					
+					
+					<li><input type="checkbox" id="node-2" checked="checked" /><label><input
+						type="checkbox" /><span></span></label><label
+					style="color: orange; " for="node-2">Inventario</label>
+					</li>
+					<li><input type="checkbox" id="node-3" checked="checked" /><label><input
+						type="checkbox" /><span></span></label><label
+					style="color: orange; " for="node-3">Produccion/Laboratorio</label>
+					</li>
+					<li><input type="checkbox" id="node-4" checked="checked" /><label><input
+						type="checkbox" /><span></span></label><label
+					style="color: orange; " for="node-4">Contabilidad</label>
+					</li>
+					<li><input type="checkbox" id="node-5" checked="checked" /><label><input
+						type="checkbox" /><span></span></label><label
+					style="color: orange; " for="node-5">Parametrizacion</label>
+					</li>
+			</ul>
+		</div>
+		<p></p>
+	</div>
+	<script>
+
+	$(function () {
+		$(".acidjs-css3-treeview").delegate("label input:checkbox", "change", function() {
+		    var
+		        checkbox = $(this),
+		        nestedList = checkbox.parent().next().next(),
+		        selectNestedListCheckbox = nestedList.find("label:not([for]) input:checkbox");
+		 
+		    if(checkbox.is(":checked")) {
+		        return selectNestedListCheckbox.prop("checked", true);
+		    }
+		    selectNestedListCheckbox.prop("checked", false);
+		});
+	});
+</script>
+</ui:composition>

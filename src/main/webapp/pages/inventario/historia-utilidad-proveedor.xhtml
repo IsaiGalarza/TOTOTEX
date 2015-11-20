@@ -1,0 +1,257 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateParametrizacions.xhtml">
+
+	<ui:define name="head">
+		<title>:: Personal Medico ::</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li>
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li><a href="/buffalo/"> Inicio </a></li>
+					<li><a href="/buffalo/pages/parametrizacion/home.xhtml">Parametrizacion</a></li>
+					<li class="active" style="color: orange;"><a
+						href="/buffalo/pages/inventario/historia-utilidad-proveedor.xhtml">Historias
+							de Utilidad de Proveedor</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+	<ui:define name="menu">
+		<h:form>
+			<ui:include src="/pages/parametrizacion/menuTemp.xhtml" />
+		</h:form>
+	</ui:define>
+	<ui:define name="content">
+		<h:form id="formRegistroMedico" styleClass="form-horizontal">
+
+
+
+			<div class="row">
+
+				<div class="col-sm-6 col-md-3" align="left"
+					style="padding: 0px 0px 0px 0px;">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								<strong>#{margenUtilidadController.tituloPanel}</strong>
+							</h3>
+						</div>
+						<div class="panel-body">
+							<h:panelGrid columns="3">
+
+								<h:outputLabel value="Proveedor" for="proveedorID" />
+								<h:selectOneMenu id="proveedorID"
+									value="#{margenUtilidadController.newHistoria.proveedor.id}"
+									styleClass="form-control" effect="fade" required="true"
+									requiredMessage="Requerido.">
+									<f:selectItems
+										value="#{margenUtilidadController.listProveedor}" var="_pro"
+										itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+									<p:ajax event="change" />
+								</h:selectOneMenu>
+								<p:message for="proveedorID" />
+
+								<h:outputLabel for="minID" value="Utilidad_Minimo" />
+								<p:inputText id="minID"
+									value="#{margenUtilidadController.newHistoria.utilidadMin}"
+									styleClass="form-control" required="false"
+									requiredMessage="Email Requerido.">
+
+								</p:inputText>
+								<p:message for="minID" errorClass="invalid" />
+
+								<h:outputLabel for="maxID" value="Utilidad_Maximo" />
+								<p:inputText id="maxID"
+									value="#{margenUtilidadController.newHistoria.utilidadMax}"
+									styleClass="form-control" required="false"
+									requiredMessage="Email Requerido." />
+								<p:message for="maxID" errorClass="invalid" />
+
+								<h:outputLabel for="actualID" value="Utilidad_Actual" />
+								<p:inputText id="actualID"
+									value="#{margenUtilidadController.newHistoria.utilidadActual}"
+									styleClass="form-control" required="false"
+									requiredMessage="Email Requerido." />
+								<p:message for="actualID" errorClass="invalid" />
+
+								<h:outputLabel value="Estado" for="estadoID" />
+								<h:selectOneMenu id="estadoID"
+									value="#{margenUtilidadController.newHistoria.estado}"
+									styleClass="form-control" required="true"
+									requiredMessage="Estado Requerido.">
+									<f:selectItem itemValue="AC" itemLabel="Activo" />
+									<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+									<p:ajax event="change" update="estadoID" />
+								</h:selectOneMenu>
+								<p:message for="estadoID" />
+
+								<h:outputLabel value="Fecha_Registro" for="fechaRegistroID" />
+								<p:calendar id="fechaRegistroID" showOn="button"
+									value="#{margenUtilidadController.newHistoria.fechaRegistro}"
+									datePattern="dd/MM/yyyy" disabled="true" required="true"
+									requiredMessage="Fecha Registro Requerido." />
+								<p:message for="fechaRegistroID" />
+
+								<h:outputLabel value="Registro" for="usuarioRegistroID" />
+								<p:inputText id="usuarioRegistroID" styleClass="form-control"
+									value="#{margenUtilidadController.newHistoria.usuarioRegistro}"
+									disabled="true" required="true"
+									requiredMessage="Usuario Registro Requerido." />
+								<p:message for="usuarioRegistroID" />
+
+							</h:panelGrid>
+
+
+						</div>
+					</div>
+					<div class="btn-group btn-group-md" style="width: 100%;">
+
+						<p:commandButton
+							rendered="#{margenUtilidadController.modificar=='true'}"
+							icon="ui-icon-minus"
+							action="#{margenUtilidadController.initNewHistoria()}"
+							style="width: 8em;" update=":formRegistroMedico"
+							styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+						<p:commandButton
+							rendered="#{margenUtilidadController.modificar=='false'}"
+							icon="ui-icon-disk"
+							action="#{margenUtilidadController.registrarMedico()}"
+							style="width: 8em;" update=":formRegistroMedico"
+							styleClass="btn btn-primary" value="Guardar" type="submit" />
+
+						<p:commandButton
+							rendered="#{margenUtilidadController.modificar=='true'}"
+							icon="ui-icon-refresh"
+							action="#{margenUtilidadController.modificarMedico()}"
+							style="width: 8em;" update=":formRegistroMedico"
+							styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+						<p:commandButton
+							rendered="#{margenUtilidadController.modificar=='true'}"
+							icon="ui-icon-circle-close"
+							action="#{margenUtilidadController.eliminarMedico()}"
+							style="width: 8em;" update=":formRegistroMedico"
+							styleClass="btn btn-danger" value="Borrar" type="submit" />
+
+					</div>
+				</div>
+
+				<div class="col-sm-6 col-md-9" align="left"
+					style="padding: 0px 0px 0px 0px;">
+					<div id="newUserMessages" class="update" />
+
+					<h:panelGroup rendered="#{empty margenUtilidad}">
+						<em>No se encontraron Medicos Registrados.</em>
+					</h:panelGroup>
+
+					<div class="panel panel-default">
+						<!-- Default panel contents -->
+						<div class="panel-heading">
+							<center>
+								<strong>LISTA MARGEN DE UTILIDAD</strong>
+							</center>
+						</div>
+
+						<!-- Table -->
+						<div class="table-responsive">
+
+							<p:dataTable
+								styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+								selection="#{margenUtilidadController.selectedMedico}"
+								selectionMode="single" rowKey="#{_medico.id}"
+								paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+								rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true"
+								rows="10" id="medicosTable" var="_medico"
+								value="#{margenUtilidad}" rendered="#{not empty margenUtilidad}">
+
+								<p:ajax event="rowSelect" update=":formRegistroMedico"
+									listener="#{margenUtilidadController.onRowSelectMedicoClick}" />
+
+
+								<p:column id="medicoNombre">
+									<f:facet name="header">ID</f:facet>
+		                      #{_medico.id}
+		                   </p:column>
+								<p:column id="direccionMedico"
+									filterBy="#{_medico.proveedor.nombre}"
+									filterMatchMode="contains">
+									<f:facet name="header">Proveedor</f:facet>
+	                      #{_medico.proveedor.nombre}
+	                   </p:column>
+								<p:column>
+									<f:facet name="header" filterBy="#{_medico.utilidadMin}"
+										filterMatchMode="contains">U. Minimo</f:facet>
+		                      #{_medico.utilidadMin}
+		                   </p:column>
+								<p:column>
+									<f:facet name="header" filterBy="#{_medico.utilidadMax}"
+										filterMatchMode="contains">U. Maximo</f:facet>
+		                      #{_medico.utilidadMax}
+		                   </p:column>
+								<p:column>
+									<f:facet name="header" filterBy="#{_medico.utilidadActual}"
+										filterMatchMode="contains">U. Actual</f:facet>
+		                      #{_medico.utilidadActual}
+		                   </p:column>
+
+								<p:column headerText="Fecha Registro">
+									<h:outputText value="#{_medico.fechaRegistro}">
+										<f:convertDateTime pattern="dd/MM/yyyy" />
+									</h:outputText>
+								</p:column>
+
+								<p:column headerText="Usuario Registro">
+									<h:outputText value="#{_medico.usuarioRegistro}" />
+								</p:column>
+
+								<p:column headerText="Estado">
+									<span class="label label-success"><h:outputText
+											rendered="#{_medico.estado=='AC'}" value="Activo" /></span>
+									<span class="label label-danger"><h:outputText
+											rendered="#{_medico.estado=='IN'}" value="Inactivo" /></span>
+								</p:column>
+
+							</p:dataTable>
+
+
+						</div>
+					</div>
+				</div>
+
+			</div>
+
+
+
+
+
+
+
+
+
+
+
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

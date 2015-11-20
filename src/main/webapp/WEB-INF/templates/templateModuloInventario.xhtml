@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:p="http://primefaces.org/ui"
+    >
+<h:head>
+    <ui:insert name="head">
+        [Main Title of Web Page]
+    </ui:insert>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta http-equiv="x-ua-compatible" content="IE=9" />
+		<meta http-equiv="x-ua-compatible" content="IE=8" />
+		<meta http-equiv="x-ua-compatible" content="IE=7" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<h:outputStylesheet name="screen-template.css" library="css" />
+    <!-- bootstrap 3.0.2 -->
+        <!-- Custom styles for this template -->
+		<link rel="stylesheet" type="text/css" href="/buffalo/resources/bootstrap/3.2.0/css/bootstrap.min.css" />
+		
+        <link href="#{request.contextPath}/resources/theme-director/css/font-awesome.min.css" rel="stylesheet" type="text/css" />
+        <!-- Ionicons -->
+        <link href="#{request.contextPath}/resources/theme-director/css/ionicons.min.css" rel="stylesheet" type="text/css" />
+        <!-- Theme style -->
+        <link href="#{request.contextPath}/resources/theme-director/css/style.css" rel="stylesheet" type="text/css" />  
+        
+              
+         <!-- ICONOS -->
+		<link rel="stylesheet"
+		href="/buffalo/resources/LigatureSymbols/styleicons.css"
+		type="text/css" charset="utf-8" />
+		
+		<link rel="stylesheet" type="text/css" href="/buffalo/resources/css/default.css" />
+		<link rel="stylesheet" type="text/css" href="/buffalo/resources/css/component.css" />
+		<!-- Theme primefaces -->
+        <link href="#{request.contextPath}/resources/primefaces-bootstrap/theme.css" rel="stylesheet" type="text/css" />
+</h:head>
+<body class="skin-black">
+        <p:growl id="growl" showDetail="true" sticky="false"  />
+        <header class="header"> 
+            <a href="/buffalo/" class="logo">
+                <span class="icon"
+				style="color: orange;"> <i aria-hidden="true"
+					class="icon-home"></i>
+				</span>
+                <strong><h:outputText value="BUFFALO" style="color: orange;" /></strong>
+            </a>
+            <!-- Header Navbar: style can be found in header.less -->
+            <nav class="navbar navbar-static-top" role="navigation">
+                <!-- Sidebar toggle button-->
+                <a href="#" class="navbar-btn sidebar-toggle" data-toggle="offcanvas" role="button">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </a>
+                <a href="#" type="button" class="navbar-toggle collapsed" role="button"
+					data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+					<span class="sr-only">Toggle navigation</span>
+					<span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+				</a>
+                <div class="navbar-left collapse navbar-collapse"
+					id="bs-example-navbar-collapse-1">
+                    <ul class="nav navbar-nav">
+						<li><a href="/buffalo/pages/ventas/home.xhtml"> 
+						<strong>
+				          	<span class="glyphicon glyphicon-shopping-cart" />  
+				          	#{' '}Ventas
+			          	</strong>
+						</a></li>
+						<li><a href="/buffalo/pages/compra/home.xhtml">
+							<strong>
+					          	<span class="glyphicon glyphicon-usd" /> 
+					          	#{' '}Compras
+				          	</strong>
+						</a></li>
+						<li class="active"><a href="/buffalo/pages/inventario/home.xhtml"> 
+							<strong>
+					          	<span class="glyphicon glyphicon-sort-by-alphabet" /> 
+					          	#{' '}Inventario
+				          	</strong>
+						</a></li>
+						
+						<li><a href="/buffalo/pages/produccion/produccion-home.xhtml"> 
+							<strong>
+					          	<span class="glyphicon glyphicon-calendar" /> 
+					          	#{' '}Produccion
+				          	</strong>
+						</a></li>
+						
+						<li><a href="/buffalo/pages/parametrizacion/home.xhtml"> 
+							<strong>
+				          		<span class="glyphicon glyphicon-cog" /> 
+				          		#{' '}Config. del Sistema
+				          	</strong>	
+						</a></li>
+						
+		
+					</ul>
+                </div>
+                <div class="navbar-right">
+                    <ul class="nav navbar-nav">
+                        <!-- Messages: style can be found in dropdown.less-->
+						<li><a href="/buffalo/profile.jsf"><span class="glyphicon glyphicon-user"></span> #{'  '}
+				        <h:outputText value="#{facturacionController.usuarioSession.name}" style="color: orange;"/>
+				        </a></li>
+				        <li><a href="/buffalo/logoutServlet"><span class="glyphicon glyphicon-log-in"></span> #{'  '}
+				        	<h:outputText value="Salir" style="color: #FFFFFF;"/>
+				        </a></li>
+                    </ul>
+                </div>
+            </nav>
+        </header>
+
+   <div class="wrapper row-offcanvas row-offcanvas-left">
+       <!-- Left side column. contains the logo and sidebar -->
+       <aside class="left-side sidebar-offcanvas">
+           <!-- sidebar: style can be found in sidebar.less -->
+           <section class="sidebar">
+               <!-- Sidebar user panel -->
+               <div class="user-panel">
+                   <div class="pull-left image">
+                  		 <a href="/buffalo/profile.jsf">
+                       		<p:graphicImage  value="#{loginController.imageUserSession}" styleClass="img-circle"
+                       		width="70px" height="70px" alt="User Image"/>
+                       	</a>
+                   </div>
+                   <div class="pull-left info">
+                       <p>#{facturacionController.usuarioSession.name}</p>
+
+<!--                        <a href="#"><i class="fa fa-circle text-success"></i> Administrador</a> -->
+                   </div>
+               </div>
+				<h4>
+					<strong> <span class="glyphicon glyphicon-sort-by-alphabet" style="color: orange;" />
+						<h:outputText value="Modulo Inventario" style="color: orange;" />
+					</strong>
+				</h4>
+               <ul id="menu-container" class="sidebar-menu">
+					  <li><a href="/buffalo/pages/inventario/stock-productos.xhtml" name="Stock de Productos" class="fuente-link-sidebar">
+			          <span class="glyphicon glyphicon-save"/> 
+			          	Stock de Productos
+			          	</a>
+			          </li>
+			          <li><a href="/buffalo/pages/inventario/gestion-productos.xhtml" name="Gestion de Productos" class="fuente-link-sidebar">
+			          <span class="glyphicon glyphicon-plus"/> 
+			          	Gestión Productos
+			          	</a>
+			          </li>
+			          <li><a href="/buffalo/pages/inventario/cardex-producto.xhtml" name="Cardex de Productos" class="fuente-link-sidebar">
+			          	<span class="glyphicon glyphicon-folder-open"/>
+			          	Kardex Productos
+			          	</a>
+			          </li>
+			          <li><a href="/buffalo/pages/inventario/categoria-productos-home.xhtml" name="Categoria de Productos" class="fuente-link-sidebar" >
+			          	<span class="glyphicon glyphicon-fullscreen"/> 
+			          	Categoria Productos
+			          	</a>
+			          </li>
+			          
+			           <li><a href="/buffalo/pages/inventario/register-bajas.xhtml" name="Gestion de Bajas" class="fuente-link-sidebar">
+			          	<span class="glyphicon glyphicon-share"/> 
+			          	Gestion de Salidas
+			          	</a>
+			          </li>
+			          <li><a href="/buffalo/pages/inventario/gestion-almacen.xhtml" name="Gestión de Almacenes" class="fuente-link-sidebar">
+			          	<span class="glyphicon glyphicon-home"/>
+			          	Gestion Almacenes
+			          	</a>
+			          </li>
+
+               </ul>
+           </section>
+           <!-- /.sidebar -->
+       </aside>
+   <!-- Right side column. Contains the navbar and content of the page -->
+       <aside class="right-side">
+			<!-- Main content -->
+           <section class="content">
+           	<div id="header">
+				<ui:insert name="header">
+               		[Template header will be inserted here]
+      			 	</ui:insert>
+			</div>
+            <div class="row">
+	            <ui:insert name="content">
+	                    [Template content will be inserted here]
+	         	</ui:insert>
+	         </div>
+           </section><!-- /.content -->
+           <div class="footer-main">
+               COPYRIGHT © 2015 - BUFFALO.
+               	<div class="entry">
+					<p:clock pattern="MM/dd/yyyy hh:mm:ss" mode="server" />
+				</div>
+           </div>
+       </aside><!-- /.right-side -->
+   </div><!-- ./wrapper -->
+		<!-- SELECCION MENU SIDEBAR -->
+		<script type="text/javascript">
+
+			$(document).ready(function () {
+				var location = window.location;
+				var found = false;
+				var titleDocument = document.title;
+				$("#menu-container a").each(function(){
+					var href = $(this).attr("name");
+					var titleSeam = href.substring(12);
+					if(titleDocument==href){
+						$(this).parent().addClass("active");
+						found = true;
+					}
+				});
+				
+				if(found==false){
+				}
+			});
+		
+		</script>
+   <!-- Bootstrap -->
+        <script src="#{request.contextPath}/resources/theme-director/js/bootstrap.min.js" type="text/javascript"></script>
+	 	<!-- Director App --> 
+		<script src="#{request.contextPath}/resources/theme-director/js/Director/app.js" type="text/javascript"></script>
+</body>
+</html>

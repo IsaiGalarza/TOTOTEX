@@ -1,0 +1,164 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateInventario.xhtml">
+
+	<ui:define name="head">
+		<title>:: Registrar Central de Costos ::</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="panel-body" style="padding: 0px 0px 0px 0px;">
+			<div class="row">
+				<div class="col-sm-6 col-md-3" align="left">
+					<div class="thumbnail">
+						<h:graphicImage sclass="thumbnail" name="logo.jpg" library="gfx"
+							width="60px;" height="50px;" />
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-3">
+					<h2>
+						<span class="label label-default">Registrar Central de
+							Costo</span>
+					</h2>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+	
+		<h:form id="formCentralCostos" styleClass="form-horizontal">
+
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h3 class="panel-title">
+						<strong>Registrar Central de Costo</strong>
+					</h3>
+				</div>
+
+					<div class="row">
+				  	<div class="col-sm-4 col-md-3" align="left" style="padding: 0px 0px 0px 0px;">
+							<h:panelGrid columns="3">
+
+								<h:outputLabel value="Proveedor" for="proveedorID" />
+								<p:inputText id="proveedorID" styleClass="form-control"
+									disabled="true"
+									value="#{centralCostosController.selectedProveedor.nombre}"
+									required="true" requiredMessage="Requerido." size="40" />
+								<p:message for="proveedorID" />
+
+								<h:outputLabel value="Pais" for="paisID" />
+								<p:inputText id="paisID" styleClass="form-control"
+									disabled="true"
+									value="#{centralCostosController.selectedProveedor.pais}"
+									required="true" requiredMessage="Requerido." size="40" />
+								<p:message for="paisID" />
+
+								<h:outputLabel value="Observacion" for="observacionID" />
+								<p:inputText id="observacionID" styleClass="form-control"
+									disabled="true"
+									value="#{centralCostosController.selectedProveedor.pais=='BOLIVIA'? 'ORIGEN NACIONAL' : 'ORIGEN EXTRANJERO'}"
+									required="true" requiredMessage="Requerido." size="40" />
+								<p:message for="observacionID" />
+
+							</h:panelGrid>
+						</div>
+						
+						<div class="col-sm-4 col-md-3" align="left" style="padding: 0px 0px 0px 0px;">
+						
+							<h:panelGrid columns="3">
+
+								<h:outputLabel value="(-)IVA" for="ivaID" rendered="#{centralCostosController.selectedProveedor.pais=='BOLIVIA'}"/>
+								<p:inputText id="ivaID" styleClass="form-control"
+									rendered="#{centralCostosController.selectedProveedor.pais=='BOLIVIA'}"
+									value="#{centralCostosController.newCentralDeCosto.cfIvaCredito}"
+									required="true" requiredMessage="Requerido." size="40" validatorMessage="Invalido.">
+									<f:convertNumber pattern="#,##0.00"/>
+									<p:ajax event="change" />
+								</p:inputText>
+								<p:message for="ivaID" rendered="#{centralCostosController.selectedProveedor.pais=='BOLIVIA'}"/>
+
+								<h:outputLabel value="(+)Pilotaje" for="pilotajeID" rendered="#{centralCostosController.selectedProveedor.pais!='BOLIVIA'}"/>
+								<p:inputText id="pilotajeID" styleClass="form-control"
+									rendered="#{centralCostosController.selectedProveedor.pais!='BOLIVIA'}"
+									value="#{centralCostosController.newCentralDeCosto.sfPilotaje}"
+									required="true" requiredMessage="Requerido." size="40" validatorMessage="Invalido.">
+									<f:convertNumber pattern="#,##0.00"/>
+									<p:ajax event="change" />
+								</p:inputText>
+								<p:message for="pilotajeID" rendered="#{centralCostosController.selectedProveedor.pais!='BOLIVIA'}"/>
+
+								<h:outputLabel value="(+)Pilotaje" for="comisionBancariaID" rendered="#{centralCostosController.selectedProveedor.pais!='BOLIVIA'}"/>
+								<p:inputText id="comisionBancariaID" styleClass="form-control"
+									rendered="#{centralCostosController.selectedProveedor.pais!='BOLIVIA'}"
+									value="#{centralCostosController.newCentralDeCosto.sfComisionBancaria}"
+									required="true" requiredMessage="Requerido." size="40" validatorMessage="Invalido.">
+									<f:convertNumber pattern="#,##0.00"/>
+									<p:ajax event="change" />
+								</p:inputText>
+								<p:message for="comisionBancariaID" rendered="#{centralCostosController.selectedProveedor.pais!='BOLIVIA'}"/>
+								
+								<h:outputLabel value="Rango_Utilidad" for="cfUtilidadID"  rendered="#{centralCostosController.selectedProveedor.pais=='BOLIVIA'}"/>
+								<p:inputText id="cfUtilidadID" styleClass="form-control"
+									rendered="#{centralCostosController.selectedProveedor.pais=='BOLIVIA'}"
+									value="#{centralCostosController.newCentralDeCosto.cfRangoUtilidad}"
+									required="true" requiredMessage="Requerido." size="40" validatorMessage="Invalido.">
+									<f:convertNumber pattern="#,##0.00"/>
+									<p:ajax event="change" />
+								</p:inputText>
+								<p:message for="cfUtilidadID" rendered="#{centralCostosController.selectedProveedor.pais=='BOLIVIA'}"/>
+								
+								
+								<h:outputLabel value="Rango_Utilidad" for="sfUtilidadID" rendered="#{centralCostosController.selectedProveedor.pais!='BOLIVIA'}"/>
+								<p:inputText id="sfUtilidadID" styleClass="form-control"
+									rendered="#{centralCostosController.selectedProveedor.pais!='BOLIVIA'}"
+									value="#{centralCostosController.newCentralDeCosto.sfRangoUtilidad}"
+									required="true" requiredMessage="Requerido." size="40" validatorMessage="Invalido.">
+									<f:convertNumber pattern="#,##0.00"/>
+									<p:ajax event="change" />
+								</p:inputText>
+								<p:message for="sfUtilidadID" rendered="#{centralCostosController.selectedProveedor.pais!='BOLIVIA'}"/>
+								
+							</h:panelGrid>
+						</div>
+						
+					</div>
+				
+			</div>
+			
+			<div class="panel-footer">
+
+					<div class="btn-group btn-group-sm">
+
+						<p:commandButton
+							icon="ui-icon-minus"
+							action="#{centralCostosController.redirectPageCentralCosto()}"
+							style="width: 8em;" update=":formCentralCostos"
+							styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+						<p:commandButton
+							icon="ui-icon-disk"
+							action="#{centralCostosController.registrarCentralDeRiesgo()}"
+							style="width: 8em;" update=":formCentralCostos"
+							styleClass="btn btn-primary" value="Guardar" type="submit" />
+
+					</div>
+				
+				</div>
+				
+				
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

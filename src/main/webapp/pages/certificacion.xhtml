@@ -1,0 +1,114 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a="http://richfaces.org/a"
+    xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+    template="/WEB-INF/templates/templateParametrizacion.xhtml" >
+
+    <ui:define name="head">
+    	<title>:: Certificacion ::</title>
+    </ui:define>
+    
+    <ui:define name="header">
+		<h:outputStylesheet name="app.css" library="css"/>
+        <h:outputScript target="head" name="showMessage.js" library="js"/>
+
+        	<div class="row">
+				  <div class="col-sm-6 col-md-3" align="left" style="padding: 0px 0px 0px 0px;">
+				      <div class="thumbnail">
+				         <h:graphicImage sclass="thumbnail" name="logo.jpg" library="gfx" width="60px;" height="50px;"/>
+				      </div>
+				  </div>
+				  <div class="col-sm-6 col-md-3">
+				    	<h2><span class="label label-default">Certificación Codigo Control V7</span></h2>
+				  </div>
+		    </div>
+        
+   	</ui:define>
+    
+    <ui:define name="content">
+		<h:form id="formCertificacion"  styleClass="form-horizontal">
+			
+			 <h:panelGrid columns="4" width="70%">
+				<h:outputLabel for="llaveControlID" value="Llave_Dosificacion"/>
+		        <p:inputTextarea id="llaveControlID" value="#{certificacionController.llaveDosificacion}" cols="60" rows="4"
+		        	styleClass="form-control" required="true" requiredMessage="Llave Dosificacion Requerido.">
+		            
+		        </p:inputTextarea>
+		        <p:watermark value="Llave de Dosificacion" for="llaveControlID"/>
+		        <p:message for="llaveControlID" errorClass="invalid"/>
+		        
+		        <h:outputLabel for="nroAutorizacionID" value="Nro._Autorizacion"/>
+		        <p:inputText id="nroAutorizacionID" value="#{certificacionController.numeroAutorizacion}" size="40"
+		        	styleClass="form-control" required="true" requiredMessage="Nro. Autorizacion Requerido.">
+		            
+		        </p:inputText>
+		        <p:watermark value="Numero Autorizacion" for="nroAutorizacionID"/>
+		        <p:message for="nroAutorizacionID" errorClass="invalid"/>
+	    
+		        <h:outputLabel for="nroFacturaID" value="Nro._Factura"/>
+		        <p:inputText id="nroFacturaID" value="#{certificacionController.numeroFactura}" size="40"
+		        	styleClass="form-control" required="true" requiredMessage="Nro. Factura Requerido.">
+		        	
+		        </p:inputText>
+		        <p:watermark value="Numero Factura" for="nroFacturaID"/>
+		        <p:message for="nroFacturaID" errorClass="invalid"/>
+		
+		        <h:outputLabel for="nitciID" value="CI/NIT_Cliente" />
+		        <p:inputText id="nitciID" value="#{certificacionController.nitCI}" size="40"
+		        	styleClass="form-control" required="true" requiredMessage="CI/NIT Requerido.">
+		            
+		        </p:inputText>
+		        <p:watermark value="CI/NIT Cliente" for="nitciID"/>
+		        <p:message for="nitciID" errorClass="invalid"/>
+	        
+		        <h:outputLabel for="fechaTransaccionID" value="Fecha_Transacción" />
+		        <p:inputText id="fechaTransaccionID" value="#{certificacionController.fechaTransaccion}" size="40"
+		        	styleClass="form-control" required="true" requiredMessage="Fecha Transacción Requerido.">
+		            
+		        </p:inputText>
+		        <p:watermark value="Fecha Transacción" for="fechaTransaccionID"/>
+		        <p:message for="fechaTransaccionID" errorClass="invalid"/>
+				
+				<h:outputLabel for="montoID" value="Monto_Bs" />
+		        <p:inputText id="montoID" value="#{certificacionController.monto}" size="40"
+		        	styleClass="form-control" required="true" requiredMessage="Monto Bs Requerido.">
+		            
+		        </p:inputText>
+		        <p:watermark value="Monto Bs" for="montoID"/>
+		        <p:message for="montoID" errorClass="invalid"/>
+		        
+		        <h:outputLabel for="codigoControlID" value="Codigo_Control"/>
+		        <p:inputText id="codigoControlID" value="#{certificacionController.codigoControl}" readonly="true" size="40"
+		        	styleClass="form-control" >
+		        </p:inputText>
+		        <p:watermark value="Codigo Control Generado" for="codigoControlID"/>
+		        <p:message for="codigoControlID" errorClass="invalid"/>
+				
+			</h:panelGrid>	
+			
+		
+		    		<p:commandButton value="Limpiar Campos" 
+			        			styleClass="btn btn-danger"
+			        			icon="ui-icon-closethick" type="submit" 
+					      		update=":formCertificacion" action="#{certificacionController.limpiarCampos}" />
+		    			
+			        <p:commandButton value="Generar Codigo Control" 
+			        			styleClass="btn btn-primary"
+			        			icon="ui-icon-play" type="submit" 
+					      		update=":formCertificacion" action="#{certificacionController.generarCodigoControlV7}" />
+			
+			
+	       	
+		</h:form>
+		
+	</ui:define>
+    
+    <ui:define name="footer">
+  
+    </ui:define>
+    
+</ui:composition>

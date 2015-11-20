@@ -1,0 +1,546 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloParametrizacion.xhtml">
+
+	<ui:define name="head">
+		<title>Gestion de Sucursales</title>
+	</ui:define>
+
+	<ui:define name="header">
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+					<li class="fuente-link-sidebar"><a href="/buffalo/">
+							Inicio </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="/buffalo/pages/parametrizacion/home.xhtml"> Config. del
+							Sistema</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/administracion/register-sucursal.xhtml">Gestion
+							de Sucursales</a></li>
+				</ol>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="frm_acciones">
+			<div class="col-sm-12 col-md-12" align="left">
+				<div class="btn-group btn-group-sm" style="width: 100%;">
+					<p:commandButton
+						rendered="#{sucursalController.nuevoSucrusal}"
+						icon="ui-icon-minus"
+						action="#{sucursalController.accionesCancelarSucursal()}"
+						update=":formRegistroSucursal :frm_lista :frm_acciones"
+						styleClass="btn btn-default" value="Cancelar" type="submit" />
+	
+					<p:commandButton
+						rendered="#{!sucursalController.nuevoSucrusal}"
+						icon="ui-icon-disk"
+						action="#{sucursalController.accionNuvaSucursal()}"
+						 update=":formRegistroSucursal :frm_lista :frm_acciones :growl"
+						styleClass="btn btn-success" value="Nueva Sucursal" type="submit" />
+	
+					<p:commandButton
+						rendered="#{!sucursalController.nuevoSucrusal}"
+						icon="ui-icon-refresh"
+						action="#{sucursalController.accionModificarSucursal()}"
+						update=":formRegistroSucursal :frm_lista :frm_acciones :growl"
+						styleClass="btn btn-primary" value="Modificar" type="submit" />
+	
+					<p:commandButton
+						rendered="#{!sucursalController.nuevoSucrusal}"
+						icon="ui-icon-circle-close"
+						action="#{sucursalController.accionesEliminarSucursal()}"
+						 update=":formRegistroSucursal :frm_lista :frm_acciones :growl"
+						styleClass="btn btn-danger" value="Borrar" type="submit" />
+				</div>	
+			</div>
+		</h:form>
+		<h:form id="formRegistroSucursal" styleClass="form-horizontal" >
+			<ui:fragment rendered="#{sucursalController.nuevoSucrusal}" >
+				<div class="row">
+					<div class="col-sm-4 col-md-3" align="left">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<strong> <span class="glyphicon glyphicon-floppy-save" />
+										#{sucursalController.tituloPanel}
+									</strong>
+								</h3>
+							</div>
+							<div class="panel-body">
+	
+								<h:panelGrid columns="3">
+	
+									<h:outputLabel value="Numero Sucursal" for="numeroSucursalID" />
+									<p:inputText id="numeroSucursalID" type="number" value="#{sucursalController.newSucursal.numeroSucursal}"
+									required="true" requiredMessage="Nº Sucursal Requerido."></p:inputText>
+									<p:message for="numeroSucursalID" />
+	
+									<h:outputLabel value="Nombre Sucursal" for="nombreID" />
+									<p:inputText id="nombreID" styleClass="form-control"
+										value="#{sucursalController.newSucursal.nombre}"
+										required="true" requiredMessage="Nombre Requerido." />
+									<p:message for="nombreID" />
+	
+									<h:outputLabel value="Descripcion" for="descripcionID" />
+									<p:inputText id="descripcionID" styleClass="form-control"
+										value="#{sucursalController.newSucursal.descripcion}"
+										required="true" requiredMessage="Descripcion Requerido." />
+									<p:message for="descripcionID" />
+	
+									<h:outputLabel value="Ciudad" for="ciudadID" />
+									<h:selectOneMenu id="ciudadID"
+										value="#{sucursalController.ciudadID}"
+										styleClass="form-control" effect="fade" required="true"
+										requiredMessage="Requerido.">
+										<f:selectItems value="#{clienteController.listaCiudad}"
+											var="_pro" itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+										<p:ajax event="change" />
+									</h:selectOneMenu>
+									<p:message for="ciudadID" />
+	
+									<h:outputLabel value="Direccion" for="direccionID" />
+									<p:inputText id="direccionID"
+										value="#{sucursalController.newSucursal.direccion}"
+										styleClass="form-control" required="true"
+										requiredMessage="Direccion Requerido." />
+									<p:message for="direccionID" />
+	
+									<h:outputLabel value="Telefono" for="telefonoID" />
+									<p:inputText id="telefonoID"
+										value="#{sucursalController.newSucursal.telefono}"
+										styleClass="form-control" required="true"
+										requiredMessage="Telefono Requerido." />
+									<p:message for="telefonoID" />
+	
+									<h:outputLabel value="Estado" for="estadoID" />
+									<h:selectOneMenu id="estadoID"
+										value="#{sucursalController.newSucursal.estado}"
+										styleClass="form-control" required="true"
+										requiredMessage="Estado Requerido.">
+										<f:selectItem itemValue="AC" itemLabel="Activo" />
+										<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+										<p:ajax event="change" update="estadoID" />
+									</h:selectOneMenu>
+									<p:message for="estadoID" />
+	
+									<h:outputLabel value="Fecha" for="fechaRegistroID" />
+									<p:calendar id="fechaRegistroID" showOn="button"
+										value="#{sucursalController.newSucursal.fechaRegistro}"
+										datePattern="dd/MM/yyyy" disabled="true" required="true"
+										requiredMessage="Fecha Registro Requerido." />
+									<p:message for="fechaRegistroID" />
+	
+									<h:outputLabel value="Registro" for="usuarioRegistroID" />
+									<p:inputText id="usuarioRegistroID"
+										value="#{sucursalController.newSucursal.usuarioRegistro.login}"
+										styleClass="form-control" required="true"
+										requiredMessage="Usuario Registro Requerido" disabled="true" />
+									<p:message for="usuarioRegistroID" />
+	
+								</h:panelGrid>
+							</div>
+							<div class="panel-footer" style="padding: 1px 1px 1px 1px;">
+								<div class="btn-group btn-group-sm" style="width: 100%;">
+	
+	
+									<p:commandButton
+										rendered="#{sucursalController.modificar=='true'}"
+										icon="ui-icon-minus" immediate="true"
+										action="#{sucursalController.limpiarCampos()}"
+										style="width: 49%;" update=":formRegistroSucursal"
+										styleClass="btn btn-default" value="Cancelar" type="submit" />
+	
+									<p:commandButton
+										rendered="#{sucursalController.modificar=='false'}"
+										icon="ui-icon-disk"
+										action="#{sucursalController.registrarSucursal()}"
+										style="width: 100%;" update=":formRegistroSucursal :frm_lista :frm_acciones :growl"
+										styleClass="btn btn-success" value="Registrar" type="submit" />
+	
+									<p:commandButton
+										rendered="#{sucursalController.modificar=='true'}"
+										icon="ui-icon-refresh"
+										action="#{sucursalController.modificarSucursal()}"
+										style="width: 50%;" update=":formRegistroSucursal :frm_lista :frm_acciones :growl" 
+										styleClass="btn btn-primary" value="Modificar" type="submit" />
+	
+								</div>
+							</div>
+	
+						</div>
+	
+					</div>
+	
+	
+					<div class="col-sm-8 col-md-9" align="left">
+						<div class="panel panel-default">
+							<!-- Default panel contents -->
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<strong> <span class="glyphicon glyphicon-th-list" />
+										LISTA DE DOSIFICACIONES
+									</strong>	
+								</h3>
+								
+							</div>
+	
+							<div class="panel-body">
+								<p:dataTable id="id_table_dosificacion" var="row" value="#{sucursalController.listaDosificacion}"
+										emptyMessage="No existen registros" 
+										rowKey="#{row}"
+										rows="10" 
+										rowsPerPageTemplate="5,10,15" 
+										paginator="true"
+										paginatorPosition="top"
+										paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+										selectionMode="single" 
+										selection="#{sucursalController.nuevaDosificacion}"
+										widgetVar="wv_table">
+										
+										<p:ajax event="rowSelect" update="formRegistroSucursal"
+											listener="#{sucursalController.onRowSelectDosificacionlClick}" immediate="true" />
+										
+										<p:column headerText="Nº Autorizacion"  >
+					                      #{row.numeroAutorizacion}
+					                   </p:column>
+										<p:column headerText="Nº Tramite" >
+					                      #{row.numeroTramite}
+					                   </p:column>
+										<p:column headerText="Cantidad" >
+											<center>
+												<span class="label label-default">#{row.cantidadDosificacion}</span>
+											</center>
+										</p:column>
+										<p:column headerText="Nº Inicial" >
+											<center>
+												<span class="label label-success">#{row.numeroInicial}</span>
+											</center>
+										</p:column>
+										<p:column headerText="Nº Actual" >
+											<center>
+												<span class="label label-warning">#{row.numeroSecuencia}</span>
+											</center>
+										</p:column>
+										<p:column headerText="Limite Emision" >
+											<h:outputText value="#{row.fechaLimiteEmision}">
+												<f:convertDateTime pattern="dd/MM/yyyy" />
+											</h:outputText>
+										</p:column>
+										<p:column headerText="Activo" >
+											<center>
+												<span class="label label-success">#{row.activo ? 'ACTIVADO': 'DESACTIVADO'}</span>
+											</center>
+										</p:column>
+										<f:facet name="footer">
+					                		#{sucursalController.listaDosificacion.size()} Registros en Total
+					               		</f:facet>
+								</p:dataTable>
+							</div>
+							<div class="panel-footer" style="padding: 1px 1px 1px 1px;">
+								<div class="btn-group btn-group-sm" style="width: 100%;">
+								
+									<p:commandButton
+										icon="ui-icon-minus" immediate="true"
+										styleClass="btn btn-default" value="Cancelar" type="submit" 
+										rendered="#{sucursalController.nuevaDosificacion.llaveControl!=null}"
+										update="formRegistroSucursal" actionListener="#{sucursalController.cancelarAccionDosificacion()}"
+										/>
+										
+									<p:commandButton
+										icon="ui-icon-minus" update="growl" immediate="true"
+										styleClass="btn btn-success" value="Activar" type="submit" 
+										actionListener="#{sucursalController.validarActivacionDosificacion()}"
+										rendered="#{sucursalController.nuevaDosificacion.llaveControl!=null}"
+										/>
+										
+								   
+	
+									<p:commandButton
+										icon="ui-icon-disk" oncomplete="PF('wv_dosificacion').show()"
+										styleClass="btn btn-success" value="Agregar" type="submit" 
+										actionListener="#{sucursalController.limpiarDosificacion()}"
+										update="growl dlgDosificacion" immediate="true"
+										rendered="#{sucursalController.nuevaDosificacion.llaveControl==null}"/>
+	
+									<p:commandButton
+										icon="ui-icon-refresh" update="growl" immediate="true"
+										styleClass="btn btn-primary" value="Modificar" type="submit" 
+										actionListener="#{sucursalController.validarModificarDosificacion()}"
+										rendered="#{sucursalController.nuevaDosificacion.llaveControl!=null}"/>
+							
+									<p:commandButton
+										icon="ui-icon-circle-close" update="growl" immediate="true"
+										styleClass="btn btn-danger" value="Eliminar" type="submit" 
+										actionListener="#{sucursalController.validarEliminarDosificacion()}"
+										rendered="#{sucursalController.nuevaDosificacion.llaveControl!=null}">
+									</p:commandButton>
+	
+								</div>
+							</div>
+						</div>
+	
+					</div>
+	
+	
+				</div>
+	
+	        </ui:fragment>
+		</h:form>
+		
+		<h:form id="frm_lista">
+			<ui:fragment rendered="#{!sucursalController.nuevoSucrusal}" >
+				<div class="row">
+					<div class="col-sm-12 col-md-12" align="left">
+						<div class="panel panel-default">
+							<!-- Default panel contents -->
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<strong> <span class="glyphicon glyphicon-th-list" />
+										LISTA DE SUCURSALES
+									</strong>
+								</h3>
+							</div>
+			
+							<!-- Table -->
+							<div class="table-responsive">
+			
+								<p:dataTable
+									styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+									selection="#{sucursalController.selectedSucursal}"
+									selectionMode="single" rowKey="#{_sucursal.id}" id="sucursalTable"
+									var="_sucursal" value="#{sucursales}" emptyMessage="No se encontraron registros.">
+			
+									<p:ajax event="rowSelect" update=":frm_acciones"
+										listener="#{sucursalController.onRowSelectSucursalClick}" />
+			
+									<p:column headerText="ID" filterBy="#{_sucursal.id}"
+										filterStyle="width: 100%;" filterMatchMode="contains">
+										<center>#{_sucursal.id}</center>
+									</p:column>
+									<p:column headerText="Sucursal" filterBy="#{_sucursal.nombre}"
+										filterStyle="width: 100%;" filterMatchMode="contains">
+				                      #{_sucursal.nombre}
+				                   </p:column>
+									<p:column headerText="Ciudad" filterBy="#{_sucursal.ciudad.nombre}"
+										filterStyle="width: 100%;" filterMatchMode="contains">
+				                      #{_sucursal.ciudad.nombre}
+				                   </p:column>
+									<p:column headerText="NIT" filterBy="#{_sucursal.nit}"
+										filterStyle="width: 100%;" filterMatchMode="contains">
+				                      #{_sucursal.nit}
+				                   </p:column>
+									
+									<p:column headerText="Estado" filterBy="#{_sucursal.estado}"
+										filterStyle="width: 100%;" filterMatchMode="contains">
+										<span class="label label-success"><h:outputText
+												rendered="#{_sucursal.estado=='AC'}" value="Activo" /></span>
+										<span class="label label-danger"><h:outputText
+												rendered="#{_sucursal.estado=='IN'}" value="Inactivo" /></span>
+									</p:column>
+									<p:column headerText="Fecha" filterBy="#{_sucursal.fechaRegistro}"
+										filterStyle="width: 100%;" filterMatchMode="contains">
+										<h:outputText value="#{_sucursal.fechaRegistro}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</p:column>
+			
+								</p:dataTable>
+			
+							</div>
+						</div>
+					</div>
+				</div>
+			</ui:fragment>
+		</h:form>
+		
+		<p:dialog widgetVar="wv_dosificacion" modal="true" closable="true" header="REGISTRAR DOSIFICACION"
+		 width="70%">
+			<h:form id="dlgDosificacion">
+			   <p:panelGrid id="pntd"   columns="4" cellspacing="0" columnClasses="ui-grid-col-2 ,ui-grid-col-4 Wid100,ui-grid-col-2 ,ui-grid-col-4 Wid100" 
+							    						layout="grid" styleClass="ui-panelgrid-blank" >
+				    <f:facet name="header">
+				       <strong> <span class="glyphicon glyphicon-paperclip" />
+									DATOS DE DOSIFICACION - FACTURACION
+						</strong>
+				    </f:facet>  
+				    
+			        <h:outputLabel value="Tipo De Dosificacion" for="tipoID" />
+					<h:selectOneMenu id="tipoID"
+						value="#{sucursalController.nuevaDosificacion.tipoDosificacion}"
+						styleClass="form-control" required="true"
+						requiredMessage="Requerido.">
+						<p:ajax event="change" update="dlgDosificacion:pntd" immediate="true"></p:ajax>
+						<f:selectItem itemValue="CANTIDAD" itemLabel="CANTIDAD" />
+						<f:selectItem itemValue="TIEMPO" itemLabel="TIEMPO" />
+					</h:selectOneMenu>
+					
+					<h:outputLabel value="Cantidad" rendered="#{sucursalController.nuevaDosificacion.tipoDosificacion=='CANTIDAD'}"
+						for="cantidadDocificacionID" id="c"/>
+					<h:outputLabel value="Nº Dias" rendered="#{sucursalController.nuevaDosificacion.tipoDosificacion=='TIEMPO'}"
+					for="cantidadDocificacionID" id="d"/>
+					<p:spinner id="cantidadDocificacionID"
+						value="#{sucursalController.nuevaDosificacion.cantidadDosificacion}"
+						required="true" requiredMessage="Cantidad es Requerido." />
+				</p:panelGrid>	
+					
+				<p:panelGrid   columns="4" cellspacing="0" columnClasses="ui-grid-col-2 ,ui-grid-col-4 Wid100,ui-grid-col-2 ,ui-grid-col-4 Wid100" 
+							    						layout="grid" styleClass="ui-panelgrid-blank" >
+				    
+		            <h:outputLabel value="Nº Tramite" for="tramiteID" />
+					<p:inputText id="tramiteID"
+						value="#{sucursalController.nuevaDosificacion.numeroTramite}"
+						styleClass="form-control" required="true"
+						requiredMessage="Numero Tramite Requerido." />
+	
+	
+					<h:outputLabel value="Nº Autorizacion"
+						for="numeroAutorizacionID" />
+					<p:inputText id="numeroAutorizacionID"
+						value="#{sucursalController.nuevaDosificacion.numeroAutorizacion}"
+						styleClass="form-control" required="true"
+						requiredMessage="Numero Autorizacion Requerido." />
+					
+	
+					<h:outputLabel value="Nº Inicial"
+						for="numeroInicialID" />
+					<p:spinner id="numeroInicialID"
+						value="#{sucursalController.nuevaDosificacion.numeroInicial}"
+						required="true"
+						requiredMessage="Numero Inicial es Requerido." />
+					
+					<h:outputLabel value="Nº Secuencial"
+						for="numeroSecuencialID" />
+					<p:spinner id="numeroSecuencialID"
+						value="#{sucursalController.nuevaDosificacion.numeroSecuencia}"
+						required="true"
+						requiredMessage="Numero Secuencial es Requerido." />
+	
+					<h:outputLabel value="Resolucion Normativa" for="normaID" />
+					<h:selectOneMenu id="normaID"
+						value="#{sucursalController.nuevaDosificacion.normaAplicada}"
+						styleClass="form-control" required="true"
+						requiredMessage="Requerido.">
+						<f:selectItem itemValue="NSF-07" itemLabel="NSF-07" />
+						<f:selectItem itemValue="SFV-14" itemLabel="SFV-14" />
+					</h:selectOneMenu>
+					
+					<h:outputLabel value="Fecha Limite Emision"
+						for="fechaLimiteEmisionID" />
+					<p:calendar id="fechaLimiteEmisionID" 
+						value="#{sucursalController.nuevaDosificacion.fechaLimiteEmision}"
+						datePattern="dd/MM/yyyy" required="true"
+						requiredMessage="Fecha Limite Emision es Requerido." />
+	
+	
+	
+			    </p:panelGrid>
+			    <p:panelGrid  columns="2" columnClasses="ui-grid-col-2 ,ui-grid-col-10 Wid100" 
+							    						layout="grid" styleClass="ui-panelgrid-blank" >
+					<h:outputLabel value="Llave Dosificacion" for="llaveControlID" />
+					<p:inputTextarea id="llaveControlID" disabled="#{sucursalController.nuevaDosificacion.llaveControl!=null}"
+						value="#{sucursalController.nuevaDosificacion.llaveControl}"
+						styleClass="form-control" required="true"
+						requiredMessage="Llave Control Requerido" cols="35" rows="4" />		    						
+				</p:panelGrid>			    						
+			    
+			    <p:panelGrid  columns="2" columnClasses="ui-grid-col-2 ,ui-grid-col-10 Wid100" 
+							    						layout="grid" styleClass="ui-panelgrid-blank" >
+				    <f:facet name="header">
+				       <strong> <span class="glyphicon glyphicon-list-alt" />
+									LEYENDA PARA FACTURA
+						</strong>
+				    </f:facet>
+				    
+				    <h:outputLabel value="Actividad Economica"
+						for="actividadEconomicaID" />
+					<p:inputText id="actividadEconomicaID"
+						value="#{sucursalController.nuevaDosificacion.actividadEconomica}"
+						styleClass="form-control" required="true"
+						requiredMessage="Actividad Economica Requerida." />
+	
+	
+					<h:outputLabel value="Leyenda Generica"
+						for="leyendaInferior1ID" />
+					<p:inputText id="leyendaInferior1ID"
+						value="#{sucursalController.nuevaDosificacion.leyendaInferior1}"
+						styleClass="form-control" required="true"
+						requiredMessage="Leyenda Mayusculas Requerida." />
+	
+	
+					<h:outputLabel value="Leyenda Ley N° 453"
+						for="leyendaInferior2ID" />
+					<p:inputText id="leyendaInferior2ID"
+						value="#{sucursalController.nuevaDosificacion.leyendaInferior2}"
+						 styleClass="form-control" required="true"
+						requiredMessage="Leyenda Minusculas Requerida." />
+				
+					
+				</p:panelGrid>	
+				<div class="panel-footer" style="padding: 1px 1px 1px 1px;">
+					<div class="btn-group btn-group-sm" style="width: 100%;">
+					
+							<p:commandButton value="Cancelar" icon="fa fa-times" 
+							styleClass="btn btn-default" oncomplete="PF('wv_dosificacion').hide()"></p:commandButton> 
+							
+							<p:commandButton value="Limpiar" icon="fa fa-trash-o" 
+							styleClass="btn btn-default" immediate="true"
+							actionListener="#{sucursalController.limpiarDosificacion()}"
+							update="dlgDosificacion"/>
+							
+							
+							<p:commandButton value="Agregar"  update="growl"
+							styleClass="btn btn-default"	icon="fa fa-save"
+							actionListener="#{sucursalController.agregarDosificacion()}"
+							rendered="#{sucursalController.nuevaDosificacion.llaveControl==null}" />
+								
+							<p:commandButton value="Modificar" 
+							styleClass="btn btn-default" icon="fa fa-pencil" 
+							actionListener="#{sucursalController.modificarDosificacion()}"
+							rendered="#{sucursalController.nuevaDosificacion.llaveControl!=null}"/>
+						
+					</div>
+				</div>
+	
+					    
+			</h:form>  
+		</p:dialog>
+		
+		<p:confirmDialog id="id_confirm_delete" widgetVar="id_confirm_delete" showEffect="fade" hideEffect="explode"
+       				 header="Confirme?" severity="alert" message="Estas seguro de eliminar este registro?">
+        	<p:commandButton value="No" icon="fa fa-reply" type="button" onclick="PF('wv_confirm_dosificacion').hide()" />
+        	<p:commandButton value="Si" icon="fa fa-check"  actionListener="#{sucursalController.eliminarSucursal()}" 
+        	update="growl" immediate="true"/>
+       </p:confirmDialog>
+			
+		<p:confirmDialog id="id_confirm_dosificacion" widgetVar="wv_confirm_dosificacion" showEffect="fade" hideEffect="explode"
+       				 header="Confirme?" severity="alert" message="Estas seguro de eliminar este registro?">
+        	<p:commandButton value="No" icon="fa fa-reply" type="button" onclick="PF('wv_confirm_dosificacion').hide()" />
+        	<p:commandButton value="Si" icon="fa fa-check"  actionListener="#{sucursalController.eliminarDosificacion()}" 
+        	update="growl" immediate="true"/>
+       </p:confirmDialog>
+       
+       <p:confirmDialog id="id_confirm_dosificacion_activado" widgetVar="id_confirm_dosificacion_activado" showEffect="fade" hideEffect="explode"
+       				 header="Confirme?" severity="alert" message="Estas seguro de activar esta dosificacion?">
+        	<p:commandButton value="No" icon="fa fa-reply" type="button" onclick="PF('id_confirm_dosificacion_activado').hide()" />
+        	<p:commandButton value="Si" icon="fa fa-check"  actionListener="#{sucursalController.activarDosificacion()}" 
+        	update="growl" immediate="true"/>
+       </p:confirmDialog>
+		
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

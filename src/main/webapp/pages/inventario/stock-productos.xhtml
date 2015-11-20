@@ -1,0 +1,262 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloInventario.xhtml">
+
+	<ui:define name="head">
+		<title>Stock de Productos</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li class="fuente-link-sidebar"><a href="/buffalo/">
+							Inicio </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="/buffalo/pages/inventario/home.xhtml">Modulo Inventario</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/inventario/stock-productos.xhtml">Stock
+							de Productos</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+
+
+	<ui:define name="content">
+		<h:form id="formAlmacen" styleClass="form-horizontal">
+
+			<div class="panel-body">
+
+				<div class="row">
+
+					<div class="col-sm-4 col-md-3">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<span class="icon"> <i aria-hidden="true"
+										class="glyphicon glyphicon-sort-by-attributes"></i>
+									</span> <strong>Consultar Stock</strong>
+								</h3>
+							</div>
+							<div class="panel-body">
+								<h:panelGrid columns="2">
+									<h:outputLabel value="Tipo Busqueda" for="estadoID" />
+									<h:selectOneRadio value="#{almacenStockListController.estado}" layout="pageDirection" >
+										<f:selectItem itemLabel="Por Proveedor" itemValue="DETALLADO" />
+										<f:selectItem itemLabel="Por Producto" itemValue="RESUMIDO" />
+										<p:ajax event="change" update=":formAlmacen" />
+									</h:selectOneRadio>
+
+									<h:outputLabel value="Almacen:" for="almacenID" />
+									<h:selectOneMenu id="almacenID"
+										value="#{almacenStockListController.almacen.id}"
+										styleClass="form-control" effect="fade" required="true"
+										requiredMessage="Requerido.">
+										<f:selectItem itemValue="" itemLabel="-- Seleccione --" />
+										<f:selectItems
+											value="#{almacenStockListController.listAlmacen}" var="_pro"
+											itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+										<p:ajax event="change" />
+									</h:selectOneMenu>
+								</h:panelGrid>
+							</div>
+							<div class="panel-footer" style="padding: 1px 1px 1px 1px;">
+								<div class="btn-group btn-group-sm" style="width: 100%;">
+									<p:commandButton immediate="true"
+										action="#{almacenStockListController.selectAlmacen()}"
+										icon="ui-icon-search" update=":formAlmacen, :growl"
+										style="width: 100%;" styleClass="btn btn-success"
+										value="Consultar Stock" type="submit" />
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-sm-4 col-md-9">
+						<ui:fragment
+							rendered="#{almacenStockListController.estado=='DETALLADO'}">
+							<div id="newPedidoMovsMessages" class="update" />
+
+							<div class="panel panel-default">
+								<!-- Default panel contents -->
+
+								<div class="panel-heading">
+									<strong> <span class="icon"> <i
+											aria-hidden="true" class="icon-list"></i>
+									</span> RESULTADO - STOCK DE PRODUCTOS
+									</strong>
+								</div>
+
+								<!-- Table -->
+								<div class="table-responsive">
+
+									<p:dataTable
+										styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+										selection="#{almacenStockListController.selectedCatalogo}"
+										selectionMode="single" rowKey="#{_pedido.id}" id="pedidoTable"
+										var="_pedido" value="#{listaAlmacenStock}"
+										emptyMessage="No se encontraron registros.">
+
+										<p:ajax event="rowSelect" update=":formAlmacen"
+											listener="#{almacenStockListController.onRowSelectAlmProductoClick}" />
+
+										<p:column headerText="Codigo" filterStyle="width: 100%;" width="90"
+											filterBy="#{_pedido.producto.codigoProducto}"
+											filterMatchMode="contains">
+											<span class="badge"><h:outputText value="#{_pedido.producto.codigoProducto}" /></span>
+										</p:column>
+										
+										<p:column headerText="Producto" filterStyle="width: 100%;"
+											filterBy="#{_pedido.producto.nombreProducto}"
+											filterMatchMode="contains">
+											<h:outputText value="#{_pedido.producto.nombreProducto}" />
+										</p:column>
+
+										<p:column headerText="Proveedor" filterStyle="width: 100%;"
+											filterBy="#{_pedido.proveedor.nombre}"
+											filterMatchMode="contains">
+											<h:outputText value="#{_pedido.proveedor.nombre}" />
+										</p:column>
+
+										<p:column headerText="Tipo" filterStyle="width: 100%;"
+											filterBy="#{_pedido.producto.tipoProducto.descripcion}"
+											filterMatchMode="contains">
+											<h:outputText id="tipoID" value="#{_pedido.producto.tipoProducto.descripcion}" />
+										</p:column>
+										
+										<p:column headerText="Fabricante" filterStyle="width: 100%;"
+											filterBy="#{_pedido.producto.fabricante.descripcion}"
+											filterMatchMode="contains">
+											<h:outputText value="#{_pedido.producto.fabricante.descripcion}" />
+										</p:column>
+										
+										<p:column headerText="Categoria" filterStyle="width: 100%;"
+											filterBy="#{_pedido.producto.grupoProducto.descripcion}"
+											filterMatchMode="contains">
+											<h:outputText value="#{_pedido.producto.grupoProducto.descripcion}" />
+										</p:column>
+										
+										<p:column headerText="Estado" width="70"
+											filterStyle="width: 100%;" filterBy="#{_pedido.stock}"
+											filterMatchMode="contains">
+											<h:graphicImage value="/resources/icons/green_button.png" width="20px" height="20px" rendered="#{_pedido.stock>200?'true':'false'}"/>
+											<h:graphicImage value="/resources/icons/orange_button.png" width="20px" height="20px" rendered="#{_pedido.stock>200?'false':'true' and _pedido.stock>10?'true':'false'}"/>
+											<h:graphicImage value="/resources/icons/red_button.png" width="20px" height="20px" rendered="#{_pedido.stock>10?'false':'true'}"/>
+										</p:column>
+										<p:column headerText="STOCK" width="100" style="text-align: right;"
+											filterStyle="width: 100%;" filterBy="#{_pedido.stock}"
+											filterMatchMode="contains">
+											<h:outputText value="#{_pedido.stock}" style="#{_pedido.stock>10?'color: green':'color:red'}">
+												<f:convertNumber pattern="#,##0.0000"  locale="en" />
+											</h:outputText>
+										</p:column>
+			
+						
+									</p:dataTable>
+
+								</div>
+							</div>
+						</ui:fragment>
+						<ui:fragment
+							rendered="#{almacenStockListController.estado=='RESUMIDO'}">
+							<div id="newPedidoMovsMessages" class="update" />
+
+							<div class="panel panel-default">
+								<!-- Default panel contents -->
+								<div class="panel-heading">
+									<strong> <span class="icon"> <i
+											aria-hidden="true" class="icon-list"></i>
+									</span> RESULTADO - STOCK DE PRODUCTOS RESUMEN
+									</strong>
+									<p:commandButton value="Exportar PDF"
+									styleClass="btn btn-success btn-md"
+										rendered="#{not empty almacenStockListController.listCatalogoResumen}" 
+									style="width: 16em;" ajax="false" icon="ui-icon-document">
+									<p:fileDownload
+										value="#{almacenStockListController.streamedContent}" />
+								</p:commandButton>
+								</div>
+
+
+								<!-- Table -->
+								<div class="table-responsive">
+
+									<p:dataTable
+										styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+										rowKey="#{_pedido.id}" id="pedidoResumenTable" var="_pedido"
+										value="#{almacenStockListController.listCatalogoResumen}" 
+										emptyMessage="No se encontraron registros." >
+
+										<p:column headerText="Codigo" filterStyle="width: 100%;"
+											filterBy="#{almacenStockListController.obtenerProducto(_pedido.idProducto).codigoProducto}"
+											filterMatchMode="contains">
+											<span class="badge"><h:outputText value="#{almacenStockListController.obtenerProducto(_pedido.idProducto).codigoProducto}" /></span>
+										</p:column>
+										
+										<p:column headerText="Producto" filterStyle="width: 100%;"
+											filterBy="#{_pedido.nombreProducto}"
+											filterMatchMode="contains">
+											<h:outputText value="#{_pedido.nombreProducto}" />
+										</p:column>
+										
+										<p:column headerText="Tipo" filterStyle="width: 100%;"
+											filterBy="#{almacenStockListController.obtenerProducto(_pedido.idProducto).tipoProducto.descripcion}"
+											filterMatchMode="contains">
+											<h:outputText id="tipoID" value="#{almacenStockListController.obtenerProducto(_pedido.idProducto).tipoProducto.descripcion}" />
+										</p:column>
+										
+										<p:column headerText="Fabricante" filterStyle="width: 100%;"
+											filterBy="#{almacenStockListController.obtenerProducto(_pedido.idProducto).fabricante.descripcion}"
+											filterMatchMode="contains">
+											<h:outputText value="#{almacenStockListController.obtenerProducto(_pedido.idProducto).fabricante.descripcion}" />
+										</p:column>
+										
+										<p:column headerText="Categoria" filterStyle="width: 100%;"
+											filterBy="#{almacenStockListController.obtenerProducto(_pedido.idProducto).grupoProducto.descripcion}"
+											filterMatchMode="contains">
+											<h:outputText value="#{almacenStockListController.obtenerProducto(_pedido.idProducto).grupoProducto.descripcion}" />
+										</p:column>
+										
+										<p:column headerText="STOCK" width="30"  style="text-align: right;" filterStyle="width: 100%;"
+											filterBy="#{_pedido.stock}" filterMatchMode="contains">
+											<h:outputText value="#{_pedido.stock}">
+												<f:convertNumber pattern="#,##0.0000"  locale="en" />
+											</h:outputText>
+										</p:column>
+
+									</p:dataTable>
+
+								</div>
+							</div>
+						</ui:fragment>
+					</div>
+				</div>
+
+			</div>
+
+
+		</h:form>
+
+
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

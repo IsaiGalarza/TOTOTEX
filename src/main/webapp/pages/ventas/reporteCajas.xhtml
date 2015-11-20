@@ -1,0 +1,157 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloParametrizacion.xhtml">
+
+	<ui:define name="head">
+		<title>Operaciones</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li class="fuente-link-sidebar"><a href="/buffalo/">
+							Inicio </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="/buffalo/pages/parametrizacion/home.xhtml">Config. del
+							Sistema</a></li>
+					<li class="fuente-link-sidebar"><a
+						href="/buffalo/pages/ventas/home-cajas.xhtml">Operaciones</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/ventas/reporteCajas.xhtml">Reporte Cajas</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+
+	<ui:define name="content">
+
+
+
+		<h:form id="formRegistroCliente" styleClass="form-horizontal">
+
+
+			<div class="col-sm-3 col-md-3" align="left">
+
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<strong> <i aria-hidden="true"
+								class="glyphicon glyphicon-search"></i> Datos
+							</strong>
+						</h3>
+					</div>
+					<div class="panel-body">
+
+						<h:panelGrid columns="3">.
+									
+										<h:outputLabel value="Caja" for="cajaID" />
+							<h:selectOneMenu id="cajaID"
+								value="#{operacionesController.idCaja}"
+								styleClass="form-control" required="true"
+								requiredMessage="Requerido.">
+								<f:selectItem itemValue="" itemLabel="-- Seleccione --" />
+								<f:selectItems value="#{operacionesController.listCaja}"
+									var="_pro" itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+								<p:ajax event="change" />
+							</h:selectOneMenu>
+							<p:message for="cajaID" />
+
+							<h:outputLabel value="Fecha Inicio" for="fechainicioID" />
+							<p:calendar id="fechainicioID" showOn="button"
+								pattern="dd/MM/yyyy"
+								value="#{operacionesController.fechaInicio}" required="true"
+								requiredMessage="Fecha Registro Requerido.">
+							</p:calendar>
+							<p:message for="fechainicioID" />
+
+							<h:outputLabel value="Fecha Fin" for="fechafinID" />
+							<p:calendar id="fechafinID" showOn="button" pattern="dd/MM/yyyy"
+								value="#{operacionesController.fechaFin}" required="true"
+								requiredMessage="Fecha Registro Requerido.">
+							</p:calendar>
+							<p:message for="fechafinID" />
+						</h:panelGrid>
+
+						<div class="btn-group btn-group-sm" style="width: 100%;">
+						<span class="badge badge-success"><p:commandButton
+									id="consultarID2"  style="width: 100%;"
+									update=":formRegistroCliente, :growl,:formModalVistaPrevia"
+									styleClass="btn btn-primary" value="Consultar"
+									action="#"
+									immediate="true" />
+									</span>
+							<span class="badge badge-success"><p:commandButton
+									id="cerrarID2"  style="width: 100%;"
+									update=":formRegistroCliente, :growl,:formModalVistaPrevia"
+									styleClass="btn btn-success" value="Vista Previa"
+									oncomplete="dlgVistaPrevia.show()"
+									action="#"
+									immediate="true" />
+									</span>
+						</div>
+					</div>
+
+
+				</div>
+			</div>
+
+
+		</h:form>
+
+
+
+		<!-- VISTA PREVIA FACTURA -->
+		<p:dialog showEffect="explode" header="Vista Previa"
+			widgetVar="dlgVistaPrevia" resizable="false" modal="true"
+			position="center" width="750" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalVistaPrevia">
+
+			<div class="modal-body">
+
+				<h:form id="formModalVistaPrevia">
+
+
+					<p:media id="idReporteFactura" player="pdf"
+						value="#{operacionesController.urlCierre}" width="700px"
+						height="500px" />
+
+				</h:form>
+			</div>
+
+			<div class="modal-footer">
+
+				<div class="btn-group btn-group-sm">
+
+					<p:commandButton value="Cerrar" style="width: 150px;"
+						icon="ui-icon-minus" action="#" styleClass="btn btn-default"
+						onclick="dlgVistaPrevia.hide()" />
+
+				</div>
+
+			</div>
+
+		</p:dialog>
+
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

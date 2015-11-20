@@ -1,0 +1,70 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+<h:head>
+   <title>:: Login ::</title>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content="Facturacion Computarizada"/>
+    
+    <!-- Custom styles for this template -->
+    <h:outputStylesheet name="bootstrap.min.css" library="css"/>
+    <h:outputStylesheet name="bootstrap-theme.min.css" library="css"/>
+    
+    <!-- Custom styles for this template -->
+    <h:outputStylesheet name="signin.css" library="css"/>
+    
+    
+</h:head>
+<h:body>
+	<p:growl id="growl" showDetail="true" autoUpdate="true"/>
+    <div class="container">
+        <div class="row">
+            
+            <div class="col-md-4 col-md-offset-4">
+            	<a href="/buffalo/" class="thumbnail">
+			      <h:graphicImage sclass="thumbnail" name="logo.jpg" library="gfx" width="300px;"/>
+			    </a>
+                <div class="login-panel panel panel-default">
+                    <div class="panel-heading">
+                        <h2 class="form-signin-heading">Iniciar Sesión</h2>
+                    </div>
+                    <div class="panel-body">
+                        <h:form id="formLogin">
+                        
+                        	<p:focus context="formLogin"/>
+                        	
+                            <fieldset>
+                                <div class="form-group">
+                                	<p:inputText placeholder="Usuario" styleClass="form-control" value="#{loginController.username}" style="width: 100% !important;"></p:inputText>
+                                </div>
+                                <div class="form-group">
+                                	<p:inputText placeholder="Contraseña" styleClass="form-control"  type="password" value="#{loginController.password}" style="width: 100% !important;"></p:inputText>
+                                </div>
+                                <div class="checkbox">
+                                    <label>
+                                        <input name="remember" type="checkbox" value="Remember Me"/>Recordarme
+                                    </label>
+                                </div>
+                                <!-- Change this to a button or input when using this as a form  update isai-->
+                                
+                                <p:commandLink styleClass="btn btn-primary btn-block"
+									value="Ingresar">
+									<p:ajax update=":formLogin, :growl" listener="#{loginController.login()}" />
+								</p:commandLink>
+								
+								<p:hotkey bind="return" actionListener="#{loginController.login}" update=":formLogin, :growl"/>
+                                
+                            </fieldset>
+                        </h:form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+</h:body>
+</html>

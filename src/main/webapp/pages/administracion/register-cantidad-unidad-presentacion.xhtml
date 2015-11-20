@@ -1,0 +1,235 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateParametrizacions.xhtml">
+
+	<ui:define name="head">
+		<title>:: Cantidad Unidad Presentacion ::</title>
+	</ui:define>
+
+
+	<ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li>
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li><a href="/buffalo/"> Inicio </a></li>
+					<li><a href="/buffalo/pages/parametrizacion/home.xhtml">Parametrizacion</a></li>
+					<li><a
+						href="/buffalo/pages/parametrizacion/home-inventario.xhtml">Inventario</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;"
+						href="/buffalo/pages/administracion/register-cantidad-unidad-presentacion.xhtml">Gestion
+							Cantidad Ud. Presentacion</a></li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+	<ui:define name="menu">
+		<h:form>
+			<ui:include src="/pages/parametrizacion/menuTemp.xhtml" />
+		</h:form>
+	</ui:define>
+	<ui:define name="content">
+		<h:form id="formRegistroCantidadUnidadPresentacion"
+			styleClass="form-horizontal">
+			<div class="row">
+			<div class="col-sm-3 col-md-3" align="left" style="padding: 0px 0px 0px 0px;">
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+						<h3 class="panel-title">
+							<strong>#{cantUnitController.tituloPanel}</strong>
+						</h3>
+					</div>
+					<div class="panel-body">
+
+						<h:panelGrid columns="3">
+
+							<h:outputLabel value="Presentacion" for="presentacionID" />
+							<h:selectOneMenu id="presentacionID"
+								value="#{cantUnitController.idPresentacion}"
+								styleClass="form-control" effect="fade" required="true"
+								requiredMessage="Requerido.">
+								<f:selectItems value="#{cantUnitController.listaPresentacion}"
+									var="_pro" itemLabel="#{_pro.descripcion}"
+									itemValue="#{_pro.id}" />
+								<p:ajax event="change" />
+							</h:selectOneMenu>
+							<p:message for="presentacionID" />
+
+							<h:outputLabel value="Unidad_Medida" for="unidadmedidaID" />
+							<h:selectOneMenu id="unidadmedidaID"
+								value="#{cantUnitController.idUnidadMeddida}"
+								styleClass="form-control" effect="fade" required="true"
+								requiredMessage="Requerido.">
+								<f:selectItems value="#{cantUnitController.listaUnidadMedida}"
+									var="_pro" itemLabel="#{_pro.descripcion}"
+									itemValue="#{_pro.id}" />
+								<p:ajax event="change" />
+							</h:selectOneMenu>
+							<p:message for="unidadmedidaID" />
+
+
+
+
+							<h:outputLabel for="cantidad" value="Cantidad" />
+							<p:spinner id="cantidad"
+								value="#{cantUnitController.newCantidadUnidadPresentacion.cantidad}"
+								styleClass="form-control" required="true"
+								requiredMessage="Nombre Requerido." size="10" />
+							<p:message for="cantidad" errorClass="invalid" />
+
+							<h:outputLabel value="Estado" for="estadoID" />
+							<h:selectOneMenu id="estadoID"
+								value="#{cantUnitController.newCantidadUnidadPresentacion.estado}"
+								styleClass="form-control" required="true"
+								requiredMessage="Estado Requerido.">
+								<f:selectItem itemValue="AC" itemLabel="Activo" />
+								<f:selectItem itemValue="IN" itemLabel="Inactivo" />
+								<p:ajax event="change" update="estadoID" />
+							</h:selectOneMenu>
+							<p:message for="estadoID" />
+
+							<h:outputLabel value="Fecha_Registro" for="fechaRegistroID" />
+							<p:calendar id="fechaRegistroID" showOn="button"
+								value="#{cantUnitController.newCantidadUnidadPresentacion.fechaRegistro}"
+								disabled="true" required="true"
+								requiredMessage="Fecha Registro Requerido.">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</p:calendar>
+							<p:message for="fechaRegistroID" />
+
+							<h:outputLabel value="Registro" for="usuarioRegistroID" />
+							<p:inputText id="usuarioRegistroID" styleClass="form-control"
+								value="#{cantUnitController.newCantidadUnidadPresentacion.usuarioRegistro}"
+								disabled="true" required="true"
+								requiredMessage="Usuario Registro Requerido." />
+							<p:message for="usuarioRegistroID" />
+
+						</h:panelGrid>
+
+					</div>
+
+				</div>
+				<div class="btn-group btn-group-md" style="width: 100%;">
+
+				<p:commandButton rendered="#{cantUnitController.modificar=='true'}"
+					icon="ui-icon-minus"
+					action="#{cantUnitController.initNewCantidadUnidadPresentacions()}"
+					style="width: 8em;"
+					update=":formRegistroCantidadUnidadPresentacion"
+					styleClass="btn btn-default" value="Cancelar" type="submit" />
+
+				<p:commandButton rendered="#{cantUnitController.modificar=='false'}"
+					action="#{cantUnitController.registrarCantidadUnidadPresentacion()}"
+					icon="ui-icon-disk"
+					update=":formRegistroCantidadUnidadPresentacion"
+					style="width: 8em;" styleClass="btn btn-primary" value="Guardar"
+					type="submit" />
+
+				<p:commandButton rendered="#{cantUnitController.modificar=='true'}"
+					icon="ui-icon-refresh"
+					action="#{cantUnitController.modificarCantidadUnidadPresentacion()}"
+					style="width: 8em;"
+					update=":formRegistroCantidadUnidadPresentacion"
+					styleClass="btn btn-primary" value="Modificar" type="submit" />
+
+				<p:commandButton rendered="#{cantUnitController.modificar=='true'}"
+					icon="ui-icon-circle-close"
+					action="#{cantUnitController.eliminarCantidadUnidadPresentacion()}"
+					style="width: 8em;"
+					update=":formRegistroCantidadUnidadPresentacion"
+					styleClass="btn btn-danger" value="Borrar" type="submit" />
+
+			</div>
+				
+			</div>
+			<div class="col-sm-3 col-md-9" align="left">
+			<div id="newGrupoProductosMessages" class="update" />
+
+			<h:panelGroup rendered="#{empty listaCantidadUnidadPresentacions}">
+				<em>No se encontraron registros.</em>
+			</h:panelGroup>
+
+
+			<div class="panel panel-default">
+				<!-- Default panel contents -->
+				<div class="panel-heading">
+					<center>
+						<strong>REGISTROS</strong>
+					</center>
+				</div>
+
+				<!-- Table -->
+				<div class="table-responsive">
+
+					<p:dataTable
+						styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+						selection="#{cantUnitController.selectedCantidadUnidadPresentacion}"
+						selectionMode="single" rowKey="#{_cantidadUnidad.id}"
+						paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+						rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true"
+						rows="10" id="grupoTable" var="_cantidadUnidad"
+						value="#{listaCantidadUnidadPresentacions}"
+						rendered="#{not empty listaCantidadUnidadPresentacions}">
+
+						<p:ajax event="rowSelect"
+							update=":formRegistroCantidadUnidadPresentacion"
+							listener="#{cantUnitController.onRowSelectCantidadUnidadPresentacionClick}" />
+
+						<p:column headerText="ID">
+							<span class="label label-success">#{_cantidadUnidad.id}</span>
+						</p:column>
+						<p:column headerText="Presentacion">
+							<h:outputText
+								value="#{_cantidadUnidad.presentacion.descripcion.toUpperCase()} #{_cantidadUnidad.cantidad} #{_cantidadUnidad.unidadMedida.descripcion.toUpperCase()}" />
+						</p:column>
+
+
+
+
+						<p:column headerText="Estado">
+							<span class="label label-success"><h:outputText
+									rendered="#{_cantidadUnidad.estado=='AC'}" value="Activo" /></span>
+							<span class="label label-danger"><h:outputText
+									rendered="#{_cantidadUnidad.estado=='IN'}" value="Inactivo" /></span>
+						</p:column>
+						<p:column headerText="Fecha Registro">
+							<h:outputText value="#{_cantidadUnidad.fechaRegistro}">
+								<f:convertDateTime pattern="dd/MM/yyyy" />
+							</h:outputText>
+						</p:column>
+						<p:column headerText="Usuario Registro">
+							<h:outputText value="#{_cantidadUnidad.usuarioRegistro}" />
+						</p:column>
+					</p:dataTable>
+
+				</div>
+			</div>
+			
+			</div>
+			</div>
+
+			
+
+
+			
+		</h:form>
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

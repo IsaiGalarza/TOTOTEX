@@ -1,0 +1,446 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ui="http://java.sun.com/jsf/facelets"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:p="http://primefaces.org/ui"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:a="http://richfaces.org/a"
+    xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+    template="/WEB-INF/templates/templateModuloVentas.xhtml">
+
+
+
+    <ui:define name="head">
+    	<title>Libros IVA</title>
+    </ui:define>
+     <ui:define name="header">
+
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li class="fuente-link-sidebar"><a href="/buffalo/"> Inicio </a></li>
+					<li class="fuente-link-sidebar"><a href="/buffalo/pages/ventas/home.xhtml"> Modulo
+							Ventas </a>
+					</li>
+					<li class="fuente-link-sidebar"><a href="/buffalo/pages/ventas/libros-iva.xhtml"> Libros IVA </a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar" href="/buffalo/pages/ventas/facturas.xhtml">Libro de Ventas</a>
+					</li>
+				</ol>
+			</div>
+		</div>
+
+	</ui:define>
+
+    
+    <ui:define name="content">
+		<h:form id="formFactura"  styleClass="form-horizontal">
+			
+			<div class="panel-body">
+			
+				<div class="row" >		 	
+			 	<div class="col-sm-6 col-md-3" align="left">
+					 
+					 <h:panelGrid columns="3" columnClasses="titleCell" width="100%">
+					 
+						<h:outputLabel value="Fecha_Inicial" for="fechaInicialID"/>
+						<p:calendar id="fechaInicialID" value="#{facturaController.fechaInicial}" pattern="dd/MM/yyyy" showOn="button" >
+							<p:ajax event="change" />
+						</p:calendar>
+						<p:message for="fechaInicialID"/>
+						
+						<h:outputLabel value="Fecha_Final" for="fechaFinalID"/>
+						<p:calendar id="fechaFinalID" value="#{facturaController.fechaFinal}" pattern="dd/MM/yyyy" showOn="button">
+							<p:ajax event="change" />
+						</p:calendar>
+						<p:message for="fechaFinalID"/>
+						
+					</h:panelGrid>	
+				</div>
+				
+				<div class="col-sm-6 col-md-3" align="left">
+					<h:panelGrid columns="3" columnClasses="titleCell" width="100%">
+						<h:outputLabel value="Estado_Factura" for="estadoFacturaID"/>
+						<h:selectOneMenu id="estadoFacturaID" value="#{facturaController.estadoFactura}" styleClass="form-control">  
+							<f:selectItem itemValue="%" itemLabel="Todos" />
+							<f:selectItem itemValue="V" itemLabel="Factura Valida" />
+				            <f:selectItem itemValue="A" itemLabel="Factura Anulada" />
+				            <f:selectItem itemValue="E" itemLabel="Factura Extraviada" />
+				            <f:selectItem itemValue="N" itemLabel="Factura No Utilizada" />
+				            <f:selectItem itemValue="C" itemLabel="Emitida en Contingencia" /> 
+							<p:ajax event="change"  />
+						</h:selectOneMenu>
+						<p:message for="estadoFacturaID"/>
+					</h:panelGrid>
+				</div>
+				
+				<div class="col-sm-6 col-md-3" align="left">
+					<h:panelGrid columns="3" columnClasses="titleCell" width="100%">
+						<h:outputLabel value="Sucursal" for="sucursalID"/>
+						<h:selectOneMenu id="sucursalID"  value="#{facturaController.sucursalID}" styleClass="form-control"  effect="fade" requiredMessage="Sucursal es Requerido.">  
+				            <f:selectItems value="#{facturaController.listaSucursales}" var="_sucursales"  
+				            	itemLabel="#{_sucursales.nombre}" itemValue="#{_sucursales.id}"/>  
+				        </h:selectOneMenu>
+						<p:message for="sucursalID"/>
+					</h:panelGrid>
+				</div>
+				
+				<div class="col-sm-6 col-md-3" align="left">
+					<p:commandButton value="Buscar Venta" styleClass="btn btn-success" 
+						      			icon="ui-icon-search"
+						      			update=":formFactura" action="#{facturaController.buscarFacturas}" />
+					
+				</div>
+			
+			</div>
+			
+			
+			
+			<br/>
+
+				<div class="row">
+					
+				<h:panelGroup rendered="#{empty listaFacturasEmitidas}">
+                	<em>No se encontraron registros de Facturas.</em>
+            	</h:panelGroup>
+            
+            	<div class="panel panel-default">
+				      <!-- Default panel contents -->
+				      <div class="panel-heading">
+				      	<span class="icon"> <i aria-hidden="true" class="icon-list"></i>
+						</span> <strong>LIBRO IVA - VENTAS</strong>
+				      </div>
+				
+				      <!-- Table -->
+				      <div class="table-responsive">
+             			<p:dataTable styleClass="table table-condensed table-hover table-responsive table-striped table-bordered" 
+             				selection="#{facturaController.selectedFactura}" selectionMode="single" rowKey="#{_factura.id}" 
+             				paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+	       					rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true" rows="10" rowIndexVar="item"
+	       					emptyMessage="No se encontraron facturas."
+				        	id="facturasTable" var="_factura" value="#{listaFacturasEmitidas}" rendered="#{not empty listaFacturasEmitidas}" >	
+				        	
+				        	<p:ajax event="rowDblselect" oncomplete="dlgDatosFactura.show()" update=":formModalFactura"
+								        		listener="#{facturaController.onRowSelectFacturaDblClic}"
+								        		/>
+								        		
+								        	<p:ajax  event="rowSelect" 
+								        		listener="#{facturaController.onRowSelectFacturaClic}" />
+				        	
+				        	
+				        	<p:column headerText="Nº" filterStyle="width: 100%;" width="50">
+				        		<h:outputText value="#{item+1}" />
+				        	</p:column>
+				        	
+				        	<p:column headerText="Nº Factura" filterBy="#{_factura.numeroFactura}" filterMatchMode="exact" filterStyle="width: 100%;"> 
+				        		<center>
+				        			<span class="label label-warning">
+						        		<h:outputText value="#{_factura.numeroFactura}" />
+						        	</span>
+						        </center>
+				        	</p:column>
+				        	<p:column headerText="Fecha">
+				        		<h:outputText value="#{_factura.fechaFactura}" >
+			                      	<f:convertDateTime pattern="dd/MM/yyyy"/>
+			                     </h:outputText>
+				        	</p:column>
+				        	
+				        	<p:column headerText="Autorizacion" filterBy="#{_factura.numeroAutorizacion}" filterMatchMode="contains" filterStyle="width: 100%;">
+				        		<h:outputText value="#{_factura.numeroAutorizacion}" />
+				        	</p:column>
+				        	
+				        	<p:column headerText="Estado" filterBy="#{_factura.estado}" filterMatchMode="contains" filterStyle="width: 100%;" width="70">
+					        	<center>
+					        		<h:outputText value="#{_factura.estado}" />
+				        		</center>
+				        	</p:column>
+				        	
+				        	<p:column headerText="NIT Comprador" filterBy="#{_factura.nitCi}" filterMatchMode="contains" filterStyle="width: 100%;">
+				        		<h:outputText value="#{_factura.nitCi}"/>
+				        	</p:column>
+				        	<p:column headerText="Razon Social" filterBy="#{_factura.nombreFactura}" filterMatchMode="contains" filterStyle="width: 100%;">
+				        		<h:outputText value="#{_factura.nombreFactura}"/>
+				        	</p:column>
+
+<!-- 				        	<p:column headerText="Usuario" filterBy="#{_factura.usuarioRegistro}" filterMatchMode="contains"> -->
+<!-- 				        		<h:graphicImage value="/resources/icons/user2.png" width="15px" height="15px"/> -->
+<!-- 				        		<h:outputText value="#{_factura.usuarioRegistro}" /> -->
+<!-- 				        	</p:column> -->
+
+<!-- 				        	<p:column headerText="Sucursal"> -->
+<!-- 					        	<h:graphicImage value="/resources/icons/home.png" width="20px" height="20px"/> -->
+<!-- 				        		<span class="label label-default"> -->
+<!-- 					        		<h:outputText value="#{facturaController.getSucursal(_factura.idSucursal).nombre}" /> -->
+<!-- 				        		</span> -->
+<!-- 				        	</p:column> -->
+				        	
+				        	<p:column headerText="Total Venta" filterBy="#{_factura.totalFacturado}" filterMatchMode="contains" filterStyle="width: 100%;">
+				        		<h:outputText value="#{_factura.totalFacturado}" style="text-align: right;">
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</p:column>
+				        	
+				        	<p:column headerText="Importe ICE"  filterBy="#{_factura.importeICE}" filterMatchMode="contains" filterStyle="width: 100%;">
+				        		<h:outputText value="#{_factura.importeICE}" style="text-align: right;">
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</p:column>
+				        	
+				        	<p:column headerText="Exportaciones"  filterBy="#{_factura.importeExportaciones}" filterMatchMode="contains" filterStyle="width: 100%;">
+				        		<h:outputText value="#{_factura.importeExportaciones}" style="text-align: right;">
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</p:column>
+				        	
+				        	<p:column headerText="SubTotal"  filterBy="#{_factura.importeSubTotal}" filterMatchMode="contains" filterStyle="width: 100%;">
+				        		<h:outputText value="#{_factura.importeSubTotal}" style="text-align: right;">
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</p:column>
+				        	<p:column headerText="Debito Fiscal"  filterBy="#{_factura.debitoFiscal}" filterMatchMode="contains" filterStyle="width: 100%;">
+				        		<h:outputText value="#{_factura.debitoFiscal}"  style="text-align: right;">
+				        			<f:convertNumber pattern="#,##0.00"/>
+				        		</h:outputText>
+				        	</p:column>
+				        	<p:column headerText="Codigo Control" filterBy="#{_factura.codigoControl}" filterMatchMode="contains" filterStyle="width: 100%;">
+				        		<h:outputText value="#{_factura.codigoControl}" />
+				        	</p:column>
+				        	
+				        </p:dataTable>
+      				
+      				</div>
+      				</div>
+					
+				</div>
+				</div>
+		</h:form>
+		
+		
+		<!-- DATOS FACTURA -->
+		<p:dialog showEffect="explode" header="Datos Factura" widgetVar="dlgDatosFactura" 
+		   		resizable="false" modal="true"  position="center"
+		   		width="1100" styleClass="customDialog"
+		   		visible="#{not empty facesContext.maximumSeverity}" id="modalDatosFactura">  
+			
+				<div class="modal-body">
+				        <h:form id="formModalFactura">
+						
+						<p:growl id="growlModal" showDetail="true"/>  
+						
+			       		<center>
+			       		<div class="panel panel-success">
+			       			<div class="panel-heading">
+								<h3 class="panel-title">
+									 <strong>#{facturaController.selectedFactura.totalLiteral}</strong>
+								</h3>
+							</div>
+			       		</div>
+			       		
+			       		</center>
+					    <div class="row" style="padding: 0px 0px 0px 0px;">
+					    	<div class="col-sm-4 col-md-4" align="left" >
+					    	
+					    		<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="basic-addon1">Nº Factura</span>
+								  <input type="text" class="form-control" placeholder="Numero Factrura" value="#{facturaController.selectedFactura.numeroFactura}" aria-describedby="basic-addon1"  size="60"/>
+								</div>
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;"  id="NITID" >NIT/CI</span>
+								  <input type="text" class="form-control" placeholder="NIT o CI" value="#{facturaController.selectedFactura.nitCi}" aria-describedby="NITID"  size="60"/>
+								</div>
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;"  id="razonSocialID" >Razon Social</span>
+								  <input type="text" class="form-control" placeholder="Razon Social" value="#{facturaController.selectedFactura.nombreFactura}" aria-describedby="razonSocialID"  size="60"/>
+								</div>
+																
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="totalFacturaID">Total Pagar Bs</span>
+								  <input type="text" class="form-control" placeholder="Importe Total" value="#{facturaController.selectedFactura.totalFacturado}" aria-describedby="totalFacturaID"  size="60"/>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="cambioID">Cambio Entregado</span>
+								  <input type="text" class="form-control" placeholder="Cambio Entregado" value="#{facturaController.selectedFactura.cambio}" aria-describedby="cambioID"  size="60"/>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="efectivoID">Total Efectivo</span>
+								  <input type="text" class="form-control" placeholder="Total Efectivo" value="#{facturaController.selectedFactura.totalEfectivo}" aria-describedby="efectivoID"  size="60"/>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="tipoCambioID">Tipo Cambio</span>
+								  <input type="text" class="form-control" placeholder="Tipo Cambio" value="#{facturaController.selectedFactura.tipoCambio}" aria-describedby="tipoCambioID"  size="60"/>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="totalEfectivoDolaresID">Total Dolares</span>
+								  <input type="text" class="form-control" placeholder="Total Dolares" value="#{facturaController.selectedFactura.totalEfectivoDolares}" aria-describedby="totalEfectivoDolaresID"  size="60"/>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="codigoControlID">Código Control</span>
+								  <input type="text" class="form-control" placeholder="Código Control" value="#{facturaController.selectedFactura.codigoControl}" aria-describedby="codigoControlID"  size="60"/>
+								</div>
+									
+					    	</div>
+					    	<div class="col-sm-4 col-md-4" align="left" >
+					    		
+					    		<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;"  id="fechaID" >Fecha Factura</span>
+								  <input type="text" class="form-control" placeholder="Fecha Factura" value="#{facturaController.selectedFactura.fechaFactura}" aria-describedby="fechaID"  size="60"/>
+								</div>
+					    		
+					    		<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="autorizacionID">Nº Autorizacion</span>
+								  <input type="text" class="form-control" placeholder="Numero Autorizacion" value="#{facturaController.selectedFactura.numeroAutorizacion}" aria-describedby="autorizacionID"  size="60"/>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="limiteEmisionID">Limite Emision</span>
+								  <input type="text" class="form-control" placeholder="Limite Emision" value="#{facturaController.selectedFactura.fechaLimiteEmision}" aria-describedby="limiteEmisionID"  size="60">
+								  </input>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="sucursalID">Sucursal</span>
+								  <input type="text" class="form-control" placeholder="Sucursal" value="#{facturaController.selectedFactura.idSucursal}-#{facturaController.sucursalSelected.nombre}" aria-describedby="sucursalID"  size="60">
+								  </input>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="usuarioRegistroID">Registro</span>
+								  <input type="text" class="form-control" placeholder="Usuario Registro" value="#{facturaController.selectedFactura.usuarioRegistro}" aria-describedby="usuarioRegistroID"  size="60">
+								  </input>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="totalTarjetaDebitoID">Total Debito</span>
+								  <input type="text" class="form-control" placeholder="Total Debito" value="#{facturaController.selectedFactura.totalPagoDebito}" aria-describedby="totalTarjetaDebitoID"  size="60"/>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="comprobanteID">Nº Comprobante</span>
+								  <input type="text" class="form-control" placeholder="Nº Comprobante Debito" value="#{facturaController.selectedFactura.comprobanteDebito}" aria-describedby="comprobanteID" size="60"/>
+								</div>
+								
+								<div class="input-group">
+								  <span class="input-group-addon" style="width: 150px; text-align: right;" id="fechaRegistroID">Fecha Registro</span>
+								  <input type="text" class="form-control" placeholder="Fecha Registro" value="#{facturaController.selectedFactura.fechaRegistro}" aria-describedby="fechaRegistroID" size="60"/>
+								</div>
+								
+								<div class="input">
+								 <h:panelGrid columns="2" border="0">
+
+									<span class="input-group-addon form-control" 
+										style="width: 150px; text-align: right;" id="estadoID">Estado</span>
+									
+									<h:selectOneMenu id="estadoID" disabled="#{facturaController.selectedFactura.estado=='A'}"
+										style="width: 175px;" class="form-control"
+										value="#{facturaController.selectedFactura.estado}"
+										required="true" requiredMessage="Estado Requerido.">
+										<f:selectItem itemValue="V" itemLabel="Valida" />
+										<f:selectItem itemValue="A" itemLabel="Anulada" />
+										<f:selectItem itemValue="E" itemLabel="Extraviada" />
+										<f:selectItem itemValue="C"
+											itemLabel="Emitida en Contingencia" />
+										<f:selectItem itemValue="N" itemLabel="No Utilizada" />
+										<p:ajax event="change" update="estadoID" />
+									</h:selectOneMenu>
+
+								</h:panelGrid>
+								</div>
+					    		
+					    	</div>
+					    	
+					    	<div class="col-sm-4 col-md-4" align="left" >
+					    		<center>
+					    		<div class="panel panel-primary">
+									   <div class="panel-heading">
+									      <h3 class="panel-title">
+									         <strong>Código QR</strong>
+									      </h3>
+									   </div>
+									   <div class="panel-body">
+					    			<p:graphicImage value="#{facturaController.urlCodeQR}" 
+									width="235px;" height="235px;"/>
+									
+									</div>
+									</div>
+									
+					    		</center>
+					    	</div>
+					    </div>
+					    </h:form>
+			      </div>
+
+
+			<div class="modal-footer">
+				
+				<div class="btn-group btn-group-sm">
+				
+				<p:commandButton value="Cerrar"  style="width: 150px;"
+				    			icon="ui-icon-minus" 
+				    			action="#" styleClass="btn btn-default"
+				    			onclick="dlgDatosFactura.hide()" update=":formModalFactura"/>
+				
+				<p:commandButton icon="ui-icon-search" style="width: 150px;" 
+					onclick="dlgVistaPrevia.show()"
+					styleClass="btn btn-default" value="Vista Previa" />
+
+				<p:commandButton value="Modificar" icon="ui-icon-disk" style="width: 150px;"
+					action="#{facturaController.modificarFactura()}" styleClass="btn btn-default"
+					update=":formFactura, :formModalFactura, :formModalFactura:growlModal" />
+					
+				</div>	
+				
+			</div>
+
+		</p:dialog>
+		
+		
+		
+		
+		<!-- VISTA PREVIA FACTURA -->
+		<p:dialog showEffect="explode" header="Vista Previa" widgetVar="dlgVistaPrevia" 
+		   		resizable="false" modal="true"  position="center"
+		   		width="750" styleClass="customDialog"
+		   		visible="#{not empty facesContext.maximumSeverity}" id="modalVistaPrevia">  
+			
+				<div class="modal-body">
+	
+					<p:outputPanel autoUpdate="true">		
+					<p:media id="idReporteFactura" player="pdf" 
+							value="#{facturaController.urlFactura}"
+							width="700px" height="500px" />
+					</p:outputPanel>
+	
+				</div>				
+
+				<div class="modal-footer">
+				
+					<div class="btn-group btn-group-sm">
+					
+						<p:commandButton value="Cerrar"  style="width: 150px;"
+					    			icon="ui-icon-minus"
+					    			action="#" styleClass="btn btn-default"
+					    			onclick="dlgVistaPrevia.hide()" />
+						
+					</div>	
+				
+				</div>
+
+		</p:dialog>
+			
+	</ui:define>
+    
+    <ui:define name="footer">
+  
+    </ui:define>
+    
+</ui:composition>

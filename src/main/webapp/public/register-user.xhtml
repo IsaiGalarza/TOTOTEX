@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    JBoss, Home of Professional Open Source
+    Copyright 2014, Red Hat, Inc. and/or its affiliates, and individual
+    contributors by the @authors tag. See the copyright.txt in the
+    distribution for a full listing of individual contributors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+    http://www.apache.org/licenses/LICENSE-2.0
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+-->
+<ui:composition template="/WEB-INF/templates/template.xhtml"
+                xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:a4j="http://richfaces.org/a4j"
+                xmlns:rich="http://richfaces.org/rich"
+                xmlns:my="http://java.sun.com/jsf/composite/components"
+                                                                              xmlns:a="http://richfaces.org/a4j">
+                
+    <ui:define name="header">
+    	<h:outputStylesheet name="app.css" library="css"/>
+        <h:outputScript target="head" name="showMessage.js" library="js"/>
+
+        <h1>Register User</h1>
+		
+        <div>
+            <p>Administrator</p>
+        </div>
+    </ui:define>            
+    
+    <ui:define name="content">
+       <h:form id="reg">
+          <rich:panel style="width : 100%" id="newUserPanel" styleClass=".form" header="User Registration" headerClass="header">
+              <p>Enforces annotation-based constraints defined on the model class.</p>
+
+              <my:userForm id="userForm" user="#{newUser}"/>
+			  
+             <h:panelGrid columns="2">
+                <a4j:commandButton id="register" action="#{userController.register}" value="Register"
+                                   styleClass="register" execute="newUserPanel" render="newUserPanel"/>
+                <rich:messages globalOnly="true"/>
+             </h:panelGrid>
+          </rich:panel>
+          <br />
+
+          <div id="newUserMessages" class="update"/>
+
+          <rich:collapsiblePanel style="width : 100%" id="userList" header="Users" headerClass="header" title="Click to expand/collapse">
+             <h:panelGroup rendered="#{empty users}">
+                <em>No registered users.</em>
+             </h:panelGroup>
+             <rich:dataTable id="userTable" var="_user" value="#{users}" rendered="#{not empty users}" style="width : 100%">
+                   <rich:column id="view">
+                      <a4j:commandLink styleClass="no-decor" render="userPanel" execute="@this"
+                                       oncomplete="#{rich:component('userPopup')}.show()">
+                         View
+                         <f:setPropertyActionListener target="#{userController.user}" value="#{_user}"/>
+                      </a4j:commandLink>
+                   </rich:column>
+                   <rich:column id="user_id">
+                      <f:facet name="header">Id</f:facet>
+                      #{_user.id}
+                   </rich:column>
+                   <rich:column id="user_name">
+                      <f:facet name="header">Name</f:facet>
+                      #{_user.name}
+                   </rich:column>
+                   <rich:column id="user_email">
+                      <f:facet name="header">Email</f:facet>
+                      #{_user.email}
+                   </rich:column>
+                   
+                   <rich:column id="user_roles">
+                      <f:facet name="header">Roles</f:facet>
+                      <a:repeat value="#{userController.getListUserRole(_user.email)}" var="var">
+                      	<li>#{var.roles.name}</li>
+                      </a:repeat>
+                   </rich:column>
+                   
+<!--                    <rich:column id="member_rest_url"> -->
+<!--                       <f:facet name="header">REST URL</f:facet> -->
+<!--                       <a href="#{request.contextPath}/rest/users/#{_user.id}" target="_rest_user">/rest/users/#{_user.id}</a> -->
+<!--                    </rich:column> -->
+                   <f:facet name="footer">
+<!--                       REST URL for all members: <a href="#{request.contextPath}/rest/users" target="_rest_all">/rest/users</a> -->
+                   </f:facet>
+                </rich:dataTable>
+          </rich:collapsiblePanel>
+
+          <rich:popupPanel id="userPopup" modal="true" onmaskclick="#{rich:component('userPopup')}.hide()"
+                           domElementAttachment="form" autosized="true">
+             <f:facet name="header">
+                <h:outputText value="User Details"/>
+             </f:facet>
+             <f:facet name="controls">
+                <h:outputLink value="#" onclick="#{rich:component('userPopup')}.hide(); return false;">
+                   X
+                </h:outputLink>
+             </f:facet>
+             <h:panelGroup id="userPanel">
+                <my:memberForm member="#{user}"/>
+             </h:panelGroup>
+          </rich:popupPanel>
+
+          <a4j:push address="pushCdi" ondataavailable="showMessage(event.rf.data)">
+             <a4j:ajax event="dataavailable" render="userList" />
+          </a4j:push>
+
+       </h:form>
+    </ui:define>
+</ui:composition>

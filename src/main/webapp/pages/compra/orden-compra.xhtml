@@ -1,0 +1,2076 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/templateModuloCompras.xhtml">
+
+	<ui:define name="head">
+		<title>Ordenes de Compra</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+	</ui:define>
+
+	<ui:define name="content">
+
+		<ol class="breadcrumb">
+			<li class="fuente-link-sidebar">
+				<div class="lsf symbol">sitemap</div>
+			</li>
+
+			<li class="fuente-link-sidebar"><a href="/buffalo/"> Inicio
+			</a></li>
+			<li class="active" style="color: orange;"><a class="fuente-link-sidebar"
+				style="color: orange;" href="/buffalo/pages/compra/home.xhtml">Modulo
+					Compra</a></li>
+
+		</ol>
+
+
+		<div class="row">
+			<h:form id="formRegistroPedidoMov" styleClass="form-horizontal">
+				<div class="col-sm-12 col-md-12" align="left">
+
+					<div class="tabbable tabs-left">
+						<ul class="nav nav-tabs span2">
+							<li class="#{pedidoMovController.activePendientes}"><a href="#tabs5-pane1" data-toggle="tab"><STRONG>Ordenes Pendientes</STRONG></a></li>
+							<li class="#{pedidoMovController.activeProcesadas}"><a href="#tabs5-pane2" data-toggle="tab" ><STRONG>Ordenes Procesadas</STRONG></a></li>
+							<li class="#{pedidoMovController.activeAnuladas}"><a href="#tabs5-pane3" data-toggle="tab"><STRONG>Ordenes Anuladas</STRONG></a></li>
+							<li class="#{pedidoMovController.activeTodas}"><a href="#tabs5-pane4" data-toggle="tab"><STRONG>Todas Las Ordenes</STRONG></a></li>
+						</ul>
+						
+						<div class="tab-content span5">
+							<div id="tabs5-pane1" class="tab-pane #{pedidoMovController.activePendientes}">
+								
+								<ui:fragment rendered="#{pedidoMovController.nuevo=='true' or pedidoMovController.modificar=='true' }" id="fragmentNuevo">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">
+												<strong>#{pedidoMovController.tituloPanel}</strong>
+											</h3>
+										</div>
+										<div class="panel-body">
+
+											<div class="row">
+
+												<div class="col-sm-4 col-md-3" align="center">
+													<div class="panel panel-primary">
+														<div class="panel-heading">
+															<h3 class="panel-title">
+																<span class="icon"> <i aria-hidden="true"
+																	class="icon-list"></i>
+																</span> <strong>Datos del Pedido</strong>
+															</h3>
+														</div>
+
+														<h:panelGrid columns="3">
+
+															<h:outputLabel value="Orden Compra" for="ordenID"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}" />
+															<p:inputText id="ordenID" styleClass="form-control"
+																size="30" disabled="true"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}"
+																value="OC-#{pedidoMovController.newPedidoMov.id}">
+															</p:inputText>
+															<p:message for="ordenID"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}" />
+
+															<h:outputLabel for="almacenIID" value="Almacen" />
+
+															<h:selectOneMenu id="almacenIID"
+																value="#{pedidoMovController.newPedidoMov.almIn.id}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por Favor, Seleccione un Almacen!"
+																disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}">
+																<f:selectItem itemValue="" itemLabel="--Seleccione--" />
+																<f:selectItems var="va"
+																	value="#{pedidoMovController.listAlmacen}"
+																	itemValue="#{va.id}" itemLabel="#{va.nombre}" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="almacenIID" />
+
+															<h:outputLabel value="Proveedor:" for="proveedorID" />
+															<h:selectOneMenu id="proveedorID"
+																value="#{pedidoMovController.newPedidoMov.proveedor.id}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por Favor, Seleccione un proveedor!"
+																disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}">
+																<f:selectItem itemValue="" itemLabel="--Seleccione--" />
+																<f:selectItems var="va" value="#{pedidoMovController.listProveedor}"
+																	 itemLabel="#{va.nombre}" itemValue="#{va.id}"/>
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="proveedorID" />
+															
+															<h:outputLabel value="Tipo Cambio $" for="tipoCambioID" />
+															<p:inputText id="tipoCambioID" styleClass="form-control"
+																size="30"  
+																value="#{pedidoMovController.newPedidoMov.tipoCambio}">
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+															</p:inputText>
+															<p:message for="tipoCambioID" />
+
+															<h:outputLabel value="Concepto" for="descripcionID" />
+															<p:inputText id="descripcionID" styleClass="form-control"
+																size="30"
+																disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}"
+																value="#{pedidoMovController.newPedidoMov.observacion}">
+																<p:ajax event="change" />
+															</p:inputText>
+															<p:message for="descripcionID" />
+
+															<h:outputLabel for="documentoID" value="Tipo_Documento" />
+															<h:selectOneMenu id="documentoID"
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Requerido."
+																disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}">
+																<f:selectItem itemValue="NA" itemLabel="Sin Documento" />
+																<f:selectItem itemValue="FACTURA" itemLabel="Factura" />
+																<f:selectItem itemValue="PROFORMA" itemLabel="Proforma" />
+																<f:selectItem itemValue="RECIBO" itemLabel="Recibo" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="documentoID" />                                                             
+                                                            
+															<h:outputLabel 
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"/>
+															<p:inputText id="facturaID" styleClass="form-control" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"
+																disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}"
+																size="30" required="true" requiredMessage="Por Favor, Introduzca el Nº de Documento!"
+																value="#{pedidoMovController.newPedidoMov.numeroDocumento}" validatorMessage="Solo se permiten Digitos">
+																<f:validateRegex pattern="[0-9 ]*" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</p:inputText>
+															<p:message for="facturaID" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"/>
+															
+															
+															
+															<h:outputLabel 
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"/>
+															<p:inputText id="conceptoID" styleClass="form-control" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"
+																disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}"
+																size="30" required="true" requiredMessage="Por Favor, Introduzca una descripcion a NA.!"
+																value="#{pedidoMovController.newPedidoMov.numeroDocumento}" validatorMessage="Solo se permiten Digitos">
+															
+															</p:inputText>
+															<p:message for="conceptoID" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"/>
+															
+
+															<h:outputLabel value="Descuento" for="desUNOGID" />
+															<p:inputText id="desUNOGID" styleClass="form-control"
+																size="30" converter="converterPorcentaje"
+																value="#{pedidoMovController.newPedidoMov.descuentoUno}"
+																required="true" requiredMessage="Requerido.">
+																<f:validateDoubleRange minimum="0" maximum="100"></f:validateDoubleRange>
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+																
+															</p:inputText>
+															<p:message for="desUNOGID" />														
+															
+															
+															<h:outputLabel value="Total Bs" for="totalBSID" />
+															<p:inputText id="totalBSID" styleClass="form-control"
+																disabled="true" size="30"
+																value="#{pedidoMovController.newPedidoMov.total}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+															</p:inputText>
+															<p:message for="totalBSID" />
+															
+															<h:outputLabel value="Total $" for="totalSUSID" />
+															<p:inputText id="totalSUSID" styleClass="form-control"
+																disabled="true" size="30"
+																value="#{pedidoMovController.newPedidoMov.totalSus}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+															</p:inputText>
+															<p:message for="totalSUSID" />
+
+
+															<h:outputLabel value="Fecha_Registro"
+																for="fechaRegistroID" />
+															<p:inputText id="fechaRegistroID"
+																styleClass="form-control" size="40"
+																value="#{pedidoMovController.newPedidoMov.fechaRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Requerido.">
+																<f:convertDateTime pattern="dd/MM/yyyy" />
+															</p:inputText>
+															<p:message for="fechaRegistroID" />
+
+															<h:outputLabel value="Registro" for="usuarioRegistroID" />
+															<p:inputText id="usuarioRegistroID"
+																styleClass="form-control" size="40"
+																value="#{pedidoMovController.newPedidoMov.usuarioRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Usuario Registro Requerido." />
+															<p:message for="usuarioRegistroID" />
+
+															
+
+														</h:panelGrid>
+													</div>
+												</div>
+												<div class="col-sm-5 col-md-9" align="left">
+													<div class="panel panel-success">
+														<div class="panel-heading">
+
+															<h3 class="panel-title">
+																<span class="icon"> <i aria-hidden="true"
+																	class="icon-list"></i>
+																</span> <strong>LISTA DE DETALLE</strong>
+															</h3>
+														</div>
+
+														<div class="panel panel-default">
+															<div class="table-responsive">
+
+																<p:dataTable
+																	styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+																	selection="#{pedidoMovController.selectedDetallePedido}"
+																	selectionMode="single" rowKey="#{_det}"
+																	id="detalleTableID" var="_det"
+																	emptyMessage="No se encontraron registros."
+																	value="#{pedidoMovController.listaPedido}">
+																	<p:ajax event="rowSelect"
+																		update=":formRegistroPedidoMov"
+																		listener="#{pedidoMovController.onRowSelectDetalleClick}" />
+
+
+																	<p:column headerText="Nombre">
+																		<p:outputLabel value="#{_det.producto.nombreProducto}" />
+																	</p:column>
+
+																	<p:column headerText="Cantidad">
+
+																		<h:outputText value="#{_det.cantidad}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																		<p:outputLabel value="Uds." />
+																	</p:column>
+																	<p:column headerText="Precio CP.">
+																		<h:outputText value="#{_det.precioProveedor}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	<p:column headerText="Precio CF.">
+																		<h:outputText value="#{_det.precioUnitario}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	<p:column headerText="Moneda">
+																		<h:outputText rendered="#{_det.moneda=='BS'}"
+																			value="Bolivianos" />
+																		<h:outputText rendered="#{_det.moneda!='BS'}"
+																			value="Dolares" />
+																	</p:column>
+																	
+																	<p:column headerText="Sub-Total BS">
+																		<h:outputText value="#{_det.total}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	
+																	<p:column headerText="Sub-Total $">
+																		<h:outputText value="#{_det.totalDolares}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+
+
+
+																	<p:columnGroup type="footer">
+																		<p:row>
+																			<p:column footerText="Totals: " colspan="5"
+																				style="text-align:right" />
+																			<p:column>
+																				<f:facet name="footer">
+																					<h:outputText value="#{pedidoMovController.newPedidoMov.total}">
+																						<f:convertNumber pattern="#,##0.000"  locale="en" />
+																					</h:outputText>
+																				</f:facet>
+																			</p:column>
+																			
+																			<p:column>
+																				<f:facet name="footer">
+																					<h:outputText value="#{pedidoMovController.newPedidoMov.totalSus}">
+																						<f:convertNumber pattern="#,##0.000"  locale="en" />
+																					</h:outputText>
+																				</f:facet>
+																			</p:column>	
+																		</p:row>
+																	</p:columnGroup>
+
+																</p:dataTable>
+
+															</div>
+
+														</div>
+														<div class="panel-footer" align="right">
+															<p:commandButton value="Agregarss" id="agregarID2"
+																disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}"
+																icon="ui-icon-plus"
+																style="width: 90px;"
+																styleClass="btn btn-success btn-right"
+																update=":formModalDetalleD" immediate="true"
+																actionListener="#{pedidoMovController.listarProducto()}" />
+
+															<p:commandButton id="quitarCompuestoID2" value="Quitar"
+																update=":formRegistroPedidoMov"
+																disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}"
+																actionListener="#{pedidoMovController.eliminarDetallePedido()}"
+																icon="ui-icon-trash"
+																style="width: 90px; text-color: white;"
+																styleClass="btn btn-danger" immediate="true" />
+														</div>
+													</div>
+
+
+												</div>
+											</div>
+										</div>
+
+
+									</div>
+									
+									<div class="btn-group btn-group-sm" style="width: 100%;">
+	
+										<p:commandButton
+											rendered="#{pedidoMovController.modificar=='true' or pedidoMovController.nuevo=='true'}"
+											icon="ui-icon-minus"
+											action="#{pedidoMovController.initNewPedidoMov()}"
+											style="width: 8em;" update=":formRegistroPedidoMov"
+											styleClass="btn btn-default btn-md" value="Cancelar"
+											type="submit" immediate="true" />
+	
+										<p:commandButton
+											rendered="#{pedidoMovController.modificar=='false' and pedidoMovController.nuevo=='true'}"
+											action="#{pedidoMovController.registrarPedidoMov()}"
+											icon="ui-icon-disk" update=":formRegistroPedidoMov"
+											style="width: 8em;" styleClass="btn btn-primary"
+											value="Guardar" type="submit" />
+	
+										<p:commandButton
+											rendered="#{pedidoMovController.modificar=='true'}"
+											icon="ui-icon-refresh"
+											action="#{pedidoMovController.modificarPedidoMov()}"
+											style="width: 8em;" update=":formRegistroPedidoMov"
+											styleClass="btn btn-primary btn-md" value="Modificar"
+											type="submit" />
+	
+										<p:commandButton
+											rendered="#{pedidoMovController.modificar=='true'}"
+											icon="ui-icon-circle-close"
+											disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}"
+											action="#{pedidoMovController.procesarPedido()}"
+											style="width: 8em;" update=":formRegistroPedidoMov,:formAplicarPrecio"
+											styleClass="btn btn-info btn-md" value="Procesar"
+											type="submit" />
+	
+										<p:commandButton
+											rendered="#{pedidoMovController.modificar=='true'}"
+											icon="ui-icon-circle-close"
+											disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}"
+											action="#{pedidoMovController.eliminarPedidoMov()}"
+											style="width: 8em;" update=":formRegistroPedidoMov"
+											styleClass="btn btn-danger btn-md" value="Anular"
+											type="submit" />
+	
+	
+	
+										<p:commandButton value="Ver PDF"
+											styleClass="btn btn-success btn-md"
+											rendered="#{pedidoMovController.modificar=='true'}" update=":formModalVistaPrevia" oncomplete="PF('dlgVistaPrevia').show()"
+											style="width: 16em;" icon="ui-icon-document">
+										</p:commandButton>
+	
+									</div>									
+								
+								</ui:fragment>
+								
+								<div class="btn-group btn-group-sm" style="width: 100%;">
+									<p:commandButton
+												rendered="#{pedidoMovController.modificar=='false' and pedidoMovController.nuevo=='false'}"
+												action="#{pedidoMovController.crearPredido()}"
+												icon="ui-icon-disk" update=":formRegistroPedidoMov"
+												style="width: 8em;" styleClass="btn btn-success btn-md"
+												value="Crear" type="submit" />
+								</div>				
+								
+								<ui:fragment
+									rendered="#{pedidoMovController.nuevo=='false' and pedidoMovController.modificar=='false' }">
+									<div id="newPedidoMovsMessages" class="update" />
+
+									<h:panelGroup rendered="#{empty listaPedidoMov}">
+										<em>No se encontraron registros.</em>
+									</h:panelGroup>
+
+
+									<div class="panel panel-default">
+										<!-- Default panel contents -->
+										<div class="panel-heading">
+											<center>
+												<strong>LISTA DE ORDENES PENDIENTES</strong>
+											</center>
+										</div>
+
+										<!-- Table -->
+										<div class="table-responsive">
+
+											<p:dataTable
+												styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+												selection="#{pedidoMovController.selectedPedidoMov}"
+												selectionMode="single" rowKey="#{_pedido.id}"
+												id="pedidoTable" var="_pedido" value="#{listaPedidoMov}"
+												rendered="#{not empty listaPedidoMov}">
+
+												<p:ajax event="rowSelect" update=":formRegistroPedidoMov"
+													listener="#{pedidoMovController.onRowSelectPedidoMovClick}" />
+
+												<p:column headerText="ID" width="50">
+													<span class="label label-success">OC-#{_pedido.id}</span>
+												</p:column>
+												<p:column headerText="Descripcion"
+													filterBy="#{_pedido.observacion}"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.observacion}" />
+												</p:column>
+
+												<p:column headerText="Remitente/Remitido"
+													filterBy="#{_pedido.usuario.name} -> #{_pedido.usuarioOut.name}"
+													filterMatchMode="contains">
+													<h:outputText
+														value="#{_pedido.usuario.name} -> #{_pedido.usuarioOut.name}"
+														rendered="#{_pedido.tipoPedido=='INT'}" />
+													<h:outputText value="#{_pedido.usuario.name}"
+														rendered="#{_pedido.tipoPedido=='EXT'}" />
+												</p:column>
+
+												<p:column headerText="Alm 1/Alm 2"
+													filterBy="#{_pedido.almIn.nombre} -> #{_pedido.almOut.nombre}"
+													filterMatchMode="contains">
+													<h:outputText
+														value="#{_pedido.almIn.nombre} -> #{_pedido.almOut.nombre}"
+														rendered="#{_pedido.tipoPedido=='INT'}" />
+													<h:outputText value="#{_pedido.almIn.nombre}"
+														rendered="#{_pedido.tipoPedido=='EXT'}" />
+												</p:column>
+												<p:column headerText="Fecha" width="100"
+													filterBy="#{_pedido.fechaRegistro}"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.fechaRegistro}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="Usuario"
+													filterBy="#{_pedido.usuarioRegistro}"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.usuarioRegistro}" />
+												</p:column>
+												<p:column headerText="Total Bs." filterBy="#{_pedido.total}" width="100"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.total}" >
+														<f:convertNumber pattern="#,##0.000"  locale="en" />
+													</h:outputText>
+												</p:column>
+												
+												<p:column headerText="Total $us." filterBy="#{_pedido.totalSus}" width="100"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.totalSus}" >
+														<f:convertNumber pattern="#,##0.000"  locale="en" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="Estado" width="100">
+													<span class="label label-success"><h:outputText
+															rendered="#{_pedido.estado=='AC'}" value="Nuevo" /></span>
+													<span class="label label-primary"><h:outputText
+															rendered="#{_pedido.estado=='PR'}" value="Aprobado" /></span>
+													<span class="label label-danger"><h:outputText
+															rendered="#{_pedido.estado=='RM'}" value="Anulado" /></span>
+												</p:column>
+											</p:dataTable>
+
+										</div>
+									</div>
+								</ui:fragment>
+
+							</div>
+							
+							<div id="tabs5-pane2" class="tab-pane #{pedidoMovController.activeProcesadas}">
+							
+								<ui:fragment id="fragmentProcesarDetalleProcesadas" rendered="#{pedidoMovController.estadoDetalleProcesar}">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">
+												<strong>#{pedidoMovController.tituloPanel}</strong>
+											</h3>
+										</div>
+										<div class="panel-body">
+
+											<div class="row">
+
+												<div class="col-sm-4 col-md-3" align="center">
+													<div class="panel panel-primary">
+														<div class="panel-heading">
+															<h3 class="panel-title">
+																<span class="icon"> <i aria-hidden="true"
+																	class="icon-list"></i>
+																</span> <strong>Datos del Pedido</strong>
+															</h3>
+														</div>
+
+														<h:panelGrid columns="3">
+
+															<h:outputLabel value="Orden Compra" for="ordenIDProcesar"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}" />
+															<p:inputText id="ordenIDProcesar" styleClass="form-control"
+																size="30" disabled="true"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}"
+																value="OC-#{pedidoMovController.newPedidoMov.id}">
+															</p:inputText>
+															<p:message for="ordenIDProcesar"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}" />
+
+
+															<h:outputLabel for="almacenIIDProcesar" value="Almacen" />
+
+															<h:selectOneMenu id="almacenIIDProcesar"
+																value="#{pedidoMovController.newPedidoMov.almIn.id}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por Favor, Seleccione un Almacen!"
+																disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}">
+																<f:selectItem itemValue="" itemLabel="--Seleccione--" />
+																<f:selectItems var="va"
+																	value="#{pedidoMovController.listAlmacen}"
+																	itemValue="#{va.id}" itemLabel="#{va.nombre}" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="almacenIIDProcesar" />
+
+															<h:outputLabel value="Proveedor:" for="proveedorIDProcesar" />
+															<h:selectOneMenu id="proveedorIDProcesar"
+																value="#{pedidoMovController.newPedidoMov.proveedor.id}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por Favor, Seleccione un proveedor!"
+																disabled="true">
+																<f:selectItem itemValue="" itemLabel="--Seleccione--" />
+																<f:selectItems var="va" value="#{pedidoMovController.listProveedor}"
+																	 itemLabel="#{va.nombre}" itemValue="#{va.id}"/>
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="proveedorID" />
+															
+															<h:outputLabel value="Tipo Cambio $" for="tipoCambioIDProcesar" />
+															<p:inputText id="tipoCambioIDProcesar" styleClass="form-control"
+																size="30" disabled="true"
+																value="#{pedidoMovController.newPedidoMov.tipoCambio}">
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+																<p:ajax event="keyup" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+															</p:inputText>
+															<p:message for="tipoCambioIDProcesar" />
+
+															<h:outputLabel value="Concepto" for="descripcionIDProcesar" />
+															<p:inputText id="descripcionIDProcesar" styleClass="form-control"
+																size="30"
+																disabled="true"
+																value="#{pedidoMovController.newPedidoMov.observacion}">
+																<p:ajax event="change" />
+															</p:inputText>
+															<p:message for="descripcionIDProcesar" />
+
+
+															<h:outputLabel for="clienteIDProcesar" value="Tipo_Pedido" />
+															<h:selectOneMenu id="clienteIDProcesar"
+																value="#{pedidoMovController.newPedidoMov.tipoIngreso}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por favor, Seleccione un tipo de pedido!"
+																disabled="true">
+																<f:selectItem itemValue="NA" itemLabel="--Seleccione--" />
+																<f:selectItem itemValue="CONTADO" itemLabel="Contado" />
+																<f:selectItem itemValue="CREDITO" itemLabel="Credito" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="clienteIDProcesar" />
+
+															<h:outputLabel for="documentoIDProcesar" value="Tipo_Documento" />
+															<h:selectOneMenu id="documentoIDProcesar"
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Requerido."
+																disabled="true">
+																<f:selectItem itemValue="NA" itemLabel="Sin Documento" />
+																<f:selectItem itemValue="FACTURA" itemLabel="Factura" />
+																<f:selectItem itemValue="PROFORMA" itemLabel="Proforma" />
+																<f:selectItem itemValue="RECIBO" itemLabel="Recibo" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="documentoIDProcesar" />
+                                                             
+                                                            
+															<p:outputLabel 
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"/>
+															<p:inputText id="facturaIDProcesar" styleClass="form-control" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"
+																disabled="true"
+																size="30" required="true" requiredMessage="Por Favor, Introduzca el Nº de Documento!"
+																value="#{pedidoMovController.newPedidoMov.numeroDocumento}" validatorMessage="Solo se permiten Digitos">
+																<f:validateRegex pattern="[0-9 ]*" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</p:inputText>
+															<p:message for="facturaIDProcesar" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"/>
+															
+															<p:outputLabel 
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"/>
+															<p:inputText id="conceptoProcesarID" styleClass="form-control" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"
+																disabled="#{pedidoMovController.newPedidoMov.estado=='PR'}"
+																size="30" required="true" requiredMessage="Por Favor, Introduzca el Nº de Documento!"
+																value="#{pedidoMovController.newPedidoMov.numeroDocumento}" validatorMessage="Solo se permiten Digitos">
+															
+															</p:inputText>
+															<p:message for="conceptoProcesarID" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"/>
+
+															<h:outputLabel value="Descuento Uno" for="desUNOGIDProcesar" />
+															<p:inputText id="desUNOGIDProcesar" styleClass="form-control"
+																size="30" disabled="true" converter="converterPorcentaje"
+																value="#{pedidoMovController.newPedidoMov.descuentoUno}"
+																required="true" requiredMessage="Requerido.">
+																<f:convertNumber type="percent" />
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+																<p:ajax event="keyup" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+															</p:inputText>
+															<p:message for="desUNOGIDProcesar" />
+															
+															<h:outputLabel value="Descunto Dos" for="desDOSGIDProcesar" />
+															<p:inputText id="desDOSGIDProcesar" styleClass="form-control"
+																size="30" disabled="true" converter="converterPorcentaje"
+																value="#{pedidoMovController.newPedidoMov.descuentoDos}"
+																required="true" requiredMessage="Requerido.">
+																<f:convertNumber type="percent" />
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+																<p:ajax event="keyup" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+															</p:inputText>
+															<p:message for="desDOSGIDProcesar" />
+															
+															<h:outputLabel value="Total Bs" for="totalBSIDProcesar" />
+															<p:inputText id="totalBSIDProcesar" styleClass="form-control"
+																disabled="true" size="30"
+																value="#{pedidoMovController.newPedidoMov.total}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+															</p:inputText>
+															<p:message for="totalBSIDProcesar" />
+															
+															<h:outputLabel value="Total $" for="totalSUSIDProcesar" />
+															<p:inputText id="totalSUSIDProcesar" styleClass="form-control"
+																disabled="true" size="30"
+																value="#{pedidoMovController.newPedidoMov.totalSus}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+															</p:inputText>
+															<p:message for="totalSUSIDProcesar" />																																																
+
+															<h:outputLabel value="Fecha_Registro"
+																for="fechaRegistroIDProcesar" />
+															<p:inputText id="fechaRegistroIDProcesar"
+																styleClass="form-control" size="40"
+																value="#{pedidoMovController.newPedidoMov.fechaRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Requerido.">
+																<f:convertDateTime pattern="dd/MM/yyyy" />
+															</p:inputText>
+															<p:message for="fechaRegistroIDProcesar" />
+
+															<h:outputLabel value="Registro" for="usuarioRegistroIDProcesar" />
+															<p:inputText id="usuarioRegistroIDProcesar"
+																styleClass="form-control" size="40"
+																value="#{pedidoMovController.newPedidoMov.usuarioRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Usuario Registro Requerido." />
+															<p:message for="usuarioRegistroIDProcesar" />
+
+
+														</h:panelGrid>
+													</div>
+												</div>
+												<div class="col-sm-5 col-md-9" align="left">
+													<div class="panel panel-success">
+														<div class="panel-heading">
+
+															<h3 class="panel-title">
+																<span class="icon"> <i aria-hidden="true"
+																	class="icon-list"></i>
+																</span> <strong>LISTA DE DETALLE</strong>
+															</h3>
+														</div>
+
+														<div class="panel panel-default">
+															<div class="table-responsive">
+
+																<p:dataTable
+																	styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+																	selection="#{pedidoMovController.selectedDetallePedido}"
+																	selectionMode="single" rowKey="#{_det}"
+																	id="detalleTableIDProcesar" var="_det"
+																	emptyMessage="No se encontraron registros de preparados."
+																	value="#{pedidoMovController.listaPedido}">
+																	<p:ajax event="rowSelect"
+																		update=":formRegistroPedidoMov"
+																		listener="#{pedidoMovController.onRowSelectDetalleClick}" />
+
+
+																	<p:column headerText="Nombre">
+																		<p:outputLabel value="#{_det.producto.nombreProducto}" />
+																	</p:column>
+
+																	<p:column headerText="Cantidad">
+
+																		<h:outputText value="#{_det.cantidad}">
+																			<f:convertNumber pattern="#,##0.0000"  locale="en" />
+																		</h:outputText>
+																		<p:outputLabel value="Uds." />
+																	</p:column>
+																	<p:column headerText="Precio CP.">
+																		<h:outputText value="#{_det.precioProveedor}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	<p:column headerText="Precio CF.">
+																		<h:outputText value="#{_det.precioUnitario}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	<p:column headerText="Moneda">
+																		<h:outputText rendered="#{_det.moneda=='BS'}"
+																			value="Bolivianos" />
+																		<h:outputText rendered="#{_det.moneda!='BS'}"
+																			value="Dolares" />
+																	</p:column>
+																	<p:column headerText="Sub-Total BS">
+																		<h:outputText value="#{_det.total}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	
+																	<p:column headerText="Sub-Total $">
+																		<h:outputText value="#{_det.totalDolares}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+
+
+
+																	<p:columnGroup type="footer">
+																		<p:row>
+																			<p:column footerText="Totals: " colspan="5"
+																				style="text-align:right" />
+																			<p:column>
+																				<f:facet name="footer">
+																					<h:outputText value="#{pedidoMovController.newPedidoMov.total}">
+																						<f:convertNumber pattern="#,##0.000"  locale="en" />
+																					</h:outputText>
+																				</f:facet>
+																			</p:column>
+																			
+																			<p:column>
+																				<f:facet name="footer">
+																					<h:outputText value="#{pedidoMovController.newPedidoMov.totalSus}">
+																						<f:convertNumber pattern="#,##0.000"  locale="en" />
+																					</h:outputText>
+																				</f:facet>
+																			</p:column>	
+																		</p:row>
+																	</p:columnGroup>
+
+																</p:dataTable>
+
+															</div>
+
+														</div>
+													</div>
+
+
+												</div>
+											</div>
+										</div>
+
+
+									</div>
+									<div class="btn-group btn-group-sm" style="width: 100%;">
+	
+										<p:commandButton
+											icon="ui-icon-minus"
+											action="#{pedidoMovController.updateProcesadas}"
+											style="width: 10em;" update=":formRegistroPedidoMov"
+											styleClass="btn btn-default btn-md" value="Volver Atras"
+											type="submit" immediate="true" />
+	
+	
+										<p:commandButton value="Ver PDF"
+											styleClass="btn btn-success btn-md"
+											update=":formModalVistaPrevia" oncomplete="PF('dlgVistaPrevia').show()"
+											style="width: 16em;" icon="ui-icon-document">
+										</p:commandButton>
+	
+									</div>									
+								</ui:fragment>
+																
+							
+								<ui:fragment rendered="#{!pedidoMovController.estadoDetalleProcesar}" id="fragmentProcesarList">
+									<div id="newPedidoMovsMessages" class="update" />
+
+									<h:panelGroup
+										rendered="#{empty pedidoMovController.listaPedidoProcesadas}">
+										<em>No se encontraron registros.</em>
+									</h:panelGroup>
+
+
+									<div class="panel panel-default">
+										<!-- Default panel contents -->
+										<div class="panel-heading">
+											<center>
+												<strong>LISTA DE ORDENES PROCESADAS</strong>
+											</center>
+										</div>
+
+										<!-- Table -->
+										<div class="table-responsive">
+
+											<p:dataTable
+												styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+												selection="#{pedidoMovController.selectedPedidoMov}"
+												selectionMode="single" rowKey="#{_pedido.id}"
+												id="pedidoPrrocesadasTable" var="_pedido"
+												value="#{pedidoMovController.listaPedidoProcesadas}"
+												rendered="#{not empty pedidoMovController.listaPedidoProcesadas}">
+
+												<p:ajax event="rowSelect" update=":formRegistroPedidoMov"
+													listener="#{pedidoMovController.onRowSelectPedidoProcesadoMovClick}" />
+
+												<p:column headerText="ID" width="50">
+													<span class="label label-success">OC-#{_pedido.id}</span>
+												</p:column>
+												<p:column headerText="Descripcion"
+													filterBy="#{_pedido.observacion}"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.observacion}" />
+												</p:column>
+
+												<p:column headerText="Remitente/Remitido"
+													filterBy="#{_pedido.usuario.name} -> #{_pedido.usuarioOut.name}"
+													filterMatchMode="contains">
+													<h:outputText
+														value="#{_pedido.usuario.name} -> #{_pedido.usuarioOut.name}"
+														rendered="#{_pedido.tipoPedido=='INT'}" />
+													<h:outputText value="#{_pedido.usuario.name}"
+														rendered="#{_pedido.tipoPedido=='EXT'}" />
+												</p:column>
+
+												<p:column headerText="Alm 1/Alm 2"
+													filterBy="#{_pedido.almIn.nombre} -> #{_pedido.almOut.nombre}"
+													filterMatchMode="contains">
+													<h:outputText
+														value="#{_pedido.almIn.nombre} -> #{_pedido.almOut.nombre}"
+														rendered="#{_pedido.tipoPedido=='INT'}" />
+													<h:outputText value="#{_pedido.almIn.nombre}"
+														rendered="#{_pedido.tipoPedido=='EXT'}" />
+												</p:column>
+												<p:column headerText="Fecha" width="100"
+													filterBy="#{_pedido.fechaRegistro}"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.fechaRegistro}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="Total Bs." filterBy="#{_pedido.total}" width="100"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.total}" >
+														<f:convertNumber pattern="#,##0.000"  locale="en" />
+													</h:outputText>
+												</p:column>
+												
+												<p:column headerText="Total $us." filterBy="#{_pedido.totalSus}" width="100"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.totalSus}" >
+														<f:convertNumber pattern="#,##0.000"  locale="en" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="Estado" width="100">
+													<span class="label label-success"><h:outputText
+															rendered="#{_pedido.estado=='AC'}" value="Nuevo" /></span>
+													<span class="label label-primary"><h:outputText
+															rendered="#{_pedido.estado=='PR'}" value="Aprobado" /></span>
+													<span class="label label-danger"><h:outputText
+															rendered="#{_pedido.estado=='RM'}" value="Anulado" /></span>
+												</p:column>
+
+											</p:dataTable>
+
+										</div>
+									</div>
+								</ui:fragment>
+
+							</div>
+
+							<div id="tabs5-pane3" class="tab-pane #{pedidoMovController.activeAnuladas}">
+							    <ui:fragment id="fragmentProcesarDetalleAnuladas" rendered="#{pedidoMovController.estadoDetalleAnular}">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">
+												<strong>#{pedidoMovController.tituloPanel}</strong>
+											</h3>
+										</div>
+										<div class="panel-body">
+
+											<div class="row">
+
+												<div class="col-sm-4 col-md-3" align="center">
+													<div class="panel panel-primary">
+														<div class="panel-heading">
+															<h3 class="panel-title">
+																<span class="icon"> <i aria-hidden="true"
+																	class="icon-list"></i>
+																</span> <strong>Datos del Pedido</strong>
+															</h3>
+														</div>
+
+														<h:panelGrid columns="3">
+
+															<h:outputLabel value="Orden Compra" for="ordenIDAnular"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}" />
+															<p:inputText id="ordenIDAnular" styleClass="form-control"
+																size="30" disabled="true"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}"
+																value="OC-#{pedidoMovController.newPedidoMov.id}">
+															</p:inputText>
+															<p:message for="ordenIDAnular"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}" />
+
+
+															<h:outputLabel for="almacenIIDAnular" value="Almacen" />
+
+															<h:selectOneMenu id="almacenIIDAnular"
+																value="#{pedidoMovController.newPedidoMov.almIn.id}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por Favor, Seleccione un Almacen!"
+																disabled="true">
+																<f:selectItem itemValue="" itemLabel="--Seleccione--" />
+																<f:selectItems var="va"
+																	value="#{pedidoMovController.listAlmacen}"
+																	itemValue="#{va.id}" itemLabel="#{va.nombre}" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="almacenIIDAnular" />
+
+															<h:outputLabel value="Proveedor:" for="proveedorIDAnular" />
+															<h:selectOneMenu id="proveedorIDAnular"
+																value="#{pedidoMovController.newPedidoMov.proveedor.id}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por Favor, Seleccione un proveedor!"
+																disabled="true">
+																<f:selectItem itemValue="" itemLabel="--Seleccione--" />
+																<f:selectItems var="va" value="#{pedidoMovController.listProveedor}"
+																	 itemLabel="#{va.nombre}" itemValue="#{va.id}"/>
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="proveedorIDAnular" />
+															
+															<h:outputLabel value="Tipo Cambio $" for="tipoCambioIDAnular" />
+															<p:inputText id="tipoCambioIDAnular" styleClass="form-control"
+																size="30" disable="true" disabled="true"
+																value="#{pedidoMovController.newPedidoMov.tipoCambio}">
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+																<p:ajax event="keyup" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+															</p:inputText>
+															<p:message for="tipoCambioIDAnular" />
+
+															<h:outputLabel value="Concepto" for="descripcionIDAnular" />
+															<p:inputText id="descripcionIDAnular" styleClass="form-control"
+																size="30"
+																disabled="true"
+																value="#{pedidoMovController.newPedidoMov.observacion}">
+																<p:ajax event="change" />
+															</p:inputText>
+															<p:message for="descripcionIDAnular" />
+
+
+															<h:outputLabel for="clienteIDAnular" value="Tipo_Pedido" />
+															<h:selectOneMenu id="clienteIDAnular" disabled="true"
+																value="#{pedidoMovController.newPedidoMov.tipoIngreso}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por favor, Seleccione un tipo de pedido!">
+																<f:selectItem itemValue="NA" itemLabel="--Seleccione--" />
+																<f:selectItem itemValue="CONTADO" itemLabel="Contado" />
+																<f:selectItem itemValue="CREDITO" itemLabel="Credito" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="clienteIDAnular" />
+
+															<h:outputLabel for="documentoIDAnular" value="Tipo_Documento" />
+															<h:selectOneMenu id="documentoIDAnular" disable="true"
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Requerido."
+																disabled="true">
+																<f:selectItem itemValue="NA" itemLabel="Sin Documento" />
+																<f:selectItem itemValue="FACTURA" itemLabel="Factura" />
+																<f:selectItem itemValue="PROFORMA" itemLabel="Proforma" />
+																<f:selectItem itemValue="RECIBO" itemLabel="Recibo" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="documentoIDAnular" />
+                                                             
+                                                            
+															<p:outputLabel 
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"/>
+															<p:inputText id="facturaIDAnular" styleClass="form-control" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"
+																disabled="true"
+																size="30" required="true" requiredMessage="Por Favor, Introduzca el Nº de Documento!"
+																value="#{pedidoMovController.newPedidoMov.numeroDocumento}" validatorMessage="Solo se permiten Digitos">
+																<f:validateRegex pattern="[0-9 ]*" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</p:inputText>
+															<p:message for="facturaIDAnular" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"/>
+															
+															<p:outputLabel 
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"/>
+															<p:inputText id="conceptoIDAnular" styleClass="form-control" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"
+																disabled="true"
+																size="30" required="true" requiredMessage="Por Favor, Introduzca el Nº de Documento!"
+																value="#{pedidoMovController.newPedidoMov.numeroDocumento}" validatorMessage="Solo se permiten Digitos">
+																
+															</p:inputText>
+															<p:message for="conceptoIDAnular" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"/>
+
+															<h:outputLabel value="Descuento Uno" for="desUNOGIDAnular" />
+															<p:inputText id="desUNOGIDAnular" styleClass="form-control"
+																size="30" disabled="true" converter="converterPorcentaje"
+																value="#{pedidoMovController.newPedidoMov.descuentoUno}"
+																required="true" requiredMessage="Requerido.">
+																<f:convertNumber type="percent" />
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+																<p:ajax event="keyup" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+															</p:inputText>
+															<p:message for="desUNOGIDAnular" />
+															
+															<h:outputLabel value="Descunto Dos" for="desDOSGIDAnular" />
+															<p:inputText id="desDOSGIDAnular" styleClass="form-control"
+																size="30" disabled="true" converter="converterPorcentaje"
+																value="#{pedidoMovController.newPedidoMov.descuentoDos}"
+																required="true" requiredMessage="Requerido.">
+																<f:convertNumber type="percent" />
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+																<p:ajax event="keyup" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+															</p:inputText>
+															<p:message for="desDOSGIDAnular" />
+															
+															<h:outputLabel value="Total Bs" for="totalBSIDAnular" />
+															<p:inputText id="totalBSIDAnular" styleClass="form-control"
+																disabled="true" size="30"
+																value="#{pedidoMovController.newPedidoMov.total}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+															</p:inputText>
+															<p:message for="totalBSIDAnular" />
+															
+															<h:outputLabel value="Total $" for="totalSUSIDAnular" />
+															<p:inputText id="totalSUSIDAnular" styleClass="form-control"
+																disabled="true" size="30"
+																value="#{pedidoMovController.newPedidoMov.totalSus}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+															</p:inputText>
+															<p:message for="totalSUSIDAnular" />
+
+
+															<h:outputLabel value="Fecha_Registro"
+																for="fechaRegistroIDAnular" />
+															<p:inputText id="fechaRegistroIDAnular"
+																styleClass="form-control" size="40"
+																value="#{pedidoMovController.newPedidoMov.fechaRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Requerido.">
+																<f:convertDateTime pattern="dd/MM/yyyy" />
+															</p:inputText>
+															<p:message for="fechaRegistroIDAnular" />
+
+															<h:outputLabel value="Registro" for="usuarioRegistroIDAnular" />
+															<p:inputText id="usuarioRegistroIDAnular"
+																styleClass="form-control" size="40"
+																value="#{pedidoMovController.newPedidoMov.usuarioRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Usuario Registro Requerido." />
+															<p:message for="usuarioRegistroIDAnular" />
+														
+														</h:panelGrid>
+													</div>
+												</div>
+												<div class="col-sm-5 col-md-9" align="left">
+													<div class="panel panel-success">
+														<div class="panel-heading">
+
+															<h3 class="panel-title">
+																<span class="icon"> <i aria-hidden="true"
+																	class="icon-list"></i>
+																</span> <strong>LISTA DE DETALLE</strong>
+															</h3>
+														</div>
+
+														<div class="panel panel-default">
+															<div class="table-responsive">
+
+																<p:dataTable
+																	styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+																	selection="#{pedidoMovController.selectedDetallePedido}"
+																	selectionMode="single" rowKey="#{_det}"
+																	id="detalleTableIDAnular" var="_det"
+																	emptyMessage="No se encontraron registros de preparados."
+																	value="#{pedidoMovController.listaPedido}">
+																	<p:ajax event="rowSelect"
+																		update=":formRegistroPedidoMov"
+																		listener="#{pedidoMovController.onRowSelectDetalleClick}" />
+
+
+																	<p:column headerText="Nombre">
+																		<p:outputLabel value="#{_det.producto.nombreProducto}" />
+																	</p:column>
+
+																	<p:column headerText="Cantidad">
+
+																		<h:outputText value="#{_det.cantidad}">
+																			<f:convertNumber pattern="#,##0.0000"  locale="en" />
+																		</h:outputText>
+																		<p:outputLabel value="Uds." />
+																	</p:column>
+																	<p:column headerText="Precio CP.">
+																		<h:outputText value="#{_det.precioProveedor}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	<p:column headerText="Precio CF.">
+																		<h:outputText value="#{_det.precioUnitario}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	<p:column headerText="Moneda">
+																		<h:outputText rendered="#{_det.moneda=='BS'}"
+																			value="Bolivianos" />
+																		<h:outputText rendered="#{_det.moneda!='BS'}"
+																			value="Dolares" />
+																	</p:column>
+																	<p:column headerText="Sub-Total BS">
+																		<h:outputText value="#{_det.total}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	
+																	<p:column headerText="Sub-Total $">
+																		<h:outputText value="#{_det.totalDolares}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+
+
+
+																	<p:columnGroup type="footer">
+																		<p:row>
+																			<p:column footerText="Totals: " colspan="5"
+																				style="text-align:right" />
+																			<p:column>
+																				<f:facet name="footer">
+																					<h:outputText value="#{pedidoMovController.newPedidoMov.total}">
+																						<f:convertNumber pattern="#,##0.000"  locale="en" />
+																					</h:outputText>
+																				</f:facet>
+																			</p:column>
+																			
+																			<p:column>
+																				<f:facet name="footer">
+																					<h:outputText value="#{pedidoMovController.newPedidoMov.totalSus}">
+																						<f:convertNumber pattern="#,##0.000"  locale="en" />
+																					</h:outputText>
+																				</f:facet>
+																			</p:column>	
+																		</p:row>
+																	</p:columnGroup>
+
+																</p:dataTable>
+
+															</div>
+
+														</div>
+													</div>
+
+
+												</div>
+											</div>
+										</div>
+
+
+									</div>
+									<div class="btn-group btn-group-sm" style="width: 100%;">
+	
+										<p:commandButton
+											icon="ui-icon-minus"
+											action="#{pedidoMovController.updateAnuladas}"
+											style="width: 10em;" update=":formRegistroPedidoMov"
+											styleClass="btn btn-default btn-md" value="Volver Atras"
+											type="submit" immediate="true" />
+	
+	
+										<p:commandButton value="Ver PDF"
+											styleClass="btn btn-success btn-md"
+											update=":formModalVistaPrevia" oncomplete="PF('dlgVistaPrevia').show()"
+											style="width: 16em;" icon="ui-icon-document">
+										</p:commandButton>
+	
+									</div>									
+								</ui:fragment>
+								
+								<ui:fragment rendered="#{!pedidoMovController.estadoDetalleAnular}">
+									<div id="newPedidoMovsMessages" class="update" />
+
+									<h:panelGroup
+										rendered="#{empty pedidoMovController.listaPedidoAnuladas}">
+										<em>No se encontraron registros.</em>
+									</h:panelGroup>
+
+
+									<div class="panel panel-default">
+										<!-- Default panel contents -->
+										<div class="panel-heading">
+											<center>
+												<strong>LISTA DE ORDENES ANULADAS</strong>
+											</center>
+										</div>
+
+										<!-- Table -->
+										<div class="table-responsive">
+
+											<p:dataTable
+												styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+												selection="#{pedidoMovController.selectedPedidoMov}"
+												selectionMode="single" rowKey="#{_pedido.id}"
+												id="pedidoAnuladasTable" var="_pedido"
+												value="#{pedidoMovController.listaPedidoAnuladas}"
+												rendered="#{not empty pedidoMovController.listaPedidoAnuladas}">
+
+												<p:ajax event="rowSelect" update=":formRegistroPedidoMov"
+													listener="#{pedidoMovController.onRowSelectPedidoAnularMovClick}" />
+
+												<p:column headerText="ID" filterBy="#{_pedido.id}" width="50"
+													filterMatchMode="contains">
+													<span class="label label-success">OC-#{_pedido.id}</span>
+												</p:column>
+												<p:column headerText="Descripcion"
+													filterBy="#{_pedido.observacion}"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.observacion}" />
+												</p:column>
+
+												<p:column headerText="Remitente/Remitido"
+													filterBy="#{_pedido.usuario.name} -> #{_pedido.usuarioOut.name}"
+													filterMatchMode="contains">
+													<h:outputText
+														value="#{_pedido.usuario.name} -> #{_pedido.usuarioOut.name}"
+														rendered="#{_pedido.tipoPedido=='INT'}" />
+													<h:outputText value="#{_pedido.usuario.name}"
+														rendered="#{_pedido.tipoPedido=='EXT'}" />
+												</p:column>
+
+												<p:column headerText="Alm 1/Alm 2"
+													filterBy="#{_pedido.almIn.nombre} -> #{_pedido.almOut.nombre}"
+													filterMatchMode="contains">
+													<h:outputText
+														value="#{_pedido.almIn.nombre} -> #{_pedido.almOut.nombre}"
+														rendered="#{_pedido.tipoPedido=='INT'}" />
+													<h:outputText value="#{_pedido.almIn.nombre}"
+														rendered="#{_pedido.tipoPedido=='EXT'}" />
+												</p:column>
+												<p:column headerText="Fecha" width="100"
+													filterBy="#{_pedido.fechaRegistro}"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.fechaRegistro}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="Total Bs." filterBy="#{_pedido.total}" width="100"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.total}" >
+														<f:convertNumber pattern="#,##0.000"  locale="en" />
+													</h:outputText>
+												</p:column>
+												
+												<p:column headerText="Total $us." filterBy="#{_pedido.totalSus}" width="100"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.totalSus}" >
+														<f:convertNumber pattern="#,##0.000"  locale="en" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="Estado" width="100">
+													<span class="label label-success"><h:outputText
+															rendered="#{_pedido.estado=='AC'}" value="Nuevo" /></span>
+													<span class="label label-primary"><h:outputText
+															rendered="#{_pedido.estado=='PR'}" value="Aprobado" /></span>
+													<span class="label label-danger"><h:outputText
+															rendered="#{_pedido.estado=='RM'}" value="Anulado" /></span>
+												</p:column>
+
+											</p:dataTable>
+
+										</div>
+									</div>
+								</ui:fragment>
+
+							</div>
+						
+							<div id="tabs5-pane4" class="tab-pane #{pedidoMovController.activeTodas}">
+								
+								<ui:fragment id="fragmentProcesarDetalleTodas" rendered="#{pedidoMovController.estadoDetalleTodas}">
+									<div class="panel panel-default">
+										<div class="panel-heading">
+											<h3 class="panel-title">
+												<strong>#{pedidoMovController.tituloPanel}</strong>
+											</h3>
+										</div>
+										<div class="panel-body">
+
+											<div class="row">
+
+												<div class="col-sm-4 col-md-3" align="center">
+													<div class="panel panel-primary">
+														<div class="panel-heading">
+															<h3 class="panel-title">
+																<span class="icon"> <i aria-hidden="true"
+																	class="icon-list"></i>
+																</span> <strong>Datos del Pedido</strong>
+															</h3>
+														</div>
+
+														<h:panelGrid columns="3">
+
+															<h:outputLabel value="Orden Compra" for="ordenIDTodas"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}" />
+															<p:inputText id="ordenIDTodas" styleClass="form-control"
+																size="30" disabled="true"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}"
+																value="OC-#{pedidoMovController.newPedidoMov.id}">
+															</p:inputText>
+															<p:message for="ordenIDTodas"
+																rendered="#{pedidoMovController.newPedidoMov.id gt 0}" />
+
+
+															<h:outputLabel for="almacenIIDTodas" value="Almacen" />
+
+															<h:selectOneMenu id="almacenIIDTodas"
+																value="#{pedidoMovController.newPedidoMov.almIn.id}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por Favor, Seleccione un Almacen!"
+																disabled="#{pedidoMovController.newPedidoMov.estado!='AC'}">
+																<f:selectItem itemValue="" itemLabel="--Seleccione--" />
+																<f:selectItems var="va"
+																	value="#{pedidoMovController.listAlmacen}"
+																	itemValue="#{va.id}" itemLabel="#{va.nombre}" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="almacenIIDTodas" />
+
+															<h:outputLabel value="Proveedor:" for="proveedorIDTodas" />
+															<h:selectOneMenu id="proveedorIDTodas"
+																value="#{pedidoMovController.newPedidoMov.proveedor.id}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por Favor, Seleccione un proveedor!"
+																disabled="#{pedidoMovController.newPedidoMov.estado!='AC'}">
+																<f:selectItem itemValue="" itemLabel="--Seleccione--" />
+																<f:selectItems var="va" value="#{pedidoMovController.listProveedor}"
+																	 itemLabel="#{va.nombre}" itemValue="#{va.id}"/>
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="proveedorIDTodas" />
+															
+															<h:outputLabel value="Tipo Cambio $" for="tipoCambioIDTodas" />
+															<p:inputText id="tipoCambioIDTodas" styleClass="form-control"
+																size="30" disabled="#{pedidoMovController.newPedidoMov.estado!='AC'}"
+																value="#{pedidoMovController.newPedidoMov.tipoCambio}">
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+																<p:ajax event="keyup" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+															</p:inputText>
+															<p:message for="tipoCambioIDTodas" />
+
+															<h:outputLabel value="Concepto" for="descripcionIDTodas" />
+															<p:inputText id="descripcionIDTodas" styleClass="form-control"
+																size="30"
+																disabled="#{pedidoMovController.newPedidoMov.estado!='AC'}"
+																value="#{pedidoMovController.newPedidoMov.observacion}">
+																<p:ajax event="change" />
+															</p:inputText>
+															<p:message for="descripcionIDTodas" />
+
+
+															<h:outputLabel for="clienteIDTodas" value="Tipo_Pedido" />
+															<h:selectOneMenu id="clienteIDTodas"
+																value="#{pedidoMovController.newPedidoMov.tipoIngreso}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Por favor, Seleccione un tipo de pedido!"
+																disabled="#{pedidoMovController.newPedidoMov.estado!='AC'}">
+																<f:selectItem itemValue="NA" itemLabel="--Seleccione--" />
+																<f:selectItem itemValue="CONTADO" itemLabel="Contado" />
+																<f:selectItem itemValue="CREDITO" itemLabel="Credito" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="clienteIDTodas" />
+
+															<h:outputLabel for="documentoIDTodas" value="Tipo_Documento" />
+															<h:selectOneMenu id="documentoIDTodas"
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}"
+																styleClass="form-control" effect="fade" required="true"
+																requiredMessage="Requerido."
+																disabled="#{pedidoMovController.newPedidoMov.estado!='AC'}">
+																<f:selectItem itemValue="NA" itemLabel="Sin Documento" />
+																<f:selectItem itemValue="FACTURA" itemLabel="Factura" />
+																<f:selectItem itemValue="PROFORMA" itemLabel="Proforma" />
+																<f:selectItem itemValue="RECIBO" itemLabel="Recibo" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</h:selectOneMenu>
+															<p:message for="documentoIDTodas" />
+                                                             
+                                                            
+															<p:outputLabel 
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"/>
+															<p:inputText id="facturaIDTodas" styleClass="form-control" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"
+																disabled="#{pedidoMovController.newPedidoMov.estado!='AC'}"
+																size="30" required="true" requiredMessage="Por Favor, Introduzca el Nº de Documento!"
+																value="#{pedidoMovController.newPedidoMov.numeroDocumento}" validatorMessage="Solo se permiten Digitos">
+																<f:validateRegex pattern="[0-9 ]*" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</p:inputText>
+															<p:message for="facturaIDTodas" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento!='NA'}"/>
+															
+															<p:outputLabel 
+																value="#{pedidoMovController.newPedidoMov.tipoDocumento}" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"/>
+															<p:inputText id="conceptoIDTodas" styleClass="form-control" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"
+																disabled="true"
+																size="30" required="true" requiredMessage="Por Favor, Introduzca el Nº de Documento!"
+																value="#{pedidoMovController.newPedidoMov.numeroDocumento}" validatorMessage="Solo se permiten Digitos">
+																<f:validateRegex pattern="[0-9 ]*" />
+																<p:ajax event="change" update=":formRegistroPedidoMov" />
+															</p:inputText>
+															<p:message for="conceptoIDTodas" rendered="#{pedidoMovController.newPedidoMov.tipoDocumento=='NA'}"/>
+
+															<h:outputLabel value="Descuento Uno" for="desUNOGIDTodas" />
+															<p:inputText id="desUNOGIDTodas" styleClass="form-control" converter="converterPorcentaje"
+																size="30" disabled="#{pedidoMovController.newPedidoMov.estado!='AC'}"
+																value="#{pedidoMovController.newPedidoMov.descuentoUno}"
+																required="true" requiredMessage="Requerido.">
+																<f:convertNumber type="percent" />
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+																<p:ajax event="keyup" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+															</p:inputText>
+															<p:message for="desUNOGIDTodas" />
+															
+															<h:outputLabel value="Descunto Dos" for="desDOSGIDTodas" />
+															<p:inputText id="desDOSGIDTodas" styleClass="form-control" converter="converterPorcentaje"
+																size="30" disabled="#{pedidoMovController.newPedidoMov.estado!='AC'}"
+																value="#{pedidoMovController.newPedidoMov.descuentoDos}"
+																required="true" requiredMessage="Requerido.">
+																<f:convertNumber type="percent" />
+																<p:ajax event="change" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+																<p:ajax event="keyup" immediate="true"
+																update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID" 
+																listener="#{pedidoMovController.actualizarOrdenDetalle}"/>
+															</p:inputText>
+															<p:message for="desDOSGIDTodas" />
+															
+															<h:outputLabel value="Total Bs" for="totalBSIDTodas" />
+															<p:inputText id="totalBSIDTodas" styleClass="form-control"
+																disabled="true" size="30"
+																value="#{pedidoMovController.newPedidoMov.total}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+															</p:inputText>
+															<p:message for="totalBSIDTodas" />
+															
+															<h:outputLabel value="Total $" for="totalSUSIDTodas" />
+															<p:inputText id="totalSUSIDTodas" styleClass="form-control"
+																disabled="true" size="30"
+																value="#{pedidoMovController.newPedidoMov.totalSus}"
+																required="true" requiredMessage="Requerido.">
+																<p:ajax event="change" />
+																<f:convertNumber pattern="#,##0.000"  locale="en" />
+															</p:inputText>
+															<p:message for="totalSUSIDTodas" />
+
+
+
+															<h:outputLabel value="Fecha_Registro"
+																for="fechaRegistroIDTodas" />
+															<p:inputText id="fechaRegistroIDTodas"
+																styleClass="form-control" size="40"
+																value="#{pedidoMovController.newPedidoMov.fechaRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Requerido.">
+																<f:convertDateTime pattern="dd/MM/yyyy" />
+															</p:inputText>
+															<p:message for="fechaRegistroIDTodas" />
+
+															<h:outputLabel value="Registro" for="usuarioRegistroIDTodas" />
+															<p:inputText id="usuarioRegistroIDTodas"
+																styleClass="form-control" size="40"
+																value="#{pedidoMovController.newPedidoMov.usuarioRegistro}"
+																disabled="true" required="true"
+																requiredMessage="Usuario Registro Requerido." />
+															<p:message for="usuarioRegistroIDTodas" />
+
+															
+
+														</h:panelGrid>
+													</div>
+												</div>
+												
+												<div class="col-sm-5 col-md-9" align="left">
+													<div class="panel panel-success">
+														<div class="panel-heading">
+
+															<h3 class="panel-title">
+																<span class="icon"> <i aria-hidden="true"
+																	class="icon-list"></i>
+																</span> <strong>LISTA DE DETALLE</strong>
+															</h3>
+														</div>
+
+														<div class="panel panel-default">
+															<div class="table-responsive">
+
+																<p:dataTable
+																	styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+																	selection="#{pedidoMovController.selectedDetallePedido}"
+																	selectionMode="single" rowKey="#{_det}"
+																	id="detalleTableIDTodas" var="_det"
+																	emptyMessage="No se encontraron registros de preparados."
+																	value="#{pedidoMovController.listaPedido}">
+																	<p:ajax event="rowSelect"
+																		update=":formRegistroPedidoMov"
+																		listener="#{pedidoMovController.onRowSelectPedidoTodasMovClick}" />
+
+
+																	<p:column headerText="Nombre">
+																		<p:outputLabel value="#{_det.producto.nombreProducto}" />
+																	</p:column>
+
+																	<p:column headerText="Cantidad">
+
+																		<h:outputText value="#{_det.cantidad}">
+																			<f:convertNumber pattern="#,##0.0000"  locale="en" />
+																		</h:outputText>
+																		<p:outputLabel value="Uds." />
+																	</p:column>
+																	<p:column headerText="Precio CP.">
+																		<h:outputText value="#{_det.precioProveedor}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	<p:column headerText="Precio CF.">
+																		<h:outputText value="#{_det.precioUnitario}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	<p:column headerText="Moneda">
+																		<h:outputText rendered="#{_det.moneda=='BS'}"
+																			value="Bolivianos" />
+																		<h:outputText rendered="#{_det.moneda!='BS'}"
+																			value="Dolares" />
+																	</p:column>
+																	<p:column headerText="Sub-Total BS">
+																		<h:outputText value="#{_det.total}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+																	
+																	<p:column headerText="Sub-Total $">
+																		<h:outputText value="#{_det.totalDolares}">
+																			<f:convertNumber pattern="#,##0.000"  locale="en" />
+																		</h:outputText>
+																	</p:column>
+
+
+
+																	<p:columnGroup type="footer">
+																		<p:row>
+																			<p:column footerText="Totals: " colspan="5"
+																				style="text-align:right" />
+																			<p:column>
+																				<f:facet name="footer">
+																					<h:outputText value="#{pedidoMovController.newPedidoMov.total}">
+																						<f:convertNumber pattern="#,##0.000"  locale="en" />
+																					</h:outputText>
+																				</f:facet>
+																			</p:column>
+																			
+																			<p:column>
+																				<f:facet name="footer">
+																					<h:outputText value="#{pedidoMovController.newPedidoMov.totalSus}">
+																						<f:convertNumber pattern="#,##0.000"  locale="en" />
+																					</h:outputText>
+																				</f:facet>
+																			</p:column>	
+																		</p:row>
+																	</p:columnGroup>
+
+
+																</p:dataTable>
+
+															</div>
+
+														</div>
+														
+														<div class="panel-footer" align="right">
+															<p:commandButton value="Agregar" id="agregarID2Todas"
+																rendered="#{pedidoMovController.newPedidoMov.estado=='AC'}"
+																icon="ui-icon-plus"
+																style="width: 90px;"
+																styleClass="btn btn-success btn-right"
+																update=":formModalDetalleD" immediate="true"
+																actionListener="#{pedidoMovController.listarProducto()}" />
+
+															<p:commandButton id="quitarCompuestoID2Todas" value="Quitar"
+																update=":formRegistroPedidoMov"
+																rendered="#{pedidoMovController.newPedidoMov.estado=='AC'}"
+																actionListener="#{pedidoMovController.eliminarDetallePedido()}"
+																icon="ui-icon-trash"
+																style="width: 90px; text-color: white;"
+																styleClass="btn btn-danger" immediate="true" />
+
+
+														</div>														
+													</div>
+
+
+												</div>
+											</div>
+										</div>
+
+
+									</div>
+									
+									<div class="btn-group btn-group-sm" style="width: 100%;">
+	
+										<p:commandButton
+											icon="ui-icon-minus"
+											action="#{pedidoMovController.updateTodas}"
+											style="width: 10em;" update=":formRegistroPedidoMov"
+											styleClass="btn btn-default btn-md" value="Volver Atras"
+											type="submit" immediate="true" />
+											
+											
+										<p:commandButton
+											rendered="#{pedidoMovController.newPedidoMov.estado=='AC'}"
+											icon="ui-icon-refresh"
+											action="#{pedidoMovController.modificarPedidoMov()}"
+											style="width: 8em;" update=":formRegistroPedidoMov"
+											styleClass="btn btn-primary btn-md" value="Modificar"
+											type="submit" />
+	
+										<p:commandButton
+											rendered="#{pedidoMovController.newPedidoMov.estado=='AC'}"
+											icon="ui-icon-circle-close"
+											action="#{pedidoMovController.procesarPedido()}"
+											style="width: 8em;" update=":formRegistroPedidoMov:formAplicarPrecio"
+											styleClass="btn btn-info btn-md" value="Procesar"
+											type="submit" />
+	
+										<p:commandButton
+											rendered="#{pedidoMovController.newPedidoMov.estado=='AC'}"
+											icon="ui-icon-circle-close"
+											action="#{pedidoMovController.eliminarPedidoMov()}"
+											style="width: 8em;" update=":formRegistroPedidoMov"
+											styleClass="btn btn-danger btn-md" value="Anular"
+											type="submit" />	
+	
+	
+										<p:commandButton value="Ver PDF"
+											styleClass="btn btn-success btn-md"
+											update=":formModalVistaPrevia" oncomplete="PF('dlgVistaPrevia').show()"
+											style="width: 16em;" icon="ui-icon-document">
+										</p:commandButton>
+	
+									</div>									
+								</ui:fragment>
+<!-- 								lista de todas las ordenes -->
+								<ui:fragment
+									rendered="#{!pedidoMovController.estadoDetalleTodas}">
+									<div id="newPedidoMovsMessages" class="update" />
+
+									<h:panelGroup
+										rendered="#{empty pedidoMovController.listaPedidoTodos}">
+										<em>No se encontraron registros.</em>
+									</h:panelGroup>
+
+
+									<div class="panel panel-default">
+										<!-- Default panel contents -->
+										<div class="panel-heading">
+											<center>
+												<strong>LISTA DE TODAS LAS ORDENES</strong>
+											</center>
+										</div>
+
+										<!-- Table -->
+										<div class="table-responsive">
+
+											<p:dataTable
+												styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+												selection="#{pedidoMovController.selectedPedidoMov}"
+												selectionMode="single" rowKey="#{_pedido.id}"
+												id="pedidoAllTable" var="_pedido"
+												value="#{pedidoMovController.listaPedidoTodos}"
+												rendered="#{not empty pedidoMovController.listaPedidoTodos}">
+
+												<p:ajax event="rowSelect" update=":formRegistroPedidoMov"
+													listener="#{pedidoMovController.onRowSelectPedidoTodasMovClick}" />
+
+												<p:column headerText="ID" filterBy="#{_pedido.id}" width="50"
+													filterMatchMode="contains">
+													<span class="label label-success">OC-#{_pedido.id}</span>
+												</p:column>
+												<p:column headerText="Descripcion"
+													filterBy="#{_pedido.observacion}"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.observacion}" />
+												</p:column>
+
+												<p:column headerText="Remitente/Remitido"
+													filterBy="#{_pedido.usuario.name} -> #{_pedido.usuarioOut.name}"
+													filterMatchMode="contains">
+													<h:outputText
+														value="#{_pedido.usuario.name} -> #{_pedido.usuarioOut.name}"
+														rendered="#{_pedido.tipoPedido=='INT'}" />
+													<h:outputText value="#{_pedido.usuario.name}"
+														rendered="#{_pedido.tipoPedido=='EXT'}" />
+												</p:column>
+
+												<p:column headerText="Alm 1/Alm 2"
+													filterBy="#{_pedido.almIn.nombre} -> #{_pedido.almOut.nombre}"
+													filterMatchMode="contains">
+													<h:outputText
+														value="#{_pedido.almIn.nombre} -> #{_pedido.almOut.nombre}"
+														rendered="#{_pedido.tipoPedido=='INT'}" />
+													<h:outputText value="#{_pedido.almIn.nombre}"
+														rendered="#{_pedido.tipoPedido=='EXT'}" />
+												</p:column>
+												<p:column headerText="Fecha" width="100"
+													filterBy="#{_pedido.fechaRegistro}"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.fechaRegistro}">
+														<f:convertDateTime pattern="dd/MM/yyyy" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="Total Bs." filterBy="#{_pedido.total}" width="100"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.total}" >
+														<f:convertNumber pattern="#,##0.000"  locale="en" />
+													</h:outputText>
+												</p:column>
+												
+												<p:column headerText="Total $us." filterBy="#{_pedido.totalSus}" width="100"
+													filterMatchMode="contains">
+													<h:outputText value="#{_pedido.totalSus}" >
+														<f:convertNumber pattern="#,##0.000"  locale="en" />
+													</h:outputText>
+												</p:column>
+
+												<p:column headerText="Estado" width="100">
+													<span class="label label-success"><h:outputText
+															rendered="#{_pedido.estado=='AC'}" value="Nuevo" /></span>
+													<span class="label label-primary"><h:outputText
+															rendered="#{_pedido.estado=='PR'}" value="Aprobado" /></span>
+													<span class="label label-danger"><h:outputText
+															rendered="#{_pedido.estado=='RM'}" value="Anulado" /></span>
+												</p:column>
+
+											</p:dataTable>
+
+										</div>
+									</div>
+								</ui:fragment>
+
+							</div>
+						</div>
+					</div>
+
+				</div>
+			</h:form>
+		</div>
+
+
+		<p:dialog showEffect="explode"  minimizable="true" maximizable="true"
+			widgetVar="dlgPreparado" resizable="true" modal="true"
+			position="center"  styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalPreparado">
+
+			<div class="modal-body">
+				<h:form id="formModalDetalleD">
+					<div class="col-sm-5 col-md-12" align="left">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<strong>INGRESO DE MATERIA PRIMA</strong>
+							</div>
+							
+							<h:panelGrid columns="2" >
+					     		<p:outputLabel value="Producto:         "   />									        
+						        <p:autoComplete id="productoID" value="#{pedidoMovController.selectedProductoProveedor.id}" completeMethod="#{pedidoMovController.completeSearhProducto}"
+						                        var="producto" itemLabel="#{producto.producto.nombreProducto}"  itemValue="#{producto.id}"  forceSelection="true"
+						                        size="100">  
+						            <p:ajax event="itemSelect" listener="#{pedidoMovController.onRowSelectProductoClick}" update=":formModalDetalleD:detalle"/>
+						            <p:column style="width: 20%;" >
+						                <h:outputText value="#{producto.producto.codigoProducto}" />
+						            </p:column>
+						 
+						            <p:column style="width: 40%;">
+						                <h:outputText value="#{producto.producto.nombreProducto}"  />
+						            </p:column>
+						            <p:column style="width: 40%;">
+						                <h:outputText value="#{producto.lineasProveedor.nombre}"  />
+						            </p:column>
+						        </p:autoComplete>
+					     	</h:panelGrid>
+						   
+						   <h:panelGrid columns="2" id="detalle">
+						   		<h:panelGrid columns="2">				        
+							        <p:outputLabel value="Proveedor:" />
+							        <p:inputText id="proveedorID" value="#{pedidoMovController.newPedidoMov.proveedor.nombre} "
+							        disabled="true"  styleClass="form-control" size="30"> 
+							        </p:inputText>  							       						
+									<h:outputLabel value="Cantidad:" for="cantidadID" />
+									<p:inputText id="cantidadID" styleClass="form-control" type="number"
+										size="30" value="#{pedidoMovController.selectedDetallePedido.cantidad}" rendered="true"
+										requiredMessage="Llenar este campo..." validatorMessage="La cantidad minima es 1!">
+										<p:ajax event="change" update=":formModalDetalleD:detalle"
+											listener="#{pedidoMovController.calcularCantidad}" />
+										<f:validateLongRange minimum="1" />
+									</p:inputText>									
+																	
+									<h:outputLabel value="Aplicar Descuento:" for="paneIDS"/>
+									<h:panelGrid columns="4" id="paneIDS">
+										 <p:selectBooleanCheckbox id="checkIDUNO" value="#{pedidoMovController.aplicardescuentoUno}" >
+								        <p:ajax update=":formModalDetalleD:detalle" listener="#{pedidoMovController.calcularDescuentos}" />
+								        </p:selectBooleanCheckbox>
+								   </h:panelGrid>			
+											
+								</h:panelGrid>		
+											
+	
+									<h:panelGrid columns="2">	
+													
+										<h:outputLabel value="Total Item Bs:" for="totalBSD"/>
+										<p:inputText styleClass="form-control" size="30" 
+											value="#{pedidoMovController.selectedDetallePedido.total}" disabled="#{pedidoMovController.selectedProductoProveedor.tipoCambio=='US'}" id="totalBSD">
+											<f:convertNumber pattern="#,##0.000"  locale="en" />
+											<p:ajax event="change" update=":formModalDetalleD:detalle"
+											listener="#{pedidoMovController.calcularCantidad}" />
+											
+										</p:inputText>
+										
+										
+										<h:outputLabel value="Total Item $us:"  for="totalBSUSD"/>
+										<p:inputText styleClass="form-control" size="30" 
+											value="#{pedidoMovController.selectedDetallePedido.totalDolares}" disabled="#{pedidoMovController.selectedProductoProveedor.tipoCambio=='BS'}" 
+											id="totalBSUSD">
+											<f:convertNumber pattern="#,##0.000"  locale="en" />
+											<p:ajax event="change" update=":formModalDetalleD:detalle"
+											listener="#{pedidoMovController.calcularCantidad}" />
+											
+										</p:inputText>
+										
+										<h:outputLabel value="Precio U. Proveedor #{pedidoMovController.moneda}:" for="precioPID" />
+										<p:inputText id="precioPID" styleClass="form-control" size="30"
+											value="#{pedidoMovController.selectedProductoProveedor.precioUnitarioCompra}"
+											disabled="true" >
+											<f:convertNumber pattern="#,##0.000"  locale="en" />
+										</p:inputText>
+										
+										<h:outputLabel rendered="false" value="Precio U. Calculado #{pedidoMovController.moneda}:" for="precioID" />
+										<p:inputText rendered="false" id="precioID" styleClass="form-control" size="30"
+											value="#{pedidoMovController.selectedDetallePedido.precioUnitario}"
+											disabled="true" >
+											<f:convertNumber pattern="#,##0.000"  locale="en" />
+										</p:inputText>
+										
+										<h:outputLabel rendered="false" value="Precio Venta Calculado Bs.:" for="precioVID" />
+										<p:inputText rendered="false" id="precioVID" styleClass="form-control" size="30" 
+											value="#{pedidoMovController.selectedDetallePedido.precioVenta}"
+											disabled="#{!pedidoMovController.aplicarPrecioVenta}" >
+											<f:convertNumber pattern="#,##0.000"  locale="en" />
+											<p:ajax event="change" update=":formModalDetalleD:detalle"
+											listener="#{pedidoMovController.calcularMargenUtilidad}" />
+										</p:inputText>
+										
+										
+										<h:outputLabel rendered="false" value="Precio Venta Actual Bs.:" styleClass="control-label" for="inputSuccess" />
+										<p:inputText rendered="false" id="inputSuccess" styleClass="form-control" size="30"  style="color:White;background:Red;"
+											value="#{pedidoMovController.selectedProductoProveedor.producto.precio}"
+											disabled="true" >
+											<f:convertNumber pattern="#,##0.000"  locale="en" />
+										</p:inputText>
+										
+										<h:outputLabel rendered="false" value="" for="value2" />
+										<p:selectBooleanButton rendered="false" id="value2"  value="#{pedidoMovController.aplicarPrecioVenta}" 
+										 onLabel="Quitar Aplicar Precio V." offLabel="Aplicar Precio Venta" onIcon="ui-icon-close" offIcon="ui-icon-check"
+										 >
+								            <p:ajax update=":formModalDetalleD:precioVID" listener="#{pedidoMovController.addMessage}" />
+								        </p:selectBooleanButton>
+										
+									</h:panelGrid>								
+						   </h:panelGrid>
+
+							<div class="panel-footer" style="padding: 1px 1px 1px 1px;">
+								<div class="btn-group btn-group-sm" style="width: 100%;">
+									<p:commandButton action="#{pedidoMovController.agregarDetalle()}"
+										icon="ui-icon-plus" style="width: 100%;"
+										update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID,:formRegistroPedidoMov:detalleTableID, :formModalDetalleD:detalle"
+										value="Agregar"  oncomplete="PF('dlgPreparado').hide()" />
+
+								</div>
+						  </div>
+						</div>
+					</div>
+				</h:form>
+			</div>
+
+			<div class="modal-footer">
+				<div class="btn-group btn-group-sm">
+					<p:commandButton value="Cerrar" style="width: 8em;"
+						icon="ui-icon-minus"
+						update=":formRegistroPedidoMov:totalBSID,:formRegistroPedidoMov:totalSUSID,:formRegistroPedidoMov:detalleTableID,:formRegistroPedidoMov:detalleTableID, :formModalDetalleD:detalle" action="#"
+						oncomplete="PF('dlgPreparado').hide()" />
+				</div>
+
+			</div>
+
+		</p:dialog>
+		
+		<p:dialog header="Aplicar Precio Venta" widgetVar="dlgAplicarPrecio" resizable="false">
+			<h:form id="formAplicarPrecio">
+	        <h:panelGrid columns="1" cellpadding="5">
+	            <p:outputLabel id="nota" value="Nota: Se aplicaran todos los precios de Venta de los siguientes productos"></p:outputLabel>
+	            
+	            <p:dataTable reflow="true" value="#{pedidoMovController.listAplicarPrecio}" var="producto">
+	            	<p:column headerText="Producto">
+	            		#{producto.producto.nombreProducto}
+	            	</p:column>
+	            	
+	            	<p:column headerText="Precio Venta Actual">
+	            		<h:outputText value="#{producto.producto.precio}">
+							<f:convertNumber pattern="#,##0.000"  locale="en" />
+						</h:outputText>
+	            	</p:column>
+	            	
+	            	<p:column headerText="Precio Venta Nuevo">
+	            		<h:outputText value="#{producto.precioVenta}">
+							<f:convertNumber pattern="#,##0.000"  locale="en" />
+						</h:outputText>
+	            	</p:column>
+	            </p:dataTable>
+	 
+	            <f:facet name="footer">
+	                <p:commandButton value="Aplicar" actionListener="#{pedidoMovController.aplicarPrecio}"
+	                                 oncomplete="PF('dlgAplicarPrecio').hide()" />
+	                <p:commandButton value="Cancelar" actionListener="#{pedidoMovController.noAplicarPrecio}"
+	                                 oncomplete="PF('dlgAplicarPrecio').hide()" />
+	            </f:facet>  
+	        </h:panelGrid>
+	        </h:form>
+    	</p:dialog>
+
+		<!-- VISTA PREVIA REPORTE -->
+		<p:dialog showEffect="explode" header="Vista Previa"
+			widgetVar="dlgVistaPrevia" resizable="false" modal="true"
+			position="center" width="750" styleClass="customDialog"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalVistaPrevia">
+
+			<h:form id="formModalVistaPrevia">
+					<div class="modal-body">
+					<p:media player="pdf" value="#{pedidoMovController.URL}"
+						width="700px" height="500px" />
+					</div>
+				
+			</h:form>
+
+			<div class="modal-footer">
+
+				<div class="btn-group btn-group-sm">
+
+					<p:commandButton value="Cerrar" style="width: 150px;"
+						icon="ui-icon-minus" styleClass="btn btn-default"
+						oncomplete="PF('dlgVistaPrevia').hide()" />
+				</div>
+			</div>
+		</p:dialog>
+	</ui:define>
+	
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

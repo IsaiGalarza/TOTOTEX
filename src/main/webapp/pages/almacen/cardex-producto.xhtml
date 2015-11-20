@@ -1,0 +1,202 @@
+
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" 
+	xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/template.xhtml">
+
+	<ui:define name="head">
+		<title>:: Cardex Producto ::</title>
+	</ui:define>
+
+	<ui:define name="header">
+
+		<div class="panel-body" style="padding: 0px 0px 0px 0px;">
+			<div class="row">
+				<div class="col-sm-6 col-md-3" align="left">
+					<div class="thumbnail">
+						<h:graphicImage sclass="thumbnail" name="logo.jpg" library="gfx"
+							width="60px;" height="50px;" />
+					</div>
+				</div>
+				<div class="col-sm-6 col-md-3">
+					<h2>
+						<span class="label label-default">Cardex Producto</span>
+					</h2>
+				</div>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formProductoCardex">
+
+			<div class="panel-body" >
+
+				<div class="row">
+
+					<div class="col-sm-4 col-md-3" align="center">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<strong>
+								<i aria-hidden="true" class="glyphicon glyphicon-search"></i>
+								Filtros Cardex
+								</strong>
+							</div>
+							<h:panelGrid columns="2">
+								<p:outputLabel value="Almacen" />
+								<h:selectOneMenu id="almacenID"
+									value="#{cardexController.almacen.id}"
+									styleClass="form-control" effect="fade" required="true"
+									requiredMessage="Requerido.">
+									<f:selectItem itemValue="0" itemLabel="Seleccione Almacen" />
+									<f:selectItems value="#{cardexController.listAlmacen}"
+										var="_pro" itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+									<p:ajax event="change" update=":formProductoCardex"
+										listener="#{cardexController.selectAlmacen()}" />
+								</h:selectOneMenu>
+
+								<p:outputLabel value="Producto" />
+								<h:selectOneMenu id="productoID"
+									value="#{cardexController.producto.id}"
+									styleClass="form-control" effect="fade" required="true"
+									requiredMessage="Requerido.">
+									<f:selectItem itemValue="0" itemLabel="Seleccione Producto" />
+									<f:selectItems value="#{cardexController.listProducto}"
+										var="_pro" itemLabel="#{_pro.nombreProducto}"
+										itemValue="#{_pro.id}" />
+									<p:ajax event="change" update=":formProductoCardex"
+										listener="#{cardexController.selectProducto()}" />
+								</h:selectOneMenu>
+
+								<p:outputLabel value="Proveedor" />
+								<h:selectOneMenu id="proveedorID"
+									value="#{cardexController.proveedor.id}"
+									styleClass="form-control" effect="fade" required="true"
+									requiredMessage="Requerido.">
+									<f:selectItem itemValue="0" itemLabel="Seleccione Proveedor" />
+									<f:selectItems value="#{cardexController.listProveedor}"
+										var="_pro" itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+									<p:ajax event="change" update=":formProductoCardex"
+										listener="#{cardexController.selectProveedor()}" />
+								</h:selectOneMenu>
+
+								<p:outputLabel value="Linea_Proveedor" />
+								<h:selectOneMenu id="lineaID"
+									value="#{cardexController.lineaProveedor.id}"
+									styleClass="form-control" effect="fade" required="true"
+									requiredMessage="Requerido.">
+									<f:selectItem itemValue="0" itemLabel="Seleccione Linea" />
+									<f:selectItems value="#{cardexController.listLineasProveedor}"
+										var="_pro" itemLabel="#{_pro.nombre}" itemValue="#{_pro.id}" />
+									<p:ajax event="change" update=":formProductoCardex"
+										listener="#{cardexController.selectLinea()}" />
+								</h:selectOneMenu>
+
+								<p:outputLabel for="mask1" value="Fecha_Inicio" />
+								<p:calendar id="mask1" value="#{cardexController.fechaIni}"
+									pattern="dd-MM-yyyy" mask="true" />
+
+								<p:outputLabel for="mask" value="Fecha_Fin" />
+								<p:calendar id="mask" value="#{cardexController.fechaFin}"
+									pattern="dd-MM-yyyy" mask="true" />
+
+							</h:panelGrid>
+							<div class="btn-group btn-group-sm">
+
+								<p:commandButton icon="ui-icon-search"
+									action="#{cardexController.consultarCardex()}"
+									style="width: 150px;" update=":formProductoCardex"
+									styleClass="btn btn-default" value="Consultar Cardex" />
+							</div>
+						</div>
+					</div>
+					<div class="col-sm-4 col-md-9" align="center">
+						<div class="panel panel-default">
+								<div class="panel-heading">
+								<strong>
+								<i aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
+								LISTA DE CARDEX
+								</strong>
+							</div>
+							<div class="table-responsive">
+
+								<p:dataTable
+									styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+									selection="#{cardexController.selectedCatalogo}"
+									selectionMode="single" rowKey="#{_pedido.id}"
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="10 20 30 40 50" first="0" paginator="true"
+									rows="10" id="pedidoTable" var="_pedido" value="#{listaCardex}"
+									rendered="#{not empty listaCardex}">
+
+									<p:ajax event="rowSelect" update=":formProductoCardex"
+										listener="#{cardexController.onRowSelectAlmProductoClick}" />
+
+									<p:column headerText="Transaccion"
+										filterBy="#{_pedido.transaccion}" filterMatchMode="contains">
+										<h:outputText value="#{_pedido.transaccion}" />
+									</p:column>
+									
+										<p:column headerText="Producto"
+										filterBy="#{_pedido.producto.nombreProducto}" filterMatchMode="contains">
+										<h:outputText value="#{_pedido.producto.nombreProducto}"  />
+									</p:column>
+
+									<p:column headerText="Cantidad" filterBy="#{_pedido.cantidad}"
+										filterMatchMode="contains">
+										<h:outputText value="#{_pedido.cantidad}" />
+									</p:column>
+
+									<p:column headerText="Stock Ant."
+										filterBy="#{_pedido.stockAnterior}" filterMatchMode="contains">
+										<h:outputText value="#{_pedido.stockAnterior}" />
+									</p:column>
+									<p:column headerText="Stock Act."
+										filterBy="#{_pedido.stockActual}" filterMatchMode="contains">
+										<h:outputText value="#{_pedido.stockActual}" />
+									</p:column>
+
+									<p:column headerText="Fecha"
+										filterBy="#{_pedido.fechaRegistro}" filterMatchMode="contains">
+										<h:outputText value="#{_pedido.fechaRegistro}">
+											<f:convertDateTime pattern="dd/MM/yyyy" />
+										</h:outputText>
+									</p:column>
+
+									<p:column headerText="Tipo"
+										filterBy="#{_pedido.tipoMovimiento}"
+										filterMatchMode="contains">
+										<h:outputText value="#{_pedido.tipoMovimiento}" />
+									</p:column>
+
+
+									<p:column headerText="Realizado"
+										filterBy="#{_pedido.usuarioRegistro}"
+										filterMatchMode="contains">
+										<h:outputText value="#{_pedido.usuarioRegistro}" />
+									</p:column>
+
+
+								</p:dataTable>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</h:form>
+
+
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>
