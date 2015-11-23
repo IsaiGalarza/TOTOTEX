@@ -53,8 +53,19 @@
 
 
 								<h:outputLabel value="Almacen" />
-								<p:inputText value="#{bajaProductoController.almacen.nombre}"
-									disabled="true" id="almacenID" size="20" />
+								<h:selectOneMenu id="almacenID"
+									value="#{bajaProductoController.almacen.id}"
+									styleClass="form-control" effect="fade" required="true"
+									requiredMessage="Requerido." editable="true" filter="true"
+									filterMatchMode="startsWith">
+									<f:selectItem itemValue="0" itemLabel="Seleccione Almacen" />
+									<f:selectItems
+										value="#{almacenController.listaAlmacen}" var="_pro"
+										itemLabel="#{_pro.nombre}"
+										itemValue="#{_pro.id}" />
+									<p:ajax event="change" update=":formRegistroBajas"
+										listener="#{bajaProductoController.obtenerAlmacenProductos()}" />
+								</h:selectOneMenu>
 								<p:message for="almacenID" />
 
 
@@ -64,7 +75,7 @@
 									styleClass="form-control" effect="fade" required="true"
 									requiredMessage="Requerido." editable="true" filter="true"
 									filterMatchMode="startsWith">
-									<f:selectItem itemValue="0" itemLabel="Seleccione Producto" />
+									<f:selectItem itemValue="0" itemLabel="Seleccione Producto del Almacen" />
 									<f:selectItems
 										value="#{bajaProductoController.listAlmProducto}" var="_pro"
 										itemLabel="#{_pro.producto.nombreProducto}-#{_pro.proveedor.nombre}-#{_pro.lineaProvedor.nombre}"
@@ -81,7 +92,7 @@
 									styleClass="form-control" effect="fade" required="true"
 									requiredMessage="Requerido." editable="true" filter="true"
 									filterMatchMode="startsWith">
-									<f:selectItem itemValue="" itemLabel="Seleccione Producto" />
+									<f:selectItem itemValue="" itemLabel="Seleccione Concepto" />
 									<f:selectItem itemValue="DOMACION"
 										itemLabel="Salida de Producto x Donacion" />
 									<f:selectItem itemValue="FECHA DE VENCIMIENTO"

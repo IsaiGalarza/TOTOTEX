@@ -79,12 +79,14 @@ public class CardexProductoRepository {
 				+ a.getId()
 				+ " and usr.producto.id="
 				+ p.getId()
-				+ " and fechaRegistro between '"
-				+ fechIni
-				+ "' and '" + fechFin + "' " + " order by usr.id desc";
+				+ " and fechaRegistro between :fechIni and :fechFin " 
+				+ " order by usr.id desc";
 		System.out.println("Query Traer CardexProductos Activos/Inactivos: "
 				+ query);
-		return em.createQuery(query).getResultList();
+		Query q = em.createQuery(query);
+		q.setParameter("fechIni", fechIni);
+		q.setParameter("fechFin", fechFin);
+		return q.getResultList();
 	}
 
 	public List<CardexProducto> findForAlmacenTipoProducto(Almacen a,
@@ -94,13 +96,14 @@ public class CardexProductoRepository {
 				+ a.getId()
 				+ " and usr.producto.tipoProducto.id="
 				+ p.getId()
-				+ " and fechaRegistro between '"
-				+ fechIni
-				+ "' and '"
-				+ fechFin + "' " + " order by usr.id desc";
+				+ " and fechaRegistro between :fechIni and :fechFin " 
+				+ " order by usr.id desc";
 		System.out.println("Query Traer CardexProductos Activos/Inactivos: "
 				+ query);
-		return em.createQuery(query).getResultList();
+		Query q = em.createQuery(query);
+		q.setParameter("fechIni", fechIni);
+		q.setParameter("fechFin", fechFin);
+		return q.getResultList();
 	}
 
 	public List<StructureCardexProducto> findForAlmacenCardex(Almacen a,
@@ -111,13 +114,14 @@ public class CardexProductoRepository {
 				+ a.getId()
 				+ " and con.producto.id="
 				+ idProducto
-				+ " and con.fechaRegistro between '"
-				+ fechIni
-				+ "' and '" + fechFin + "' " + " order by con.fechaRegistro desc";
+				+ " and con.fechaRegistro between :fechIni and :fechFin " 
+				+ " order by con.fechaRegistro desc";
 		
 		System.out.println("Query findForAlmacenCardex: " + query);
 
 		Query quer = em.createQuery(query);
+		quer.setParameter("fechIni", fechIni);
+		quer.setParameter("fechFin", fechFin);
 		System.out.println("entro");
 		List<StructureCardexProducto> listCatalogo = new ArrayList<StructureCardexProducto>();
 		double total=0;
@@ -144,13 +148,14 @@ public class CardexProductoRepository {
 				+ p.getId()
 				+ " and usr.proveedor.id="
 				+ prov.getId()
-				+ " and fechaRegistro between '"
-				+ fechIni
-				+ "' and '"
-				+ fechFin + "' " + " order by usr.id desc";
+				+ " and fechaRegistro between :fechIni and :fechFin" 
+				+ " order by usr.id desc";
 		System.out.println("Query Traer CardexProductos Activos/Inactivos: "
 				+ query);
-		return em.createQuery(query).getResultList();
+		Query q = em.createQuery(query);
+		q.setParameter("fechIni", fechIni);
+		q.setParameter("fechFin", fechFin);
+		return q.getResultList();
 	}
 
 	public List<CardexProducto> findForProductoProveedorLinea(Almacen a,
@@ -165,13 +170,14 @@ public class CardexProductoRepository {
 				+ prov.getId()
 				+ " and usr.lineaProveedor.id="
 				+ lp.getId()
-				+ " and fechaRegistro between '"
-				+ fechIni
-				+ "' and '"
-				+ fechFin + "' " + " order by usr.id desc";
+				+ " and fechaRegistro between :fechIni and :fechFin " 
+				+ " order by usr.id desc";
 		System.out.println("Query Traer CardexProductos Activos/Inactivos: "
 				+ query);
-		return em.createQuery(query).getResultList();
+		Query q = em.createQuery(query);
+		q.setParameter("fechIni", fechIni);
+		q.setParameter("fechFin", fechFin);
+		return q.getResultList();
 	}
 
 }

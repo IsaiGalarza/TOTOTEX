@@ -55,7 +55,7 @@
 							<div class="panel-body">
 								<h:panelGrid columns="2">
 									<h:outputLabel value="Tipo Busqueda" for="estadoID" />
-									<h:selectOneRadio value="#{almacenStockListController.estado}" layout="pageDirection" >
+									<h:selectOneRadio id="estadoID" value="#{almacenStockListController.estado}" layout="pageDirection" >
 										<f:selectItem itemLabel="Por Proveedor" itemValue="DETALLADO" />
 										<f:selectItem itemLabel="Por Producto" itemValue="RESUMIDO" />
 										<p:ajax event="change" update=":formAlmacen" />
@@ -201,31 +201,31 @@
 										value="#{almacenStockListController.listCatalogoResumen}" 
 										emptyMessage="No se encontraron registros." >
 
-										<p:column headerText="Codigo" filterStyle="width: 100%;"
+										<p:column headerText="Codigo" filterStyle="width: 100%;" width="50"
 											filterBy="#{almacenStockListController.obtenerProducto(_pedido.idProducto).codigoProducto}"
 											filterMatchMode="contains">
 											<span class="badge"><h:outputText value="#{almacenStockListController.obtenerProducto(_pedido.idProducto).codigoProducto}" /></span>
 										</p:column>
 										
-										<p:column headerText="Producto" filterStyle="width: 100%;"
+										<p:column headerText="Producto" filterStyle="width: 100%;" width="50"
 											filterBy="#{_pedido.nombreProducto}"
 											filterMatchMode="contains">
 											<h:outputText value="#{_pedido.nombreProducto}" />
 										</p:column>
 										
-										<p:column headerText="Tipo" filterStyle="width: 100%;"
+										<p:column headerText="Tipo" filterStyle="width: 100%;" width="50"
 											filterBy="#{almacenStockListController.obtenerProducto(_pedido.idProducto).tipoProducto.descripcion}"
 											filterMatchMode="contains">
 											<h:outputText id="tipoID" value="#{almacenStockListController.obtenerProducto(_pedido.idProducto).tipoProducto.descripcion}" />
 										</p:column>
 										
-										<p:column headerText="Fabricante" filterStyle="width: 100%;"
+										<p:column headerText="Fabricante" filterStyle="width: 100%;" width="50"
 											filterBy="#{almacenStockListController.obtenerProducto(_pedido.idProducto).fabricante.descripcion}"
 											filterMatchMode="contains">
 											<h:outputText value="#{almacenStockListController.obtenerProducto(_pedido.idProducto).fabricante.descripcion}" />
 										</p:column>
 										
-										<p:column headerText="Categoria" filterStyle="width: 100%;"
+										<p:column headerText="Categoria" filterStyle="width: 100%;" width="50"
 											filterBy="#{almacenStockListController.obtenerProducto(_pedido.idProducto).grupoProducto.descripcion}"
 											filterMatchMode="contains">
 											<h:outputText value="#{almacenStockListController.obtenerProducto(_pedido.idProducto).grupoProducto.descripcion}" />

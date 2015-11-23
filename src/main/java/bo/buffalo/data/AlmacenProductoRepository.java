@@ -179,14 +179,13 @@ public class AlmacenProductoRepository {
 				+ alm.getId()
 				+ " and ser.producto.tipoProducto.id="
 				+ tipo.getId()
-				+ " and ser.fechaRegistro between '"
-				+ fechIni
-				+ "' and '"
-				+ fechFin
-				+ "' group by ser.producto.id,ser.producto.nombreProducto order by ser.producto.nombreProducto asc";
+				+ " and ser.fechaRegistro between :fechIni and :fechFin "
+				+ " group by ser.producto.id,ser.producto.nombreProducto order by ser.producto.nombreProducto asc";
 		System.out.println("Query AlmProducto: " + query);
 
 		Query quer = em.createQuery(query);
+		quer.setParameter("fechIni", fechIni);
+		quer.setParameter("fechFin", fechFin);
 		System.out.println("entro");
 		List<StructureCatalogoPrecios> listCatalogo = new ArrayList<StructureCatalogoPrecios>();
 		for (Iterator it = quer.getResultList().iterator(); it.hasNext();) {

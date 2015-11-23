@@ -54,8 +54,19 @@
 							</div>
 							<h:panelGrid columns="2">
 								<p:outputLabel value="Almacen" />
-								<p:inputText value="#{cardexProductoController.almacen.nombre}"
-									disabled="true" />
+								<h:selectOneMenu 
+									value="#{cardexProductoController.almacen.id}" 
+									styleClass="form-control" effect="fade" required="true"
+									requiredMessage="Requerido.">
+									<f:selectItem itemValue="0" itemLabel="Seleccione Almacen" />
+									<f:selectItems
+										value="#{almacenController.listaAlmacen}"
+										var="_pro" itemLabel="#{_pro.nombre}"
+										itemValue="#{_pro.id}" />
+									<p:ajax event="change"
+										update=":formProductoCardex:pedidoResumenTable, :formProductoCardex:pedidoTable"
+										listener="#{cardexProductoController.limpiar()}" />
+								</h:selectOneMenu>
 
 
 								<p:outputLabel value="Tipo Producto" />

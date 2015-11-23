@@ -49,6 +49,13 @@ public class Producto implements Serializable {
 	@OneToMany(mappedBy = "producto")
 	private List<ProductoProveedor> listProductoProveedors;
 	
+	@ManyToOne
+	@JoinColumn(name="id_fabricante", nullable = true)
+	private Fabricante fabricante;
+	
+	@ManyToOne
+	@JoinColumn(name="id_grupo_producto", nullable = true)
+	private GrupoProducto grupoProducto;
 	
 	public Producto() {
 	}
@@ -213,6 +220,26 @@ public class Producto implements Serializable {
 				+ nombreProducto + ", observacion=" + observacion + ", precio="
 				+ precio + ", usuarioRegistro=" + usuarioRegistro
 				+ ", tipoProducto=" + tipoProducto + "]";
+	}
+
+	
+	public Fabricante getFabricante() {
+		return fabricante;
+	}
+
+
+	public void setFabricante(Fabricante fabricante) {
+		this.fabricante = fabricante;
+	}
+
+
+	public GrupoProducto getGrupoProducto() {
+		return grupoProducto;
+	}
+
+
+	public void setGrupoProducto(GrupoProducto grupoProducto) {
+		this.grupoProducto = grupoProducto;
 	}
 
 	
