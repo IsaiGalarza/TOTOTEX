@@ -36,7 +36,7 @@ import bo.buffalo.service.AlmacenSucursalRegistration;
 @Named(value = "almacenController")
 @ConversationScoped
 public class AlmacenController implements Serializable {
-
+//test
 	private static final long serialVersionUID = -7819149623543804669L;
 
 	public static final String PUSH_CDI_TOPIC = "pushCdi";
