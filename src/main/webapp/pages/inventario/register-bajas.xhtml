@@ -7,6 +7,12 @@
 	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
 	template="/WEB-INF/templates/templateModuloInventario.xhtml">
 
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('GESTION SALIDAS')}">
+		</h:body>
+	</ui:define>
+	
 	<ui:define name="head">
 		<title>Gestion de Bajas</title>
 	</ui:define>

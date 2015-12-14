@@ -1,0 +1,133 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/template-seguridad.xhtml">
+
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('PERMISOS')}">
+		</h:body>
+	</ui:define>
+	
+	<ui:define name="head">
+		<title>Gestion de Permisos</title>
+	</ui:define>
+
+	<ui:define name="header">
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+					<li class="fuente-link-sidebar"><a href="/buffalo/">
+							Inicio </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="/buffalo/pages/seguridad/seguridad-home.xhtml">
+							Seguridad</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/seguridad/permisos.xhtml">Gestion de
+							Permisos</a></li>
+				</ol>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="formTreepermiso">
+			<div class="col-sm-12 col-md-12" align="left">
+				<div class="btn-group btn-group-sm" style="width: 100%;">
+
+					<p:commandButton id="buttonModificar" icon="ui-icon-refresh"
+						style="width: 8em;" styleClass="btn btn-primary btn-md"
+						actionListener="#{permisoV2Controller.guardar()}" value="Guardar"
+						update="formTreepermiso">
+					</p:commandButton>
+
+				</div>
+			</div>
+
+			<div class="row" styleClass="form-horizontal">
+				<div class="col-sm-4 col-md-3" align="left">
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								<strong> <span class="glyphicon glyphicon-floppy-save" />
+									SELECCIONE UN ROL
+								</strong>
+							</h3>
+						</div>
+						<div class="panel-body">
+
+							<p:dataTable
+								styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+								selection="#{permisoV2Controller.selectedRoles}"
+								selectionMode="single" rowKey="#{_roles.id}" id="sucursalTable"
+								var="_roles" value="#{permisoV2Controller.listaRoles}"
+								emptyMessage="No se encontraron registros.">
+
+								<p:ajax event="rowSelect" update="@form"
+									listener="#{permisoV2Controller.onRowSelectRol}" />
+
+								<p:column width="20%" headerText="ID" filterBy="#{_roles.id}"
+									filterStyle="width: 100%;" filterMatchMode="contains">
+									<center>#{_roles.id}</center>
+								</p:column>
+								<p:column headerText="Nombre" filterBy="#{_roles.name}"
+									filterStyle="width: 100%;" filterMatchMode="contains">
+				                      #{_roles.name}
+				                   </p:column>
+
+							</p:dataTable>
+						</div>
+					</div>
+				</div>
+
+
+				<div class="col-sm-12 col-md-9" align="left">
+					<div class="panel panel-default">
+						<!-- Default panel contents -->
+						<div class="panel-heading">
+							<h3 class="panel-title">
+								<strong> <span class="glyphicon glyphicon-th-list" />
+									PERMISOS DEL SISTEMA
+								</strong>
+							</h3>
+						</div>
+						<div class="panel-body">
+
+							<p:tree id="permiso" value="#{permisoV2Controller.root}"
+								var="node"
+								selectionMode="#{permisoV2Controller.selectionModeTreeNode}"
+								style="font-size: 13px !important; padding: 0 0 0 16px !important; width: 100%; font-family: sans-serif !important;"
+								selection="#{permisoV2Controller.selectedNodes}">
+
+								<p:treeNode icon="ui-icon-star">
+									<h:outputText value="#{node}" />
+								</p:treeNode>
+
+								<p:treeNode type="1" icon="ui-icon-newwin">
+									<h:outputText value="#{node}" />
+								</p:treeNode>
+
+							</p:tree>
+						</div>
+					</div>
+				</div>
+
+			</div>
+		</h:form>
+
+
+
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

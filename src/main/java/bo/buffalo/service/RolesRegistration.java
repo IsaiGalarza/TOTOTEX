@@ -43,4 +43,10 @@ public class RolesRegistration {
         em.persist(roles);
         rolesEventSrc.fire(roles);
     }
+    
+    public void updated(Roles roles) throws Exception {
+        log.info("Registering Roles: " + roles.getName());
+        em.merge(roles);
+        rolesEventSrc.fire(roles);
+    }
 }

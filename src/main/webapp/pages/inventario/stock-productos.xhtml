@@ -7,6 +7,14 @@
 	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
 	template="/WEB-INF/templates/templateModuloInventario.xhtml">
 
+
+
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('STOCK DE PRODUCTOS')}">
+		</h:body>
+	</ui:define>
+	
 	<ui:define name="head">
 		<title>Stock de Productos</title>
 	</ui:define>

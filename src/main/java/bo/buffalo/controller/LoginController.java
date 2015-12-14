@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -27,6 +28,10 @@ import org.primefaces.model.StreamedContent;
 import bo.buffalo.data.UsuarioRepository;
 import bo.buffalo.model.Usuario;
 import bo.buffalo.util.DateUtility;
+import bo.buffalo.model.Privilegio;
+import bo.buffalo.model.UsuarioRol;
+import bo.buffalo.data.PrivilegioRepository;
+import bo.buffalo.data.UsuarioRolRepository;
 
 
 
@@ -36,6 +41,10 @@ public class LoginController implements Serializable {
 
 	
 	private static final long serialVersionUID = -17662900381487364L;
+	
+	private @Inject UsuarioRolRepository usuerRolRepository;
+	private @Inject PrivilegioRepository privilegioRepository;
+	
 	@Inject
     private transient Logger logger;
 	private @Inject FacesContext facesContext;
@@ -122,6 +131,7 @@ public class LoginController implements Serializable {
 //                        navigateString = "/cliente/company.xhtml";
 //                    }
                         setImageUserSession();
+                        cargarPermisosUserSession();
                         
                         FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO, "Bienvenido!", u.getName());
                         facesContext.addMessage(null, m);
@@ -155,7 +165,6 @@ public class LoginController implements Serializable {
      
 			
 		} catch (Exception e) {
-			// TODO: handle exception
 			logger.log(Level.SEVERE, username +" : " +password);
             logger.log(Level.SEVERE, e.toString());
             
@@ -250,4 +259,36 @@ public class LoginController implements Serializable {
 		}
 		return baos.toByteArray();
 	}
+	
+	//----------------PERMISOS USUARIO --------------
+
+		private void cargarPermisosUserSession(){
+			try{
+				HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+				UsuarioRol usuarioRol = usuerRolRepository.findByUsuario(getUsuarioSession());
+				List<Privilegio> listPrivilegio = privilegioRepository.findAllByRoles(usuarioRol.getRoles());
+				for(Privilegio p : listPrivilegio){
+					session.setAttribute(p.getPermiso().getNombre(), "AC");
+				}
+			}catch(Exception e){
+
+			}
+		}
+
+		public void permisoValidado(String permiso){
+			try {
+				logger.info("permisoValidado("+permiso+")");
+				FacesContext context = FacesContext.getCurrentInstance();
+				HttpServletRequest request1 = (HttpServletRequest) context
+						.getExternalContext().getRequest();
+				HttpSession request = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+				String permisoAux = request.getAttribute(permiso)!=null ? (String) request.getAttribute(permiso):"IN";
+				if( ! permisoAux.equals("AC")){
+					FacesContext.getCurrentInstance().getExternalContext()
+					.redirect(request1.getContextPath() +"/error403.xhtml");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
 }

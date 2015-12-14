@@ -34,6 +34,9 @@
 		<link rel="stylesheet" type="text/css" href="/buffalo/resources/css/component.css" />
 		<!-- Theme primefaces -->
         <link href="#{request.contextPath}/resources/primefaces-bootstrap/theme.css" rel="stylesheet" type="text/css" />
+        
+        <ui:insert name="security">
+	</ui:insert>
 </h:head>
 <body class="skin-black">
         <p:growl id="growl" showDetail="true" sticky="false"  />
@@ -87,6 +90,12 @@
 							<strong>
 					          	<span class="glyphicon glyphicon-calendar" /> 
 					          	#{' '}Produccion
+				          	</strong>
+						</a></li>
+						<li><a href="/buffalo/pages/seguridad/seguridad-home.xhtml"> 
+							<strong>
+					          	<span class="glyphicon glyphicon-calendar" /> 
+					          	#{' '}Seguridad
 				          	</strong>
 						</a></li>
 						

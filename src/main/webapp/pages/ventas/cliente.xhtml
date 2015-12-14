@@ -6,6 +6,12 @@
 	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
 	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
 	template="/WEB-INF/templates/templateModuloVentas.xhtml">
+	
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('CLIENTES')}">
+		</h:body>
+	</ui:define>
 
 	<ui:define name="head">
 		<title>Clientes</title>

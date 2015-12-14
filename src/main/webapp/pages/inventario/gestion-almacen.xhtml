@@ -7,6 +7,12 @@
 	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
 	template="/WEB-INF/templates/templateModuloInventario.xhtml">
 
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('GESTION ALMACEN')}">
+		</h:body>
+	</ui:define>
+	
 	<ui:define name="head">
 		<title>Gestión de Almacenes</title>
 	</ui:define>

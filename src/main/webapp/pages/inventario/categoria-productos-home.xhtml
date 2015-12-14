@@ -8,6 +8,11 @@
 	template="/WEB-INF/templates/templateModuloInventario.xhtml">
 
 
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('CATEGORIA PRODUCTOS')}">
+		</h:body>
+	</ui:define>
 
 	<ui:define name="head">
 		<title>Categoria de Productos</title>

@@ -113,41 +113,61 @@
   </session-config>
   
   <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>pages</web-resource-name>
-      <url-pattern>/pages/*</url-pattern>
-      <http-method>PUT</http-method>
-      <http-method>DELETE</http-method>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>ventas</role-name>
-      <role-name>administracion</role-name>
-      <role-name>laboratorio</role-name>
+		<web-resource-collection>
+			<web-resource-name>pages</web-resource-name>
+			<url-pattern>/pages/*</url-pattern>
+			<http-method>PUT</http-method>
+			<http-method>DELETE</http-method>
+			<http-method>GET</http-method>
+			<http-method>POST</http-method>
+		</web-resource-collection>
+		<auth-constraint>
+      <role-name>*</role-name>
     </auth-constraint>
-  </security-constraint>
+
+	</security-constraint>
+
+
+	 <security-role>
+        <role-name>*</role-name>
+     </security-role>
   
-  <security-constraint>
-    <web-resource-collection>
-      <web-resource-name>protected</web-resource-name>
-      <url-pattern>/pages/protected/*</url-pattern>
-      <http-method>PUT</http-method>
-      <http-method>DELETE</http-method>
-      <http-method>GET</http-method>
-      <http-method>POST</http-method>
-    </web-resource-collection>
-    <auth-constraint>
-      <role-name>administracion</role-name>
-    </auth-constraint>
-  </security-constraint>
-  <security-role>
-    <role-name>ventas</role-name>
-  </security-role>
-  <security-role>
-    <role-name>administracion</role-name>
-  </security-role>
-  <security-role>
-    <role-name>laboratorio</role-name>
-  </security-role>
+<!--   <security-constraint> -->
+<!--     <web-resource-collection> -->
+<!--       <web-resource-name>pages</web-resource-name> -->
+<!--       <url-pattern>/pages/*</url-pattern> -->
+<!--       <http-method>PUT</http-method> -->
+<!--       <http-method>DELETE</http-method> -->
+<!--       <http-method>GET</http-method> -->
+<!--       <http-method>POST</http-method> -->
+<!--     </web-resource-collection> -->
+<!--     <auth-constraint> -->
+<!--       <role-name>ventas</role-name> -->
+<!--       <role-name>administracion</role-name> -->
+<!--       <role-name>laboratorio</role-name> -->
+<!--     </auth-constraint> -->
+<!--   </security-constraint> -->
+  
+<!--   <security-constraint> -->
+<!--     <web-resource-collection> -->
+<!--       <web-resource-name>protected</web-resource-name> -->
+<!--       <url-pattern>/pages/protected/*</url-pattern> -->
+<!--       <http-method>PUT</http-method> -->
+<!--       <http-method>DELETE</http-method> -->
+<!--       <http-method>GET</http-method> -->
+<!--       <http-method>POST</http-method> -->
+<!--     </web-resource-collection> -->
+<!--     <auth-constraint> -->
+<!--       <role-name>administracion</role-name> -->
+<!--     </auth-constraint> -->
+<!--   </security-constraint> -->
+<!--   <security-role> -->
+<!--     <role-name>ventas</role-name> -->
+<!--   </security-role> -->
+<!--   <security-role> -->
+<!--     <role-name>administracion</role-name> -->
+<!--   </security-role> -->
+<!--   <security-role> -->
+<!--     <role-name>laboratorio</role-name> -->
+<!--   </security-role> -->
 </web-app>

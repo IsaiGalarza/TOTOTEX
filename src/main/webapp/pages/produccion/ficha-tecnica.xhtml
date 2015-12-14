@@ -5,6 +5,13 @@
 	xmlns:f="http://java.sun.com/jsf/core"
 	template="/WEB-INF/templates/template-produccion.xhtml">
 
+
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('FICHA TECNICA')}">
+		</h:body>
+	</ui:define>
+	
 	<ui:define name="head">
 		<title>Ficha Tecnica</title>
 	</ui:define>

@@ -50,7 +50,9 @@ import bo.buffalo.model.Sucursal;
 import bo.buffalo.model.Usuario;
 import bo.buffalo.model.UsuarioRol;
 import bo.buffalo.service.UsuarioRegistration;
+import bo.buffalo.service.UsuarioRolRegistration;
 import bo.buffalo.structure.EstructuraRoles;
+import bo.buffalo.data.UsuarioRolRepository;
 
 // The @Model stereotype is a convenience mechanism to make this a request-scoped bean that has an
 // EL name
@@ -74,11 +76,16 @@ public class UsuarioController implements Serializable {
 	Conversation conversation;
 	
 	@Inject
+	private UsuarioRolRepository usuarioRolRepository;
+	
+	@Inject
 	private RolesRepository rolesRepository;
 
 	@Inject
 	private UsuarioRegistration userRegistration;
 
+	@Inject
+	private UsuarioRolRegistration usuarioRolRegistration;
 	
 	@Inject
     private SucursalRepository sucursalRepository;
@@ -109,6 +116,8 @@ public class UsuarioController implements Serializable {
 	private List<EstructuraRoles> listaRolesUsuario = new ArrayList<EstructuraRoles>();
 	private Integer[] arrayRoles;
 	private List<UsuarioRol> listUsuarioRole = new ArrayList<UsuarioRol>();
+	private List<Roles> listRoles = new ArrayList<Roles>();
+	private Roles selectedRoles;
 	
 	private List<Sucursal> sucursalesActivas;
 	
@@ -158,7 +167,7 @@ public class UsuarioController implements Serializable {
 			listaRolesUsuario.add(0, new EstructuraRoles(rol.getId(), false,
 					rol));
 		}
-		
+		selectedRoles = new Roles();
 		selectedUsuario = null;
 		tituloPanel = "Registrar Personal";
 		usuarioSession = usuarioRepository.findByLogin(request
@@ -178,6 +187,9 @@ public class UsuarioController implements Serializable {
 		sucursalesActivas = sucursalRepository.traerSucursalesActivas();
 		setListaCargos(cargoRepository.findActivosOrderedByFechaRegistro());
 		modificar = false;
+		
+
+		listRoles = rolesRepository.findAllOrderedByID();
 
 	}
 
@@ -236,12 +248,10 @@ public class UsuarioController implements Serializable {
 //						arrayRoles[i] = listaRoles.get(i).getRoles().getId(); //AQUI ERROR
 //					}
 //				} catch (Exception e) {
-//					// TODO: handle exception
 //					System.out.println("Error al Recorrer Roles: "+e.getMessage());
 //				}
 
 			} catch (Exception e) {
-				// TODO: handle exception
 				e.printStackTrace();
 				System.out.println("Error in onRowSelectUsuarioClick: "
 						+ e.getMessage());
@@ -277,25 +287,19 @@ public class UsuarioController implements Serializable {
 
 	public void registrarUsuario() {
 		try {
-			System.out.println("Ingreso a registrarUsuario "
-					+ newUsuario.getId());
+			System.out.println("Ingreso a registrarUsuario ");
 			
-//			List<Roles> listRole = new ArrayList<Roles>();
-//			for (Integer roles : arrayRoles) {
-//				// System.out.println("Role ID: "+roles);
-//				Roles role = em.find(Roles.class, roles);
-//				// System.out.println("Role: "+role.getName());
-//				listRole.add(role);
-//			}
-
-		/*	Sucursal sucursal = (Sucursal) em.find(Sucursal.class,
-					this.getSucursalID());
-			System.out.println("Sucursal: " + sucursal.getNombre());
-			newUsuario.setCargo(em.find(Cargo.class, this.getCargoID()));
-			newUsuario.setSucursal(sucursal);
-*/
-			userRegistration.registerUserAndRoles(newUsuario, listaRolesUsuario);	
-			//userRegistration.register(newUsuario, listRole);
+			userRegistration.register(newUsuario);
+			
+			//--------------------------------------------------
+			//registrar Rol del usuario
+			if(newUsuario.isIngresoSistema()){//si tiene opcion Ingresar sistema
+				UsuarioRol usuarioRol  = new UsuarioRol();
+				usuarioRol.setRoles(selectedRoles);
+				usuarioRol.setUsuario(newUsuario);
+				usuarioRolRegistration.register(usuarioRol);
+			}
+			//------------------------------------------------
 			
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"Personal Registrado!", newUsuario.getName());
@@ -317,28 +321,28 @@ public class UsuarioController implements Serializable {
 		try {
 			System.out.println("Ingreso a modificarUsuario "
 					+ newUsuario.getId());
-//			List<Roles> listRole = new ArrayList<Roles>();
-//			for (Integer roles : arrayRoles) {
-//				// System.out.println("Role ID: "+roles);
-//				Roles role = em.find(Roles.class, roles);
-//				// System.out.println("Role: "+role.getName());
-//				listRole.add(role);
-//			}
-/*
-			Sucursal sucursal = (Sucursal) em.find(Sucursal.class,
-					this.getSucursalID());*/
-			/*System.out.println("Sucursal: " + sucursal.getNombre());*/
+
 			newUsuario.setFechaRegistro(new Date());
 			newUsuario.setUsuarioRegistro(usuarioSession.getLogin());
-			if(newUsuario.getSucursal()==null){
-				newUsuario.setSucursal(new Sucursal());
-			}
-		/*	newUsuario.setCargo(em.find(Cargo.class, this.getCargoID()));
-			newUsuario.setSucursal(sucursal);*/
 
-			userRegistration.updateUserAndRoles(newUsuario, listaRolesUsuario);
-			
-			//userRegistration.update(newUsuario, listRole);
+			userRegistration.updateUsuario(newUsuario);
+
+			//--------------------------------------------------
+			//modificar Rol del usuario
+			UsuarioRol usuarioRol = usuarioRolRepository.findByUsuario(newUsuario) ;
+			if(usuarioRol!= null){
+				System.out.println("usuarioRol TRUE : "+usuarioRol.getId());
+				usuarioRol.setRoles(selectedRoles);
+				usuarioRol.setUsuario(newUsuario);
+				usuarioRolRegistration.updated(usuarioRol);
+			}else{
+				System.out.println("usuarioRol FALSE ");
+				usuarioRol = new UsuarioRol();
+				usuarioRol.setRoles(selectedRoles);
+				usuarioRol.setUsuario(newUsuario);
+				usuarioRolRegistration.register(usuarioRol);
+			}
+			//------------------------------------------------
 
 			FacesMessage m = new FacesMessage(FacesMessage.SEVERITY_INFO,
 					"Personal Modificado!", newUsuario.getName());
@@ -509,6 +513,22 @@ public class UsuarioController implements Serializable {
 
 	public void setListaAlmacen(List<Almacen> listaAlmacen) {
 		this.listaAlmacen = listaAlmacen;
+	}
+
+	public List<Roles> getListRoles() {
+		return listRoles;
+	}
+
+	public void setListRoles(List<Roles> listRoles) {
+		this.listRoles = listRoles;
+	}
+
+	public Roles getSelectedRoles() {
+		return selectedRoles;
+	}
+
+	public void setSelectedRoles(Roles selectedRoles) {
+		this.selectedRoles = selectedRoles;
 	}
 
 }

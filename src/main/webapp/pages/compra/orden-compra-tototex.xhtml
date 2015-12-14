@@ -7,6 +7,13 @@
 	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
 	template="/WEB-INF/templates/templateModuloCompras.xhtml">
 
+
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('ORDEN DE COMPRA')}">
+		</h:body>
+	</ui:define>
+	
 	<ui:define name="head">
 		<title>Ordenes de Compra Tototex</title>
 	</ui:define>
@@ -1497,7 +1504,7 @@
 					<div class="col-sm-5 col-md-12" align="left">
 						<div class="panel panel-primary">
 							<div class="panel-heading">
-								<strong>INGRESO DE PRODUCTOS</strong>
+								<strong>INGRESO DE PRODUCTOSss</strong>
 							</div>
 							
 							<h:panelGrid columns="2" >
@@ -1506,16 +1513,10 @@
 						                        var="producto" itemLabel="#{producto.producto.nombreProducto}"  itemValue="#{producto.id}"  forceSelection="true"
 						                        size="100">  
 						            <p:ajax event="itemSelect" listener="#{ordenCompraController.onRowSelectProductoClick}" update=":formModalDetalleD:detalle"/>
-						            <p:column style="width: 20%;" >
-						                <h:outputText value="#{producto.producto.codigoProducto}" />
-						            </p:column>
-						 
+						           					 
 						            <p:column style="width: 40%;">
 						                <h:outputText value="#{producto.producto.nombreProducto}"  />
-						            </p:column>
-						            <p:column style="width: 40%;">
-						                <h:outputText value="#{producto.lineasProveedor.nombre}"  />
-						            </p:column>
+						            </p:column>						           
 						        </p:autoComplete>
 					     	</h:panelGrid>
 						   
@@ -1524,7 +1525,8 @@
 							        <p:outputLabel value="Proveedor:" />
 							        <p:inputText id="proveedorID" value="#{ordenCompraController.newOrdenCompra.proveedor.nombre} "
 							        disabled="true"  styleClass="form-control" size="30"> 
-							        </p:inputText>  							       						
+							        </p:inputText>  
+							        							       						
 									<h:outputLabel value="Cantidad:" for="cantidadID" />
 									<p:inputText id="cantidadID" styleClass="form-control" type="number"
 										size="30" value="#{ordenCompraController.selectedDetalleOC.cantidad}" rendered="true"
@@ -1534,26 +1536,25 @@
 										<f:validateLongRange minimum="1" />
 									</p:inputText>	
 											
-								</h:panelGrid>		
-											
+								</h:panelGrid>	
 	
 									<h:panelGrid columns="2">	
+									    <h:outputLabel  value="Precio Unitario:" for="precioID" />
+										<p:inputText id="precioID" styleClass="form-control" size="30"
+											value="#{ordenCompraController.selectedDetalleOC.precioUnitario}"
+											 >
+											<f:convertNumber pattern="#,##0.000"  locale="en" />
+										</p:inputText>
 													
 										<h:outputLabel value="Total Item Bs:" for="totalBSD"/>
 										<p:inputText styleClass="form-control" size="30" 
 											value="#{ordenCompraController.selectedDetalleOC.total}" id="totalBSD">
 											<f:convertNumber pattern="#,##0.000"  locale="en" />
 											<p:ajax event="change" update=":formModalDetalleD:detalle"
-											listener="#{ordenCompraController.calcularCantidad}" />
-											
+											listener="#{ordenCompraController.calcularCantidad}" />											
 										</p:inputText>
 										
-										<h:outputLabel rendered="false" value="Precio Unitario:" for="precioID" />
-										<p:inputText rendered="false" id="precioID" styleClass="form-control" size="30"
-											value="#{ordenCompraController.selectedDetalleOC.precioUnitario}"
-											disabled="true" >
-											<f:convertNumber pattern="#,##0.000"  locale="en" />
-										</p:inputText>
+										
 										
 									</h:panelGrid>								
 						   </h:panelGrid>

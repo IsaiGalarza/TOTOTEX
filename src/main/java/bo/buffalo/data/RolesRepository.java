@@ -44,4 +44,11 @@ public class RolesRepository {
         return em.createQuery(criteria).getResultList();
     }
     
+    public List<Roles> findAllOrderedByID() {
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<Roles> criteria = cb.createQuery(Roles.class);
+        Root<Roles> rol = criteria.from(Roles.class);
+        criteria.select(rol).orderBy(cb.asc(rol.get("id")));
+        return em.createQuery(criteria).getResultList();
+    }
 }

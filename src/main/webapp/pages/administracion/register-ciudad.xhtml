@@ -7,6 +7,12 @@
 	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
 	template="/WEB-INF/templates/templateModuloParametrizacion.xhtml">
 
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('CIUDADES')}">
+		</h:body>
+	</ui:define>
+	
 	<ui:define name="head">
 		<title>Gestion de Ciudades</title>
 	</ui:define>

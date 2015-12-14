@@ -8,7 +8,11 @@
     xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
     template="/WEB-INF/templates/templateModuloVentas.xhtml">
 
-
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('LIBROS IVA')}">
+		</h:body>
+	</ui:define>
 
     <ui:define name="head">
     	<title>Libros IVA</title>

@@ -1,0 +1,190 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core" xmlns:a="http://richfaces.org/a"
+	xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
+	template="/WEB-INF/templates/template-seguridad.xhtml">
+
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('ROLES')}">
+		</h:body>
+	</ui:define>
+	
+	<ui:define name="head">
+		<title>Gestion de Roles</title>
+	</ui:define>
+
+	<ui:define name="header">
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+					<li class="fuente-link-sidebar"><a href="/buffalo/">
+							Inicio </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="/buffalo/pages/seguridad/seguridad-home.xhtml"> Seguridad</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/administracion/register-sucursal.xhtml">Gestion
+							de Roles</a></li>
+				</ol>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="frm_acciones">
+			<div class="col-sm-12 col-md-12" align="left">
+				<div class="btn-group btn-group-sm" style="width: 100%;">
+					<p:commandButton
+						rendered="#{rolesV2Controller.nuevo}"
+						icon="ui-icon-minus"
+						action="#{rolesV2Controller.accionesCancelarRol()}"
+						update="formRegistroRoles ,frm_acciones,frm_lista"
+						styleClass="btn btn-default" value="Cancelar" type="submit" />
+	
+					<p:commandButton
+						rendered="#{!rolesV2Controller.nuevo}"
+						icon="ui-icon-disk"
+						action="#{rolesV2Controller.accionNuevoRol()}"
+						 update=":formRegistroRoles ,frm_acciones ,frm_lista"
+						styleClass="btn btn-success" value="Nuevo Rol" type="submit" />
+	
+					<p:commandButton
+						rendered="#{!rolesV2Controller.nuevo}"
+						icon="ui-icon-refresh"
+						action="#{rolesV2Controller.accionModificarRol()}"
+						update=":formRegistroRoles ,frm_acciones ,frm_lista"
+						styleClass="btn btn-primary" value="Modificar" type="submit" />
+	
+					<p:commandButton
+						rendered="#{!rolesV2Controller.nuevo}"
+						icon="ui-icon-circle-close"
+						action="#{rolesV2Controller.accionesEliminarRol()}"
+						 update=":formRegistroRoles,frm_acciones ,frm_lista"
+						styleClass="btn btn-danger" value="Borrar" type="submit" />
+				</div>	
+			</div>
+		</h:form>
+		<h:form id="formRegistroRoles" styleClass="form-horizontal" >
+			<ui:fragment rendered="#{rolesV2Controller.nuevo}" >
+				<div class="row">
+					<div class="col-sm-4 col-md-3" align="left">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<strong> <span class="glyphicon glyphicon-floppy-save" />
+										#{rolesV2Controller.tituloPanel}
+									</strong>
+								</h3>
+							</div>
+							<div class="panel-body">
+	
+								<h:panelGrid columns="3">
+	
+									<h:outputLabel value="Nombre Rol" for="nombreID" />
+									<p:inputText id="nombreID" styleClass="form-control"
+										value="#{rolesV2Controller.newRoles.name}"
+										required="true" requiredMessage="Nombre Requerido." />
+									<p:message for="nombreID" />
+	
+									
+	
+								</h:panelGrid>
+							</div>
+							<div class="panel-footer" style="padding: 1px 1px 1px 1px;">
+								<div class="btn-group btn-group-sm" style="width: 100%;">
+	
+	
+									<p:commandButton
+										rendered="#{rolesV2Controller.modificar=='true'}"
+										icon="ui-icon-minus" immediate="true"
+										action="#{rolesV2Controller.limpiarCampos()}"
+										style="width: 49%;" update=":formRegistroRoles"
+										styleClass="btn btn-default" value="Cancelar" type="submit" />
+	
+									<p:commandButton
+										rendered="#{rolesV2Controller.modificar=='false'}"
+										icon="ui-icon-disk"
+										action="#{rolesV2Controller.registrarRoles()}"
+										style="width: 100%;" update="formRegistroRoles ,frm_acciones,frm_lista"
+										styleClass="btn btn-success" value="Registrar " type="submit" />
+	
+									<p:commandButton
+										rendered="#{rolesV2Controller.modificar=='true'}"
+										icon="ui-icon-refresh"
+										action="#{rolesV2Controller.modificarRoles()}"
+										style="width: 50%;" update="formRegistroRoles ,frm_acciones,frm_lista" 
+										styleClass="btn btn-primary" value="Modificar" type="submit" />
+	
+								</div>
+							</div>
+	
+						</div>
+	
+					</div>
+	
+				</div>
+	
+	        </ui:fragment>
+		</h:form>
+		
+		<h:form id="frm_lista">
+			<ui:fragment rendered="#{!rolesV2Controller.nuevo}" >
+				<div class="row">
+					<div class="col-sm-12 col-md-12" align="left">
+						<div class="panel panel-default">
+							<!-- Default panel contents -->
+							<div class="panel-heading">
+								<h3 class="panel-title">
+									<strong> <span class="glyphicon glyphicon-th-list" />
+										LISTA DE ROLES
+									</strong>
+								</h3>
+							</div>
+			
+							<!-- Table -->
+							<div class="table-responsive">
+			
+								<p:dataTable
+									styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+									selection="#{rolesV2Controller.selectedRoles}"
+									selectionMode="single" rowKey="#{_roles.id}" id="sucursalTable"
+									var="_roles" value="#{rolesV2Controller.listaRoles}" emptyMessage="No se encontraron registros.">
+			
+									<p:ajax event="rowSelect" update=":frm_acciones"
+										listener="#{rolesV2Controller.onRowSelectRolesClick}" />
+			
+									<p:column width="20%" headerText="ID" filterBy="#{_roles.id}"
+										filterStyle="width: 100%;" filterMatchMode="contains">
+										<center>#{_roles.id}</center>
+									</p:column>
+									<p:column headerText="Nombre" filterBy="#{_roles.name}"
+										filterStyle="width: 100%;" filterMatchMode="contains">
+				                      #{_roles.name}
+				                   </p:column>
+			
+								</p:dataTable>
+			
+							</div>
+						</div>
+					</div>
+				</div>
+			</ui:fragment>
+		</h:form>
+		
+		
+		
+		
+		
+	</ui:define>
+
+	<ui:define name="footer">
+
+	</ui:define>
+
+</ui:composition>

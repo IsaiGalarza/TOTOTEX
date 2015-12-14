@@ -8,6 +8,12 @@
     xmlns:mj="http://mojarra.dev.java.net/mojarra_ext"
     template="/WEB-INF/templates/templateModuloVentas.xhtml">
 
+	<ui:define name="security">
+		<h:body
+			onload="#{loginController.permisoValidado('REPORTES VENTA')}">
+		</h:body>
+	</ui:define>
+	
     <ui:define name="head">
     	<title>Reporte de Ventas</title>
     </ui:define>
