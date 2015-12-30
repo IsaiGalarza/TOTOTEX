@@ -26,6 +26,12 @@ public class FichaTecnica implements Serializable{
 	@Id  @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
 	
+	@Column(name="codigo",nullable=true)
+	private String codigo;
+	
+	@Column(name="correlativo",nullable=true)
+	private Integer correlativo;
+	
 	private String confeccionista;
 	
 	@ManyToOne
@@ -82,6 +88,9 @@ public class FichaTecnica implements Serializable{
 	private Date fechaProceso;
 
 	public FichaTecnica(){
+		this.id = 0;
+		this.codigo="";
+		this.correlativo = 0;
 		baja=false;
 		molde=null;
 		tela=new Producto();
@@ -287,6 +296,22 @@ public class FichaTecnica implements Serializable{
 				+ ", baja=" + baja + ", fechaRegistro=" + fechaRegistro
 				+ ", usuarioRegistro=" + usuarioRegistro + ", molde=" + molde
 				+ "]";
+	}
+
+	public String getCodigo() {
+		return codigo;
+	}
+
+	public void setCodigo(String codigo) {
+		this.codigo = codigo;
+	}
+
+	public Integer getCorrelativo() {
+		return correlativo;
+	}
+
+	public void setCorrelativo(Integer correlativo) {
+		this.correlativo = correlativo;
 	}
 	
 	

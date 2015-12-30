@@ -89,6 +89,10 @@ public class FacesUtil {
 		RequestContext.getCurrentInstance().update(components);
 	}
 	
+	public static void updateComponet(String component){
+		RequestContext.getCurrentInstance().update(component);
+	}
+	
 	public static void resetComponent(String component) {
 		RequestContext.getCurrentInstance().reset(component);
 	}

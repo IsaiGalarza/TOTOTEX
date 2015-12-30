@@ -439,5 +439,18 @@ public abstract class DataAccessRepository<T> {
 			return null;
 		}
         
-    }	
+    }
+	
+	//method mauricio
+	@SuppressWarnings("unchecked")
+	public Integer findCorrelativo() {
+		try {
+			System.out.println("findCorrelativo() ....");
+			 List<T> listT = em.createQuery("select fac FROM "+this.type.getSimpleName()+ " fac WHERE fac.estado='AC' ").getResultList();
+			return listT.size()+1;
+		} catch (Exception e) {
+			System.out.println(e.toString());
+			return 0;
+		}
+    }
 }
