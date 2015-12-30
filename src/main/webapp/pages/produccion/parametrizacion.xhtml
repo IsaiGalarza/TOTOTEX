@@ -1,0 +1,245 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="/WEB-INF/templates/template-produccion.xhtml">
+
+	<ui:define name="security">
+		<h:body onload="#{loginController.permisoValidado('FICHA TECNICA')}">
+		</h:body>
+	</ui:define>
+
+	<ui:define name="head">
+		<title>Parametrización</title>
+		<f:event listener="#{clasificacionPrendaController.initConversation}"
+			type="preRenderView"></f:event>
+	</ui:define>
+
+	<ui:define name="header">
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li class="fuente-link-sidebar"><a href="/buffalo/">
+							Inicio </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="/buffalo/pages/produccion/produccion-home.xhtml">Modulo
+							Produccion</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="/buffalo/pages/produccion/clasificacion-prenda.xhtml">Parametrización</a></li>
+				</ol>
+			</div>
+		</div>
+	</ui:define>
+
+	<ui:define name="content">
+		<h:form id="frm">
+			<div class="row">
+				<div class="col-sm-12  col-md-12">
+					<div class="btn-group btn-group-sm" style="width: 100%;">
+
+						<p:commandButton rendered="#{fichaTecnicaController.nuevo}"
+							action="#{fichaTecnicaController.cancelarEntity()}"
+							icon="ui-icon-minus" style="width: 8em;"
+							styleClass="btn btn-default" value="Cancelar" immediate="true" />
+
+						<p:commandButton action="#{fichaTecnicaController.register()}"
+							update="growl"
+							rendered="#{!fichaTecnicaController.modificar and fichaTecnicaController.nuevo}"
+							icon="ui-icon-disk" style="width: 8em;"
+							styleClass="btn btn-success" value="Registrar" />
+
+						<p:commandButton action="#{fichaTecnicaController.update()}"
+							update="growl" rendered="#{fichaTecnicaController.modificar}"
+							icon="ui-icon-refresh" style="width: 8em;"
+							styleClass="btn btn-primary" value="Modificar" />
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<p:tabView>
+					<p:tab title="COLORES">
+						<div class="row">
+							<div class="col-md-4">
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										<strong> <span class="icon"> <i
+												aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
+										</span>Datos Color
+										</strong>
+									</div>
+									<div class="panel-body" style="margin-bottom: 10px;">
+										<p:panelGrid columns="2"
+											columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid">
+
+											<h:outputLabel value="Nombre" for="c2" />
+											<p:inputText id="c2"
+												value="#{colorController.newAtributo.nombre}"
+												required="true" requiredMessage="Ingrese Nombre"
+												style="width: 95% !important;">
+											</p:inputText>
+
+											<h:outputLabel value="Descripción" for="p1" />
+											<p:inputText id="p1"
+												value="#{colorController.newAtributo.descripcion}"
+												required="true" requiredMessage="Ingrese Descripción"
+												style="width: 95% !important;">
+											</p:inputText>
+
+											<h:outputLabel value="Fecha Registro" for="fr2" />
+											<p:inputText id="fr2"
+												value="#{colorController.newAtributo.fechaRegistro}"
+												disabled="true" style="width: 95% !important;">
+												<f:convertDateTime pattern="MM-dd-yyyy" />
+											</p:inputText>
+
+											<h:outputLabel value="Usuario Registro" for="ur2" />
+											<p:inputText id="ur2"
+												value="#{colorController.newAtributo.usuarioRegistro.name}"
+												disabled="true" style="width: 95% !important;">
+											</p:inputText>
+										</p:panelGrid>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										<strong> <span class="icon"> <i
+												aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
+										</span>Lista Color
+										</strong>
+									</div>
+									<div class="panel-body" style="margin-bottom: 10px;">
+
+										<p:dataTable
+											styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+											rowKey="#{_det}" id="detalleTable2ID" var="_var"
+											selection="#{colorController.selectedAtributo}"
+											emptyMessage="No se encontraron registros."
+											value="#{colorController.listaColor}">
+
+
+											<p:column headerText="Id">
+												<h:outputText value=" #{_var.id}" />
+											</p:column>
+
+											<p:column headerText="Nombre">
+												<h:outputText value=" #{_var.nombre}" />
+											</p:column>
+
+											<p:column headerText="Descripcion">
+												<h:outputText value=" #{_var.descripcion}" />
+											</p:column>
+										</p:dataTable>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</p:tab>
+					<p:tab title="TALLAS">
+						<div class="row">
+							<div class="col-md-4">
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										<strong> <span class="icon"> <i
+												aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
+										</span>Datos Clasificación Prendas
+										</strong>
+									</div>
+									<div class="panel-body" style="margin-bottom: 10px;">
+										<p:panelGrid columns="2"
+											columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid">
+
+											<h:outputLabel value="Nombre" for="c3" />
+											<p:inputText id="c3"
+												value="#{clasificacionPrendaController.newAtributo.nombre}"
+												required="true" requiredMessage="Ingrese Nombre"
+												style="width: 95% !important;">
+											</p:inputText>
+
+											<h:outputLabel value="Descripción" for="p2" />
+											<p:inputText id="p2"
+												value="#{clasificacionPrendaController.newAtributo.descripcion}"
+												required="true" requiredMessage="Ingrese Descripción"
+												style="width: 95% !important;">
+											</p:inputText>
+
+											<h:outputLabel value="Fecha Registro" for="fr3" />
+											<p:inputText id="fr3"
+												value="#{clasificacionPrendaController.newAtributo.fechaRegistro}"
+												disabled="true" style="width: 95% !important;">
+												<f:convertDateTime pattern="MM-dd-yyyy" />
+											</p:inputText>
+
+											<h:outputLabel value="Usuario Registro" for="ur3" />
+											<p:inputText id="ur3"
+												value="#{clasificacionPrendaController.newAtributo.usuarioRegistro.name}"
+												disabled="true" style="width: 95% !important;">
+											</p:inputText>
+										</p:panelGrid>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="row">
+							<div class="col-md-12">
+								<div class="panel panel-primary">
+									<div class="panel-heading">
+										<strong> <span class="icon"> <i
+												aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
+										</span>Lista Clasificación Prendas
+										</strong>
+									</div>
+									<div class="panel-body" style="margin-bottom: 10px;">
+
+										<p:dataTable
+											styleClass="table table-condensed table-hover table-responsive table-striped table-bordered"
+											rowKey="#{_det}" id="detalleTable3ID" var="_var"
+											selection="#{clasificacionPrendaController.selectedAtributo}"
+											emptyMessage="No se encontraron registros."
+											value="#{clasificacionPrendaController.listaClasificacionPrenda}">
+
+
+											<p:column headerText="Id">
+												<h:outputText value=" #{_var.id}" />
+											</p:column>
+
+											<p:column headerText="Nombre">
+												<h:outputText value=" #{_var.nombre}" />
+											</p:column>
+
+											<p:column headerText="Descripcion">
+												<h:outputText value=" #{_var.descripcion}" />
+											</p:column>
+										</p:dataTable>
+
+									</div>
+								</div>
+							</div>
+						</div>
+					</p:tab>
+					<p:tab title="TELA">
+						<h:panelGrid columns="2" cellpadding="10">
+							<p:graphicImage name="demo/images/godfather/godfather3.jpg" />
+							<h:outputText value="After a break of more than 15 years..." />
+						</h:panelGrid>
+					</p:tab>
+				</p:tabView>
+			</div>
+		</h:form>
+
+
+	</ui:define>
+</ui:composition>
