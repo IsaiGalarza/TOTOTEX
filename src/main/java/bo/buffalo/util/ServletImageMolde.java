@@ -16,9 +16,7 @@ import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
 import bo.buffalo.data.FichaTecnicaRepository;
-import bo.buffalo.data.UsuarioRepository;
 import bo.buffalo.model.FichaTecnica;
-import bo.buffalo.model.Usuario;
 
 /**
  * Servlet implementation class ServletImageTaxistaCar
@@ -54,7 +52,6 @@ public class ServletImageMolde extends HttpServlet {
 				imagenData =  toByteArrayUsingJava(getImageDefaul().getStream());
 			}
 			try{
-
 				response.setContentType("image/jpeg");
 				response.setHeader("Content-Disposition", "inline; filename=imagen.jpg");
 				response.setHeader("Cache-control", "public");

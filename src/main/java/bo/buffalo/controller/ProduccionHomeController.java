@@ -18,16 +18,23 @@ import javax.servlet.http.HttpServletRequest;
 import org.richfaces.cdi.push.Push;
 
 import bo.buffalo.data.DetalleOrdenProduccionRepository;
+import bo.buffalo.data.FallaProcesoRepository;
 import bo.buffalo.data.OrdenProduccionRepository;
 import bo.buffalo.data.UsuarioRepository;
 import bo.buffalo.model.Atributo;
 import bo.buffalo.model.DetalleOrdenProduccion;
+import bo.buffalo.model.FallaProceso;
 import bo.buffalo.model.OrdenProduccion;
 import bo.buffalo.model.ProcesoCorte;
+import bo.buffalo.model.ProcesoEmpaqueFinal;
+import bo.buffalo.model.ProcesoLavanderia;
 import bo.buffalo.model.Usuario;
 import bo.buffalo.service.DetalleOrdenProduccionRegistration;
+import bo.buffalo.service.FallaProcesoRegistration;
 import bo.buffalo.service.OrdenProduccionRegistration;
 import bo.buffalo.service.ProcesoCorteRegistration;
+import bo.buffalo.service.ProcesoEmpaqueFinalRegistration;
+import bo.buffalo.service.ProcesoLavanderiaRegistration;
 import bo.buffalo.util.EstructuraFlujoProceso;
 import bo.buffalo.util.SessionMain;
 
@@ -59,11 +66,15 @@ public class ProduccionHomeController implements Serializable{
 	private @Inject UsuarioRepository usuarioRepository;
 	private @Inject OrdenProduccionRepository ordenProduccionRepository;
 	private @Inject DetalleOrdenProduccionRepository detalleOrdenProduccionRepository;
+	private @Inject FallaProcesoRepository fallaProcesoRepository;
 
 	//REGISTRATION
 	private @Inject OrdenProduccionRegistration ordenProduccionRegistration;
 	private @Inject DetalleOrdenProduccionRegistration detalleOrdenProduccionRegistration;
 	private @Inject ProcesoCorteRegistration procesoCorteRegistration;
+	private @Inject ProcesoLavanderiaRegistration procesoLavanderiaRegistration;
+	private @Inject ProcesoEmpaqueFinalRegistration procesoEmpaqueFinalRegistration;
+	private @Inject FallaProcesoRegistration fallaProcesoRegistration;
 
 	//ESTADO
 	private boolean nuevo; /*Control para renderizar la vista*/
@@ -73,6 +84,7 @@ public class ProduccionHomeController implements Serializable{
 	private boolean verProceso;
 	private boolean verClasePrenda;
 	private boolean buttonCargar;
+	private boolean buttonObservacion;
 
 	//ESTADO DE LOS PROCESOS
 
@@ -83,6 +95,7 @@ public class ProduccionHomeController implements Serializable{
 	private OrdenProduccion newOrdenProduccion;
 	private EstructuraFlujoProceso estructuraFlujoProceso;
 	private DetalleOrdenProduccion selectedDetalleOrdenProduccion;
+	private FallaProceso fallaProceso;
 
 	//LIST
 	private List<OrdenProduccion> listOrdenProduccion;
@@ -93,6 +106,7 @@ public class ProduccionHomeController implements Serializable{
 	private String usuario;
 	private String password;
 	private String clasePrenda;
+	private String textTipoProceso;
 
 	//SESION
 	private @Inject SessionMain sessionMain;
@@ -103,13 +117,22 @@ public class ProduccionHomeController implements Serializable{
 		usuarioSistema= usuarioRepository.findByLogin(FacesUtil.getUserSession());
 		request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		newEntity();
+
+		//si se le paso idOrdenProduccion por session
+		//if(){
+		//selectedOrdenProduccion = 
+		//cargarOrdenProduccion();
+		//}
 	}
 
 	private void newEntity(){
+		fallaProceso = new FallaProceso();
 		selectedDetalleOrdenProduccion= new DetalleOrdenProduccion();
 		estructuraFlujoProceso = new EstructuraFlujoProceso();
 		clasePrenda = "";
 
+		textTipoProceso = "LAVANDERIA";
+		buttonObservacion = false;
 		nuevo     = true;
 		modificar = false;
 		detalle   = false;
@@ -139,7 +162,12 @@ public class ProduccionHomeController implements Serializable{
 			conversation.end();
 			System.out.println(">>>>>>>>>> CONVERSACION TERMINADA...");
 		}
-		return "orden_ingreso.xhtml?faces-redirect=true";
+		return "produccion-home.xhtml?faces-redirect=true";
+	}
+	
+	public void cargarObservacion(){
+		System.out.println("cargarObservacion()");
+		FacesUtil.showDialog("dlgDetalleObservacion");
 	}
 
 	public void nuevaOrdenProduccion(){
@@ -168,6 +196,11 @@ public class ProduccionHomeController implements Serializable{
 		System.out.println("onRowSelectedOrdenProduccion()");
 		buttonCargar= true;
 		nuevo = true;
+		if(selectedOrdenProduccion.getEstado().equals("AC")){
+			buttonObservacion = true;
+		}else{
+			buttonObservacion = false;
+		}
 		FacesUtil.updateComponet("form001");
 	}
 
@@ -182,6 +215,8 @@ public class ProduccionHomeController implements Serializable{
 		this.clasePrenda = selectedOrdenProduccion.getClasePrenda();
 
 		selectedDetalleOrdenProduccion = detalleOrdenProduccionRepository.findbyOrdenProduccion(selectedOrdenProduccion);
+		System.out.println("selectedOrdenProduccion() "+selectedOrdenProduccion.getId());
+		System.out.println("selectedDetalleOrdenProduccion() "+selectedDetalleOrdenProduccion.getId());
 		//Aqui tiene que verificar y cargar los estados de los procesos
 		//====================================================================
 		//1.- Verificar Proceso Corte
@@ -191,30 +226,55 @@ public class ProduccionHomeController implements Serializable{
 		cargarEstructuraProcesoMaquilador();
 		//====================================================================
 		//3.- Verificar Proceso de lavado
-		cargarEstructuraProcesoLavado();
+		if(selectedDetalleOrdenProduccion.getProcesoCorte()!=null){
+			if(selectedDetalleOrdenProduccion.getProcesoCorte().getEstado().equals("AP")){
+				cargarEstructuraProcesoLavado();
+			}
+		}
 		//====================================================================
 		//4.- Verificar Proceso de Acabado Final
-		cargarEstructuraProcesoEmpaqueFinal();
+		if(selectedDetalleOrdenProduccion.getProcesoLavanderia()!=null){
+			if(selectedDetalleOrdenProduccion.getProcesoLavanderia().getEstado().equals("AP")){
+				cargarEstructuraProcesoEmpaqueFinal();
+			}
+		}
 	}
 
 	private void cargarEstructuraProcesoCorte(){
+		System.out.println("cargarEstructuraProcesoLavado() ");
 		if(selectedDetalleOrdenProduccion.getProcesoCorte()==null){//verifica si se creo el proceso de corte
 			estructuraFlujoProceso.setEstadoProcesoCorte("IN");
 			estructuraFlujoProceso.setPorcentajeProcesoCorte(0);//0%
-		}else if(selectedDetalleOrdenProduccion.getProcesoCorte().getEstado().equals("PR")){
-			estructuraFlujoProceso.setEstadoProcesoCorte("PR");
-			estructuraFlujoProceso.setPorcentajeProcesoCorte(25);//25%
+		}else if(selectedDetalleOrdenProduccion.getProcesoCorte().getEstado().equals("AP")){
+			estructuraFlujoProceso.setEstadoProcesoCorte("AP");
+			estructuraFlujoProceso.setPorcentajeProcesoCorte(100);//100%
 			//ficha tecnica
-			estructuraFlujoProceso.setEstadoSubProcesoFichaTecnica("PR");
+			estructuraFlujoProceso.setEstadoSubProcesoFichaTecnica("AP");
+			//insumo corte
+			estructuraFlujoProceso.setEstadoSubProcesoInsumoCorte("AP");
 		}else{
 			estructuraFlujoProceso.setEstadoProcesoCorte("AC");
 			//1,1.- Verificar el proceso de la ficha tecnica
 			if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaTecnica()==null){
 				estructuraFlujoProceso.setEstadoSubProcesoFichaTecnica("IN");
-			}else if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaTecnica().getEstado().equals("PR")){
-				estructuraFlujoProceso.setEstadoSubProcesoFichaTecnica("PR");
-			}else{
+				estructuraFlujoProceso.setPorcentajeProcesoCorte(0);//0%
+			}else if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaTecnica().getEstado().equals("AC")){
 				estructuraFlujoProceso.setEstadoSubProcesoFichaTecnica("AC");
+			}else if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaTecnica().getEstado().equals("AP")){
+				estructuraFlujoProceso.setEstadoSubProcesoFichaTecnica("AP");
+				estructuraFlujoProceso.setEstadoProcesoCorte("AP");
+				estructuraFlujoProceso.setPorcentajeProcesoCorte(50);//50%
+				//verificar para cargar insumo de corte
+				if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaCorte()==null){
+					estructuraFlujoProceso.setEstadoSubProcesoInsumoCorte("IN");
+				}else if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaCorte().getEstado().equals("AC")){
+					estructuraFlujoProceso.setEstadoSubProcesoInsumoCorte("AC");
+				}else if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaCorte().getEstado().equals("AP")){
+					estructuraFlujoProceso.setEstadoSubProcesoInsumoCorte("AP");
+					estructuraFlujoProceso.setEstadoProcesoCorte("AP");
+					estructuraFlujoProceso.setPorcentajeProcesoCorte(100);//100%
+				}
+
 			}
 		}
 	}
@@ -224,12 +284,94 @@ public class ProduccionHomeController implements Serializable{
 	}
 
 	private void cargarEstructuraProcesoLavado(){
-
+		System.out.println("cargarEstructuraProcesoLavado() ");
+		if(selectedDetalleOrdenProduccion.getProcesoLavanderia() == null ){//verifica si se creo el proceso de 
+			estructuraFlujoProceso.setEstadoProcesoLavado("AC");
+			estructuraFlujoProceso.setPorcentajeProcesoLavado(0);//0%
+			ProcesoLavanderia proceso = new ProcesoLavanderia();
+			proceso.setCorrelativo(0);
+			proceso.setEstado("AC");
+			proceso.setFechaRegistro(new Date());
+			proceso.setReciboLavanderia(null);
+			proceso.setUsuarioAprobacion(null);
+			proceso.setUsuarioRegistro(usuarioSistema.getLogin());
+			proceso = procesoLavanderiaRegistration.register(proceso);
+			selectedDetalleOrdenProduccion.setProcesoLavanderia(proceso);
+			detalleOrdenProduccionRegistration.updated(selectedDetalleOrdenProduccion);			
+		}else if(selectedDetalleOrdenProduccion.getProcesoLavanderia().getEstado().equals("AP")){
+			estructuraFlujoProceso.setEstadoProcesoLavado("AP");
+			estructuraFlujoProceso.setPorcentajeProcesoLavado(100);//100%
+			//Recibo
+			estructuraFlujoProceso.setEstadoSubProcesoReciboLavanderia("AP");
+		}else{
+			estructuraFlujoProceso.setEstadoProcesoLavado("AC");
+			//1,1.- Verificar el proceso de la ficha tecnica
+			if(selectedDetalleOrdenProduccion.getProcesoLavanderia().getReciboLavanderia()==null){
+				estructuraFlujoProceso.setEstadoSubProcesoReciboLavanderia("IN");
+				estructuraFlujoProceso.setPorcentajeProcesoLavado(0);//0%
+				//ReciboLavanderia recibo = new ReciboLavanderia();
+				//recibo.set
+			}else if(selectedDetalleOrdenProduccion.getProcesoLavanderia().getReciboLavanderia().getEstado().equals("AC")){
+				estructuraFlujoProceso.setEstadoSubProcesoReciboLavanderia("AC");
+				estructuraFlujoProceso.setPorcentajeProcesoLavado(0);//0%
+			}else if(selectedDetalleOrdenProduccion.getProcesoLavanderia().getReciboLavanderia().getEstado().equals("AP")){
+				estructuraFlujoProceso.setEstadoSubProcesoReciboLavanderia("AP");
+				estructuraFlujoProceso.setEstadoProcesoLavado("AP");
+				estructuraFlujoProceso.setPorcentajeProcesoLavado(100);//50%
+			}
+		}
 	}
 
 	private void cargarEstructuraProcesoEmpaqueFinal(){
-
+		System.out.println("cargarEstructuraProcesoEmpaqueFinal() ");
+		if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal() == null){//verifica si se creo el proceso de corte
+			estructuraFlujoProceso.setEstadoProcesoEmpaqueFinal("AC");
+			estructuraFlujoProceso.setPorcentajeProcesoEmpaqueFinal(0);//0%
+			//crear proceso empaque
+			ProcesoEmpaqueFinal procesoEmpaqueFinal = new ProcesoEmpaqueFinal();
+			procesoEmpaqueFinal.setAlmacenPrenda(null);
+			procesoEmpaqueFinal.setCorrelativo(0);
+			procesoEmpaqueFinal.setEstado("AC");
+			procesoEmpaqueFinal.setFechaRegistro(new Date());
+			procesoEmpaqueFinal.setFichaInsumoAcabado(null);
+			procesoEmpaqueFinal.setUsuarioRegistro(usuarioSistema.getLogin());
+			procesoEmpaqueFinalRegistration.register(procesoEmpaqueFinal);
+			selectedDetalleOrdenProduccion.setProcesoEmpaqueFinal(procesoEmpaqueFinal);
+			detalleOrdenProduccionRegistration.updated(selectedDetalleOrdenProduccion);
+		}else if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal().getEstado().equals("AP")){
+			estructuraFlujoProceso.setEstadoProcesoEmpaqueFinal("AP");
+			estructuraFlujoProceso.setPorcentajeProcesoEmpaqueFinal(100);//100%
+			//insumo final
+			estructuraFlujoProceso.setEstadoSubProcesoInsumoFinal("AP");
+			//almacen prenda
+			estructuraFlujoProceso.setEstadoSubProcesoAlmacenPrenda("AP");
+		}else{
+			estructuraFlujoProceso.setEstadoProcesoEmpaqueFinal("AC");
+			//1,1.- Verificar el proceso de la ficha tecnica
+			if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal().getFichaInsumoAcabado()==null){
+				estructuraFlujoProceso.setEstadoSubProcesoInsumoFinal("IN");
+			}else if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal().getFichaInsumoAcabado().getEstado().equals("AC")){
+				estructuraFlujoProceso.setEstadoSubProcesoInsumoFinal("AC");
+			}else if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal().getFichaInsumoAcabado().getEstado().equals("AP")){
+				estructuraFlujoProceso.setEstadoSubProcesoInsumoFinal("AP");
+				estructuraFlujoProceso.setPorcentajeProcesoEmpaqueFinal(50);//50%
+				//verificar para cargar insumo de corte
+				if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal().getAlmacenPrenda() ==null){
+					estructuraFlujoProceso.setEstadoSubProcesoAlmacenPrenda("AC");
+				}else if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal().getAlmacenPrenda().getEstado().equals("AC")){
+					estructuraFlujoProceso.setEstadoSubProcesoAlmacenPrenda("AC");
+				}else if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal().getAlmacenPrenda().getEstado().equals("AP")){
+					estructuraFlujoProceso.setEstadoSubProcesoAlmacenPrenda("AP");
+					estructuraFlujoProceso.setEstadoProcesoEmpaqueFinal("AP");
+					estructuraFlujoProceso.setPorcentajeProcesoEmpaqueFinal(100);//100%
+				}
+			}
+		}
+		System.out.println("EstadoProcesoEmpaqueFinal: "+estructuraFlujoProceso.getEstadoProcesoEmpaqueFinal());
+		System.out.println("EstadoSubProcesoInsumoFinal: "+estructuraFlujoProceso.getEstadoSubProcesoInsumoFinal());
+		System.out.println("EstadoSubProcesoAlmacenPrenda: "+estructuraFlujoProceso.getEstadoSubProcesoAlmacenPrenda());
 	}
+
 	/**
 	 * Obtiene la clase de prenda seleccionada
 	 * @param clasePrenda
@@ -242,6 +384,16 @@ public class ProduccionHomeController implements Serializable{
 		this.clasePrenda = clasePrenda;
 	}
 
+	public void cargarFichaTecnica(){
+		sessionMain.setAttributeSession("pIdOrdenProduccion", String.valueOf( selectedOrdenProduccion.getId() ));
+		cargarPagina("/pages/produccion/ficha-tecnicaV2.xhtml");
+	}
+	
+	public void cargarInsumoCorte(){
+		sessionMain.setAttributeSession("pIdOrdenProduccion", String.valueOf( selectedOrdenProduccion.getId() ));
+		cargarPagina("/pages/produccion/ficha-corte.xhtml");
+	}
+
 	/**
 	 * se establece el proceso de corte, de acuerdo al estado que tenga, se
 	 * cargaran los datos
@@ -252,7 +404,7 @@ public class ProduccionHomeController implements Serializable{
 		//=====================================================================================
 		//1.- Verificar si la orden de produccion es nueva, redireccionar direcamente a cargar la ficha tecnica y termina
 		System.out.println("PASO 1.-");
-		if(selectedOrdenProduccion.getId()==0){
+		if(selectedOrdenProduccion.getId() == 0 ){
 			//1.1.-Crear instancia de orden produccion
 			newOrdenProduccion = new OrdenProduccion();
 			newOrdenProduccion.setCorrelativo(1);
@@ -262,6 +414,7 @@ public class ProduccionHomeController implements Serializable{
 			newOrdenProduccion.setObservacion("Ninguna");
 			newOrdenProduccion.setUsuarioRegistro(usuarioSistema.getLogin());
 			newOrdenProduccion = ordenProduccionRegistration.register(newOrdenProduccion);
+			System.out.println("newOrdenProduccion: "+newOrdenProduccion.getId());
 
 			//1.2 Crear instancia del procesocorte
 			ProcesoCorte procesoCorte = new ProcesoCorte();
@@ -269,44 +422,52 @@ public class ProduccionHomeController implements Serializable{
 			procesoCorte.setEstado("AC");
 			procesoCorte.setFechaRegistro(new Date());
 			procesoCorte.setUsuarioRegistro(usuarioSistema.getName());
+			procesoCorte.setFichaTecnica(null);
+			procesoCorte.setFichaCorte(null);
+			procesoCorte.setUsuarioAprobacion(null);
 			procesoCorte = procesoCorteRegistration.register(procesoCorte);
+			System.out.println("procesoCorte: "+procesoCorte.getId());
 
 			//1.3 Crear instancia del detalle orden produccion
 			DetalleOrdenProduccion detalleOP = new DetalleOrdenProduccion();
 			detalleOP.setEstado("AC");
 			detalleOP.setFechaRegistro(new Date());
-			detalleOP.setObservacion("Ninguna");  
-			detalleOP.setOrdenProduccion(newOrdenProduccion);
-			detalleOP.setUsuarioRegistro(usuarioSistema.getLogin());
+			detalleOP.setObservacion("Ninguna"); 
 			detalleOP.setProcesoCorte(procesoCorte);
+			detalleOP.setProcesoMaquilador(null);
+			detalleOP.setProcesoLavanderia(null);
+			detalleOP.setProcesoEmpaqueFinal(null);
+			detalleOP.setOrdenProduccion(newOrdenProduccion);
+			detalleOP.setUsuarioRegistro(usuarioSistema.getLogin()); 
 			detalleOP = detalleOrdenProduccionRegistration.register(detalleOP);
+			System.out.println("detalleOP: "+detalleOP.getId());
 
 			//1.4 enviar por parametro el id de la orden de produccion
 			sessionMain.setAttributeSession("pIdOrdenProduccion", String.valueOf( newOrdenProduccion.getId() ));
-			try {
-				String path = request.getContextPath()+"/pages/produccion/ficha-tecnica.xhtml";
-				FacesUtil.redirect(path);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			cargarPagina("/pages/produccion/ficha-tecnicaV2.xhtml");
 			return;
 		}
 		//+=================================================================================
 		System.out.println("PASO 2.-");
 		// 2.- Verificar en que proceso esta.
-		//2.1 Verificar estado ficha tecnica
 		sessionMain.setAttributeSession("pIdOrdenProduccion", String.valueOf( selectedOrdenProduccion.getId() ));
+		if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaTecnica()==null){
+			cargarPagina("/pages/produccion/ficha-tecnicaV2.xhtml");
+		} else if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaTecnica().getEstado().equals("AC")){
+			cargarPagina("/pages/produccion/ficha-tecnicaV2.xhtml");
+		}else if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaTecnica().getEstado().equals("AP")) {
+			cargarPagina("/pages/produccion/ficha-corte.xhtml");
+		}  
+	}
+
+	private void cargarPagina(String page){
 		try {
-			String path = request.getContextPath()+"/pages/produccion/ficha-tecnica.xhtml";
-			FacesUtil.redirect(path);
+			//http://localhost:8080/buffalo/pages/produccion/produccion-home.xhtml
+			String path = request.getContextPath()+page;//"/pages/produccion/ficha-tecnicaV2.xhtml";
+			FacesUtil.redirect("http://localhost:8080/buffalo"+page);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		//2.2 Verificar 
-
-
-		System.out.println("PASO 3.-");
-		// 3.-  
 	}
 
 	public void cargarProcesoMaquilador(){
@@ -316,12 +477,37 @@ public class ProduccionHomeController implements Serializable{
 
 	public void cargarProcesoLavado(){
 		System.out.println("cargarProcesoLavado()");
+		System.out.println("PASO 1.-");
 		sessionMain.setAttributeSession("pIdOrdenProduccion", String.valueOf( selectedOrdenProduccion.getId() ));
+		cargarPagina("/pages/produccion/lavado.xhtml");
+		
+	}
+	
+	public void cargarEmpaque(){
+		sessionMain.setAttributeSession("pIdOrdenProduccion", String.valueOf( selectedOrdenProduccion.getId() ));
+		cargarPagina("/pages/produccion/empaque.xhtml");
+	}
+	
+	public void cargarAlmacenPrenda(){
+		sessionMain.setAttributeSession("pIdOrdenProduccion", String.valueOf( selectedOrdenProduccion.getId() ));
+		cargarPagina("/pages/produccion/almacen-prenda.xhtml");
 	}
 
 	public void cargarProcesoEmpaque(){
 		System.out.println("cargarProcesoEmpaque()");
 		sessionMain.setAttributeSession("pIdOrdenProduccion", String.valueOf( selectedOrdenProduccion.getId() ));
+		//verifica si cargar empaque o almacen prenda
+		if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal() == null){
+			cargarPagina("/pages/produccion/empaque.xhtml");
+			return;
+		}
+		if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal().getFichaInsumoAcabado() == null){
+			cargarPagina("/pages/produccion/empaque.xhtml");
+		} else if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal().getFichaInsumoAcabado().getEstado().equals("AC")){
+			cargarPagina("/pages/produccion/empaque.xhtml");
+		}else if(selectedDetalleOrdenProduccion.getProcesoEmpaqueFinal().getFichaInsumoAcabado().getEstado().equals("AP")) {
+			cargarPagina("/pages/produccion/almacen-prenda.xhtml");
+		}
 	} 
 
 	/* ------------ Get and Set ---------- */
@@ -476,6 +662,30 @@ public class ProduccionHomeController implements Serializable{
 	public void setSelectedDetalleOrdenProduccion(
 			DetalleOrdenProduccion selectedDetalleOrdenProduccion) {
 		this.selectedDetalleOrdenProduccion = selectedDetalleOrdenProduccion;
+	}
+
+	public FallaProceso getFallaProceso() {
+		return fallaProceso;
+	}
+
+	public void setFallaProceso(FallaProceso fallaProceso) {
+		this.fallaProceso = fallaProceso;
+	}
+
+	public String getTextTipoProceso() {
+		return textTipoProceso;
+	}
+
+	public void setTextTipoProceso(String textTipoProceso) {
+		this.textTipoProceso = textTipoProceso;
+	}
+
+	public boolean isButtonObservacion() {
+		return buttonObservacion;
+	}
+
+	public void setButtonObservacion(boolean buttonObservacion) {
+		this.buttonObservacion = buttonObservacion;
 	}
 
 }

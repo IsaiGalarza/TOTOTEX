@@ -12,6 +12,11 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+/**
+ * 
+ * @author mauriciobejaranorivera
+ *SCHEMA = PRODUCCION
+ */
 @Entity
 @Table(name = "proceso_corte", schema = "public")
 public class ProcesoCorte implements Serializable {	
@@ -37,16 +42,21 @@ public class ProcesoCorte implements Serializable {
 	
 	@ManyToOne
 	@JoinColumn(name = "id_ficha_tecnica",nullable=true)
-	private FichaTecnica fichaTecnica;	
+	private FichaTecnica fichaTecnica;
+	
+	@ManyToOne
+	@JoinColumn(name = "id_ficha_corte",nullable=true)
+	private FichaCorte fichaCorte;
 
 	@ManyToOne
-	@JoinColumn(name = "id_usuario_aprobacion")
+	@JoinColumn(name = "id_usuario_aprobacion",nullable=true)
 	private Usuario usuarioAprobacion;	
 
 	public ProcesoCorte() {
 		super();
 		this.id = 0;
 		this.fichaTecnica = new FichaTecnica();
+		this.usuarioAprobacion = new Usuario();
 	}
 
 	public Integer getId() {
@@ -111,6 +121,14 @@ public class ProcesoCorte implements Serializable {
 
 	public void setFichaTecnica(FichaTecnica fichaTecnica) {
 		this.fichaTecnica = fichaTecnica;
+	}
+
+	public FichaCorte getFichaCorte() {
+		return fichaCorte;
+	}
+
+	public void setFichaCorte(FichaCorte fichaCorte) {
+		this.fichaCorte = fichaCorte;
 	}
 
 }

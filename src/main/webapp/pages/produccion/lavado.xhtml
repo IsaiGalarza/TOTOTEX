@@ -1,0 +1,186 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="/WEB-INF/templates/template-produccion.xhtml">
+
+	<ui:define name="security">
+		<h:body onload="#{loginController.permisoValidado('FICHA TECNICA')}">
+		</h:body>
+	</ui:define>
+
+	<ui:define name="head">
+		<title>Lavado</title>
+		<f:event listener="#{lavadoController.initConversation}"
+			type="preRenderView"></f:event>
+			
+	</ui:define>
+
+	<ui:define name="header">
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li class="fuente-link-sidebar"><a href="/buffalo/">
+							Inicio </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="#{request.contextPath}/pages/produccion/produccion-home.xhtml">Modulo
+							Producción</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="#{request.contextPath}/pages/produccion/lavado.xhtml">Lavado</a></li>
+				</ol>
+			</div>
+		</div>
+	</ui:define>
+	<ui:define name="content">
+
+		<h:form id="frm_accion">
+
+		</h:form>
+
+		<h:form id="frm_list">
+			<ui:fragment rendered="true">
+				<div class="row">
+					<div class="col-sm-12  col-md-12">
+						<div class="btn-group btn-group-sm"
+							style="width: 100%; padding-bottom: 10px;">
+							<p:commandButton icon="ui-icon-minus" style="width: 8em;"
+								styleClass="btn btn-default" value="Atras" immediate="true"
+								update="frm_list"
+								onclick="location.href='#{request.contextPath}/pages/produccion/produccion-home.xhtml'" />
+
+							<p:commandButton
+								action="#{lavadoController.registrarReciboEnvio()}"
+								update="growl" rendered="#{lavadoController.nuevo}"
+								icon="ui-icon-disk" style="width: 8em;"
+								styleClass="btn btn-success" value="Registrar" />
+
+							<p:commandButton
+								action="#{lavadoController.aprobarReciboEnvio()}" update="growl"
+								rendered="#{lavadoController.aprobar}" icon="ui-icon-refresh"
+								style="width: 8em;" styleClass="btn btn-success" value="Aprobar" />
+
+							<p:commandButton action="#{lavadoController.imprimirRecibo()}"
+								update="growl" rendered="#{lavadoController.imprimir}"
+								icon="ui-icon-print" style="width: 8em;"
+								styleClass="btn btn-success" value="Impriimir" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<strong> <span class="icon"> <i
+										aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
+								</span>LAVANDERIA
+								</strong>
+							</div>
+							<div class="panel-body"
+								style="margin-bottom: 10px; text-align: center;">
+								<h:panelGrid columns="4">
+									<h:outputLabel value="Lavanderia" />
+									<p:autoComplete id="autoCompleteLavanderia" style="width: 100%"
+										value="#{lavadoController.textoAutoCompleteLavanderia}"
+										completeMethod="#{lavadoController.completeLavanderia}"
+										required="true" requiredMessage="Lavanderia Requerido"
+										maxResults="10" placeholder="Lavanderia" dropdown="true">
+										<p:ajax event="itemSelect" update="autoCompleteLavanderia"
+											listener="#{lavadoController.onRowSelectLavanderiaClick}" />
+									</p:autoComplete>
+
+									<h:outputLabel value="Fecha" />
+									<h:outputLabel value="13/01/2015" />
+								</h:panelGrid>
+								<h:panelGrid columns="4">
+									<h:outputLabel value="Recibido por:" />
+									<p:inputText style="width: 100%"
+										value="#{lavadoController.newReciboLavanderia.recibi}">
+										<p:ajax event="change" />
+									</p:inputText>
+
+									<h:outputLabel value="Entregado por:" />
+									<p:inputText style="width: 100%"
+										value="#{lavadoController.newReciboLavanderia.entrege}">
+										<p:ajax event="change" />
+									</p:inputText>
+								</h:panelGrid>
+
+								<h:panelGrid columns="2">
+									<h:outputLabel value="Observación" />
+
+									<p:inputTextarea style="width: 100%"
+										value="#{lavadoController.newReciboLavanderia.observaciones}"
+										rows="2">
+										<p:ajax event="change" />
+									</p:inputTextarea>
+								</h:panelGrid>
+
+								<p:dataTable rows="10"
+									value="#{lavadoController.listDetalleReciboLavanderia}"
+									var="prenda" paginator="true" paginatorPosition="top"
+									emptyMessage="No existes datos."
+									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+									rowsPerPageTemplate="5,10,15" selectionMode="single"
+									rowKey="#{prenda}">
+
+									<p:column headerText="Talla" style="text-align: center;">
+										<p:outputLabel value="#{prenda.fichaDetalleProducto.talla}" />
+									</p:column>
+									<p:column headerText="Cantidad" style="text-align: center;">
+										<p:outputLabel value="#{prenda.fichaDetalleProducto.cantidad}" />
+									</p:column>
+
+									<f:facet name="footer">
+										Cantidad de Datos #{lavadoController.listDetalleReciboLavanderia.size()}
+									</f:facet>
+								</p:dataTable>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</ui:fragment>
+		</h:form>
+
+		<p:dialog showEffect="explode" header="Vista Previa Impresion"
+			widgetVar="dlgVistaPrevia" resizable="true" modal="true"
+			position="center" closable="false" width="750"
+			visible="#{not empty facesContext.maximumSeverity}"
+			id="modalVistaPrevia">
+			<div class="modal-body">
+
+				<h:form id="formModalVistaPrevia" styleClass="form" role="form">
+
+					<p:media id="idReporteFactura" player="pdf"
+						value="#{lavadoController.urlVista}" width="700px" height="500px" />
+
+				</h:form>
+			</div>
+
+			<div class="modal-footer">
+
+				<div class="btn-group btn-group-sm">
+					<h:panelGrid columns="2" width="100%">
+						<p:commandButton value="Cerrar"
+							oncomplete="PF('dlgVistaPrevia').hide()">
+
+						</p:commandButton>
+					</h:panelGrid>
+
+				</div>
+
+			</div>
+
+		</p:dialog>
+
+		
+
+	</ui:define>
+</ui:composition>

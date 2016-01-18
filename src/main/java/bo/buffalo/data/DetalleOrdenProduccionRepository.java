@@ -28,7 +28,7 @@ public class DetalleOrdenProduccionRepository {
 	
 	public DetalleOrdenProduccion findbyOrdenProduccion(OrdenProduccion ordenProduccion) {
 		String query = "select em from DetalleOrdenProduccion em where ( em.estado='AC' or em.estado='IN' or em.estado='PR' ) and em.ordenProduccion.id="+ordenProduccion.getId();
-		System.out.println("Query OrdenProduccion: " + query);
+		System.out.println("Query DetalleOrdenProduccion: " + query);
 		return (DetalleOrdenProduccion) em.createQuery(query).getSingleResult();
 	}
 

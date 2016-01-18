@@ -11,41 +11,44 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Arturo.Herrera
+ * 
+ * @author mauriciobejaranorivera
  *
  */
-@SuppressWarnings("serial")
 @Entity
-@XmlRootElement
-@Table(name = "ficha_detalle_insummo_corte", schema = "public")
-public class FichaDetalleInsumoCorte implements Serializable{
+@Table(name = "detalle_almacen_prenda", schema = "public")
+public class DetalleAlmacenPrenda implements Serializable{
+
+	private static final long serialVersionUID = -3586357302235244181L;
+
 	@Id  @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
-	
-	@ManyToOne
-	@JoinColumn(name="id_producto")
-	private Producto producto;
-	
-	private Integer cantidad;
 	
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
 	
 	@Column(name="usuario_registro")
 	private String usuarioRegistro;
+
+	@Column(name = "estado",nullable=true)
+	private String estado;
+	
+	private String observacion;
 	
 	@ManyToOne
-	@JoinColumn(name="ficha_tecnica")
-	private FichaTecnica fichaTecnica;
+	@JoinColumn(name = "id_ficha_detalle_producto")
+	private FichaDetalleProducto fichaDetalleProducto;
 	
-	private Boolean baja;
+	@ManyToOne
+	@JoinColumn(name = "id_almacen_prenda")
+	private AlmacenPrenda almacenPrenda;
 	
-	public FichaDetalleInsumoCorte(){
-		baja=false;
-		producto=new Producto();
+	public DetalleAlmacenPrenda(){
+		this.id = 0;
+		this.estado = "AC";
+		this.observacion = "Ninguna";
 	}
 
 	public Integer getId() {
@@ -54,22 +57,6 @@ public class FichaDetalleInsumoCorte implements Serializable{
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public Producto getProducto() {
-		return producto;
-	}
-
-	public void setProducto(Producto producto) {
-		this.producto = producto;
-	}
-
-	public Integer getCantidad() {
-		return cantidad;
-	}
-
-	public void setCantidad(Integer cantidad) {
-		this.cantidad = cantidad;
 	}
 
 	public Date getFechaRegistro() {
@@ -86,22 +73,6 @@ public class FichaDetalleInsumoCorte implements Serializable{
 
 	public void setUsuarioRegistro(String usuarioRegistro) {
 		this.usuarioRegistro = usuarioRegistro;
-	}
-
-	public FichaTecnica getFichaTecnica() {
-		return fichaTecnica;
-	}
-
-	public void setFichaTecnica(FichaTecnica fichaTecnica) {
-		this.fichaTecnica = fichaTecnica;
-	}
-
-	public Boolean getBaja() {
-		return baja;
-	}
-
-	public void setBaja(Boolean baja) {
-		this.baja = baja;
 	}
 
 	@Override
@@ -123,7 +94,7 @@ public class FichaDetalleInsumoCorte implements Serializable{
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		FichaDetalleInsumoCorte other = (FichaDetalleInsumoCorte) obj;
+		DetalleAlmacenPrenda other = (DetalleAlmacenPrenda) obj;
 		if (id == null) {
 			if (other.id != null) {
 				return false;
@@ -136,10 +107,40 @@ public class FichaDetalleInsumoCorte implements Serializable{
 
 	@Override
 	public String toString() {
-		return "FichaDetalleInsumoCorte [id=" + id + ", producto=" + producto
-				+ ", cantidad=" + cantidad + ", fechaRegistro=" + fechaRegistro
-				+ ", usuarioRegistro=" + usuarioRegistro + ", fichaTecnica="
-				+ fichaTecnica + "]";
+		return "AlmacenPrenda [id=" + id + ", fechaRegistro=" + fechaRegistro
+				+ ", usuarioRegistro=" + usuarioRegistro ;
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
+	public FichaDetalleProducto getFichaDetalleProducto() {
+		return fichaDetalleProducto;
+	}
+
+	public void setFichaDetalleProducto(FichaDetalleProducto fichaDetalleProducto) {
+		this.fichaDetalleProducto = fichaDetalleProducto;
+	}
+
+	public String getObservacion() {
+		return observacion;
+	}
+
+	public void setObservacion(String observacion) {
+		this.observacion = observacion;
+	}
+
+	public AlmacenPrenda getAlmacenPrenda() {
+		return almacenPrenda;
+	}
+
+	public void setAlmacenPrenda(AlmacenPrenda almacenPrenda) {
+		this.almacenPrenda = almacenPrenda;
 	}
 	
 	

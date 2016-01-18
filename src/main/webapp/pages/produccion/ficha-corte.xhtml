@@ -1,0 +1,254 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:p="http://primefaces.org/ui"
+	xmlns:f="http://java.sun.com/jsf/core"
+	template="/WEB-INF/templates/template-produccion.xhtml">
+
+	<ui:define name="security">
+		<h:body onload="#{loginController.permisoValidado('FICHA TECNICA')}">
+		</h:body>
+	</ui:define>
+
+	<ui:define name="head">
+		<title>Ficha Corte</title>
+		<f:event listener="#{fichaCorteController.initConversation}"
+			type="preRenderView"></f:event>
+	</ui:define>
+
+	<ui:define name="header">
+		<div class="row">
+			<div class="col-sm-12 col-md-12" align="left">
+
+				<ol class="breadcrumb">
+					<li class="fuente-link-sidebar">
+						<div class="lsf symbol">sitemap</div>
+					</li>
+
+					<li class="fuente-link-sidebar"><a href="/buffalo/">
+							Inicio </a></li>
+					<li class="fuente-link-sidebar"><a
+						href="#{request.contextPath}/pages/produccion/produccion-home.xhtml">Modulo
+							Producción</a></li>
+					<li class="active" style="color: orange;"><a
+						style="color: orange;" class="fuente-link-sidebar"
+						href="#{request.contextPath}/pages/produccion/ficha-corte.xhtml">Ficha
+							Corte</a></li>
+				</ol>
+			</div>
+		</div>
+	</ui:define>
+	<ui:define name="content">
+
+
+		<h:form id="frm_list">
+			<ui:fragment rendered="true">
+				<div class="row">
+					<div class="col-sm-12  col-md-12">
+						<div class="btn-group btn-group-sm"
+							style="width: 100%; padding-bottom: 10px;">
+							<p:commandButton icon="ui-icon-minus" style="width: 8em;"
+								styleClass="btn btn-default" value="Atras" immediate="true"
+								update="frm_list"
+								onclick="location.href='#{request.contextPath}/pages/produccion/produccion-home.xhtml'" />
+
+							<p:commandButton
+								action="#{fichaCorteController.registrarFichaInsumoCorte()}"
+								update="growl" rendered="#{fichaCorteController.nuevo}"
+								icon="ui-icon-disk" style="width: 8em;"
+								styleClass="btn btn-success" value="Registrar" />
+
+							<p:commandButton
+								action="#{fichaCorteController.aprobarFichaInsumoCorte()}"
+								update="growl"
+								rendered="#{fichaCorteController.aprobarFicha}"
+								icon="ui-icon-refresh" style="width: 8em;"
+								styleClass="btn btn-success" value="Aprobar" />
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<strong> <span class="icon"> <i
+										aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
+								</span>Detalle Ficha Corte
+								</strong>
+							</div>
+							<div class="panel-body" style="margin-bottom: 10px;">
+
+								<p:tabView id="tab_detalle">
+									<!-- CONTROL DE CORTE -->
+									<p:tab title="CONTROL DE CORTE">
+										<p:panelGrid columns="2"
+											columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid">
+											<h:outputLabel value="Operario" for="autoCompleteOperario" />
+											<p:autoComplete id="autoCompleteOperario" style="width: 100%"
+												value="#{fichaCorteController.textoAutoCompleteOperario}"
+												completeMethod="#{fichaCorteController.completeOperario}"
+												required="true" requiredMessage="Operario Requerido"
+												maxResults="10" placeholder="Operario" dropdown="true">
+												<p:ajax event="itemSelect" update="autoCompleteOperario"
+													listener="#{fichaCorteController.onRowSelectOperarioClick}" />
+											</p:autoComplete>
+										</p:panelGrid>
+
+										<p:panelGrid columns="4"
+											columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4"
+											layout="grid">
+											<h:outputLabel value="Tela" for="t" />
+											<p:autoComplete id="t"
+												value="#{fichaCorteController.fichaCorte.tela}"
+												placeholder="Buscar Tela"
+												completeMethod="#{fichaCorteController.completeProductoTela}"
+												dropdown="true" var="_pro"
+												itemLabel="#{_pro.nombreProducto}" itemValue="#{_pro}"
+												converter="productoConverter">
+												<p:ajax event="itemSelect"
+													listener="#{fichaCorteController.onItemSelectTela}"
+													update="t" />
+											</p:autoComplete>
+
+											<h:outputLabel value="Metro Tela" for="mt" />
+											<p:inputText id="mt"
+												value="#{fichaCorteController.fichaCorte.metroTela}">
+												<p:ajax event="change"/>
+											</p:inputText>
+
+											<h:outputLabel value="Fecha Corte" for="fc" />
+											<p:calendar id="fc"
+												value="#{fichaCorteController.fichaCorte.fechaCorte}"></p:calendar>
+
+											<h:outputLabel value="Fecha Proceso" for="fp" />
+											<p:calendar id="fp"
+												value="#{fichaCorteController.fichaCorte.fechaProceso}"></p:calendar>
+										</p:panelGrid>
+										<br />
+										<br />
+										<p:dataTable id="table001"
+											value="#{fichaCorteController.listFichaDetalleProducto}"
+											var="ficha" emptyMessage="No existes datos."
+											selectionMode="single"
+											selection="#{fichaCorteController.selectedFichaDetalleProducto}"
+											rowKey="#{ficha.talla}">
+											<p:ajax event="rowSelect"
+												listener="#{fichaCorteController.onRowSelectProducto}" />
+											<p:column headerText="Talla">	
+													#{ficha.talla}
+												</p:column>
+											<p:column headerText="Cantidad">
+													#{ficha.cantidad}
+												</p:column>
+											<p:column headerText="Codigo Barra">
+													#{ficha.codigoBarra}
+												</p:column>
+											<f:facet name="footer">
+													Cantidad de Datos #{fichaCorteController.listFichaDetalleProducto.size()}
+												</f:facet>
+										</p:dataTable>
+										<br />
+										<p:commandButton value="Nuevo1" immediate="true"
+											action="#{fichaCorteController.agregarProducto()}"
+											update="growl"></p:commandButton>
+										<p:commandButton value="Modificar" immediate="true"
+											action="#{fichaCorteController.modificarProducto()}"
+											update="growl"></p:commandButton>
+										<p:commandButton value="Eliminar" immediate="true"
+											action="#{fichaCorteController.eliminarProducto()}"
+											update="growl"></p:commandButton>
+									</p:tab>
+
+									<!-- INSUMO CORTE -->
+									<p:tab title="INSUMO DE CORTE">
+										<p:dataTable rows="10" id="table01"
+											value="#{fichaCorteController.listFichaInsumoCorte}"
+											var="ficha" paginator="true" paginatorPosition="top"
+											emptyMessage="No existes datos."
+											paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+											rowsPerPageTemplate="5,10,15" selectionMode="single"
+											selection="#{fichaCorteController.selectedFichaInsumoCorte}"
+											rowKey="#{ficha.producto.id}">
+											<p:ajax event="rowSelect"
+												listener="#{fichaCorteController.onRowSelectInsumoCorte}" />
+											<p:column headerText="Insumo">	
+												#{ficha.producto.nombreProducto}
+											</p:column>
+											<p:column headerText="Cantidad">
+												#{ficha.cantidad}
+											</p:column>
+											<f:facet name="footer">
+												Cantidad de Datos #{fichaCorteController.listFichaInsumoCorte.size()}
+											</f:facet>
+										</p:dataTable>
+										<br />
+										<p:commandButton value="Nuevo" immediate="true"
+											action="#{fichaCorteController.agregarInsumoCorte()}"></p:commandButton>
+										<p:commandButton value="Modificar"
+											action="#{fichaCorteController.modificarInsumoCorte()}"
+											update="growl"></p:commandButton>
+										<p:commandButton value="Eliminar"
+											action="#{fichaCorteController.eliminarInsumoCorte()}"
+											update="growl"></p:commandButton>
+									</p:tab>
+								</p:tabView>
+							</div>
+						</div>
+					</div>
+				</div>
+			</ui:fragment>
+		</h:form>
+
+		<p:dialog header="Insumo de Corte" widgetVar="wv_dlg_insumo_corte"
+			modal="true">
+			<h:form id="frm_insumo_corte">
+				<h:panelGrid columns="2">
+					<h:outputLabel value="Insumo" />
+					<p:autoComplete dropdown="true"
+						value="#{fichaCorteController.selectedFichaInsumoCorte.producto}"
+						placeholder="Buscar Insumo"
+						completeMethod="#{fichaCorteController.completeProducto}"
+						var="_pro" itemLabel="#{_pro.nombreProducto}" itemValue="#{_pro}"
+						converter="productoConverter">
+						<p:ajax event="itemSelect"
+							listener="#{fichaCorteController.onItemSelectCorte}" />
+					</p:autoComplete>
+
+					<h:outputLabel value="Cantidad" />
+					<p:inputText
+						value="#{fichaCorteController.selectedFichaInsumoCorte.cantidad}"></p:inputText>
+				</h:panelGrid>
+				<br />
+				<p:commandButton value="Agregar"
+					action="#{fichaCorteController.accionAgregarInsumoCorte()}"
+					update="growl,frm_list"></p:commandButton>
+			</h:form>
+		</p:dialog>
+		
+		<p:dialog header="Producto" widgetVar="wv_dlg_producto" modal="true"
+			position="center">
+			<h:form id="frm_producto">
+				<h:panelGrid columns="2">
+					<h:outputLabel value="Talla" />
+					<p:selectOneMenu
+						value="#{fichaCorteController.selectedFichaDetalleProducto.talla}"
+						filter="true" filterMatchMode="startsWith">
+						<f:selectItems value="#{fichaCorteController.listaTalla}"
+							var="talla" itemLabel="#{talla.nombre}"
+							itemValue="#{talla.nombre}" />
+					</p:selectOneMenu>
+
+					<h:outputLabel value="Cantidad" />
+					<h:inputText
+						value="#{fichaCorteController.selectedFichaDetalleProducto.cantidad}" />
+
+				</h:panelGrid>
+				<br />
+				<p:commandButton value="Agregar"
+					action="#{fichaCorteController.accionAgregarProducto()}"
+					update="growl"></p:commandButton>
+			</h:form>
+		</p:dialog>
+
+	</ui:define>
+</ui:composition>

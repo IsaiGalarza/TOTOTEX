@@ -42,6 +42,10 @@ public class FichaDetalleProducto implements Serializable{
 	@JoinColumn(name="id_ficha_tecnica")
 	private FichaTecnica fichaTecnica;
 	
+	@ManyToOne
+	@JoinColumn(name="id_ficha_corte",nullable=true)
+	private FichaCorte fichaCorte;
+	
 	private Boolean baja;
 	
 	public FichaDetalleProducto(){
@@ -149,6 +153,14 @@ public class FichaDetalleProducto implements Serializable{
 				+ ", cantidad=" + cantidad + ", CodigoBarra=" + codigoBarra
 				+ ", FechaRegistro=" + FechaRegistro + ", UsuarioRegistro="
 				+ UsuarioRegistro + ", fichaTecnica=" + fichaTecnica + "]";
+	}
+
+	public FichaCorte getFichaCorte() {
+		return fichaCorte;
+	}
+
+	public void setFichaCorte(FichaCorte fichaCorte) {
+		this.fichaCorte = fichaCorte;
 	}
 	
 	

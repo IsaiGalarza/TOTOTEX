@@ -58,6 +58,7 @@ public class Producto implements Serializable {
 	private GrupoProducto grupoProducto;
 	
 	public Producto() {
+		this.id = 0;
 	}
 
 	

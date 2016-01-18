@@ -28,6 +28,12 @@ public class OrdenProduccion implements Serializable {
 	private String clasePrenda;
 	
 	private String observacion;
+	
+	@Column(name = "porcentaje_total")
+	private double porcentajeTotal;
+	
+	@Column(name = "proceso_actual")
+	private String procesoActual;
 
 	private String estado;
 	
@@ -47,6 +53,8 @@ public class OrdenProduccion implements Serializable {
 	public OrdenProduccion() {
 		super();
 		this.id = 0;
+		this.porcentajeTotal = 0;
+		this.procesoActual = "CORTE";
 	}
 
 	public Integer getId() {
@@ -119,6 +127,22 @@ public class OrdenProduccion implements Serializable {
 
 	public void setClasePrenda(String clasePrenda) {
 		this.clasePrenda = clasePrenda;
+	}
+
+	public double getPorcentajeTotal() {
+		return porcentajeTotal;
+	}
+
+	public void setPorcentajeTotal(double porcentajeTotal) {
+		this.porcentajeTotal = porcentajeTotal;
+	}
+
+	public String getProcesoActual() {
+		return procesoActual;
+	}
+
+	public void setProcesoActual(String procesoActual) {
+		this.procesoActual = procesoActual;
 	}
 
 }

@@ -17,16 +17,14 @@ package bo.buffalo.data;
 
 import java.util.List;
 
+import javax.ejb.Stateless;
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Root;
 
 import bo.buffalo.model.Confeccionista;
 
-@ApplicationScoped
+@Stateless
 public class ConfeccionistaRepository {
 	
 	@Inject
@@ -36,25 +34,24 @@ public class ConfeccionistaRepository {
         return em.find(Confeccionista.class, id);
     }
 
-    public List<Confeccionista> findAllOrderedByNombre() {
-        CriteriaBuilder cb = em.getCriteriaBuilder();
-        CriteriaQuery<Confeccionista> criteria = cb.createQuery(Confeccionista.class);
-        Root<Confeccionista> cargo = criteria.from(Confeccionista.class);
-        criteria.select(cargo).orderBy(cb.desc(cargo.get("nombre")));
-        return em.createQuery(criteria).getResultList();
+    @SuppressWarnings("unchecked")
+	public List<Confeccionista> findAllOrderedByNombre() {
+    	String query = "select em from Confeccionista em where em.estado='AC' order by em.nombre desc";
+    	System.out.println("Query Confeccionista: "+query);
+    	return em.createQuery(query).getResultList();
     }
     
     @SuppressWarnings("unchecked")
 	public List<Confeccionista> findActivosOrderedByFechaRegistro() {
-    	String query = "select car from Confeccionista car where car.estado='AC' order by car.fechaRegistro desc";
-    	System.out.println("Query Servicios: "+query);
+    	String query = "select em from Confeccionista em where em.estado='AC' order by em.fechaRegistro desc";
+    	System.out.println("Query Confeccionista: "+query);
     	return em.createQuery(query).getResultList();
     }
     
     @SuppressWarnings("unchecked")
 	public List<Confeccionista> findAllOrderedByFechaRegistro() {
-    	String query = "select car from Confeccionista car where car.estado='AC' or car.estado='IN' order by car.fechaRegistro desc";
-    	System.out.println("Query Servicios: "+query);
+    	String query = "select em from Confeccionista em where em.estado='AC' or em.estado='IN' order by em.fechaRegistro desc";
+    	System.out.println("Query Confeccionista: "+query);
     	return em.createQuery(query).getResultList();
     }
     

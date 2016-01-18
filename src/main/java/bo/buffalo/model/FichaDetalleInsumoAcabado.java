@@ -38,10 +38,17 @@ public class FichaDetalleInsumoAcabado implements Serializable{
 	private String usuarioRegistro;
 	
 	@ManyToOne
-	@JoinColumn(name="ficha_tecnica")
+	@JoinColumn(name="id_ficha_tecnica",nullable=true)
 	private FichaTecnica fichaTecnica;
 	
 	private Boolean baja;
+	
+	@Column(name = "estado",nullable=true)
+	private String estado;
+	
+	@ManyToOne
+	@JoinColumn(name="id_ficha_insumo_acabado",nullable=true)
+	private FichaInsumoAcabado fichaInsumoAcabado;
 	
 	public FichaDetalleInsumoAcabado(){
 		baja=false;
@@ -140,6 +147,22 @@ public class FichaDetalleInsumoAcabado implements Serializable{
 				+ ", cantidad=" + cantidad + ", fechaRegistro=" + fechaRegistro
 				+ ", usuarioRegistro=" + usuarioRegistro + ", fichaTecnica="
 				+ fichaTecnica + "]";
+	}
+
+	public String getEstado() {
+		return estado;
+	}
+
+	public void setEstado(String estado) {
+		this.estado = estado;
+	}
+
+	public FichaInsumoAcabado getFichaInsumoAcabado() {
+		return fichaInsumoAcabado;
+	}
+
+	public void setFichaInsumoAcabado(FichaInsumoAcabado fichaInsumoAcabado) {
+		this.fichaInsumoAcabado = fichaInsumoAcabado;
 	}
 	
 	

@@ -44,8 +44,16 @@ public class DetalleOrdenProduccion implements Serializable {
 	private ProcesoCorte procesoCorte;
 	
 	@ManyToOne
+	@JoinColumn(name = "id_proceso_lavanderia",nullable=true)
+	private ProcesoLavanderia procesoLavanderia;
+	
+	@ManyToOne
 	@JoinColumn(name = "id_proceso_maquilador",nullable=true)
 	private ProcesoMaquilador procesoMaquilador;
+	
+	@ManyToOne
+	@JoinColumn(name = "id_proceso_empaque_final",nullable=true)
+	private ProcesoEmpaqueFinal procesoEmpaqueFinal;
 	
 	public DetalleOrdenProduccion() {
 		super();
@@ -53,6 +61,8 @@ public class DetalleOrdenProduccion implements Serializable {
 		this.procesoCorte = new ProcesoCorte();
 		this.procesoMaquilador = new ProcesoMaquilador();
 		this.ordenProduccion = new OrdenProduccion();
+		this.procesoLavanderia = new ProcesoLavanderia();
+		this.procesoEmpaqueFinal = new ProcesoEmpaqueFinal();
 	}
 
 	public Integer getId() {
@@ -125,6 +135,22 @@ public class DetalleOrdenProduccion implements Serializable {
 
 	public void setProcesoMaquilador(ProcesoMaquilador procesoMaquilador) {
 		this.procesoMaquilador = procesoMaquilador;
+	}
+
+	public ProcesoLavanderia getProcesoLavanderia() {
+		return procesoLavanderia;
+	}
+
+	public void setProcesoLavanderia(ProcesoLavanderia procesoLavanderia) {
+		this.procesoLavanderia = procesoLavanderia;
+	}
+
+	public ProcesoEmpaqueFinal getProcesoEmpaqueFinal() {
+		return procesoEmpaqueFinal;
+	}
+
+	public void setProcesoEmpaqueFinal(ProcesoEmpaqueFinal procesoEmpaqueFinal) {
+		this.procesoEmpaqueFinal = procesoEmpaqueFinal;
 	}
 
 }

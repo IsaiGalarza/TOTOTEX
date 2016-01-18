@@ -12,11 +12,14 @@
 	</ui:define>
 
 	<ui:define name="head">
+
 		<title>Ficha Tecnica</title>
+
+		<f:event listener="#{fichaTecnicaV2Controller.initConversation}"
+			type="preRenderView"></f:event>
 	</ui:define>
 
 	<ui:define name="header">
-		<h:body onload="#{fichaTecnicaController.init()}"></h:body>
 		<div class="row">
 			<div class="col-sm-12 col-md-12" align="left">
 
@@ -29,11 +32,11 @@
 							Inicio </a></li>
 					<li class="fuente-link-sidebar"><a
 						href="#{request.contextPath}/pages/produccion/produccion-home.xhtml">Modulo
-							Produccion</a></li>
+							Producción</a></li>
 					<li class="active" style="color: orange;"><a
 						style="color: orange;" class="fuente-link-sidebar"
-						href="#{request.contextPath}/pages/produccion/ficha-tecnica.xhtml">Ficha
-							Tecnica</a></li>
+						href="#{request.contextPath}/pages/produccion/ficha-tecnicaV2.xhtml">Ficha
+							Técnica</a></li>
 				</ol>
 			</div>
 		</div>
@@ -45,31 +48,20 @@
 		</h:form>
 
 		<h:form id="frm_list">
-			<ui:fragment rendered="#{!fichaTecnicaController.nuevo}">
+			<ui:fragment rendered="#{fichaTecnicaV2Controller.verLista}">
 				<div class="row">
-					<div class="col-md-12">
-						<div class="btn-group btn-group-sm" style="width: 100%;">
-
-							<p:commandButton rendered="#{!fichaTecnicaController.nuevo}"
-								action="#{fichaTecnicaController.nuevoEntity()}"
-								icon="ui-icon-plus" style="width: 8em;"
-								styleClass="btn btn-success" value="Crear" type="submit" />
-
-							<p:commandButton update="growl"
-								rendered="#{!fichaTecnicaController.nuevo}"
-								action="#{fichaTecnicaController.modificarEntity()}"
-								icon="ui-icon-disk" value="Modificar" style="width: 8em;"
-								styleClass="btn btn-primary btn-md" />
-
-
+					<div class="col-sm-12  col-md-12">
+						<div class="btn-group btn-group-sm"
+							style="width: 100%; padding-bottom: 10px;">
+							<p:commandButton icon="ui-icon-minus" style="width: 8em;"
+								styleClass="btn btn-default" value="Atras" immediate="true"
+								update="frm_list,frm"
+								action="#{fichaTecnicaV2Controller.volverAtras()}" />
 							<p:commandButton
-								action="#{fichaTecnicaController.eliminarEntity()}"
-								update="growl" rendered="#{!fichaTecnicaController.nuevo}"
-								icon="ui-icon-circle-close" style="width: 8em;"
-								styleClass="btn btn-danger" value="Borrar" type="submit" />
-
-							<p:commandButton value="Ver Ficha Tecnica" icon="ui-icon-search"
-								action="#{fichaTecnicaController.verEntity()}" update="growl" />
+								rendered="#{fichaTecnicaV2Controller.buttonCargarFichaTecnica}"
+								value="Cargar Ficha Tecnica" icon="ui-icon-search"
+								update="frm_list,frm,growl"
+								action="#{fichaTecnicaV2Controller.cargarFichaTecnicaSeleccionada()}" />
 						</div>
 					</div>
 				</div>
@@ -84,15 +76,15 @@
 							</div>
 							<div class="panel-body" style="margin-bottom: 10px;">
 								<p:dataTable reflow="true"
-									value="#{fichaTecnicaController.entitys}" var="entity"
+									value="#{fichaTecnicaV2Controller.entitys}" var="entity"
 									emptyMessage="No existen registros.!" rows="15"
 									paginator="true"
 									paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
 									rowsPerPageTemplate="10,15,20,30" paginatorPosition="top"
 									selectionMode="single" rowKey="#{entity.id}"
-									selection="#{fichaTecnicaController.entity}">
-									<p:ajax event="rowSelect"
-										listener="#{fichaTecnicaController.onRowSelect}"></p:ajax>
+									selection="#{fichaTecnicaV2Controller.selectedFichaTecnica}">
+									<p:ajax event="rowSelect" update="frm_list"
+										listener="#{fichaTecnicaV2Controller.onRowSelect}"></p:ajax>
 
 									<p:column headerText="Codigo" filterBy="#{entity.id}">
 										<h:outputText value="#{entity.id}" />
@@ -127,10 +119,15 @@
 										</h:outputText>
 									</p:column>
 									<p:column headerText="Estado">
-										<h:outputLabel value="#{entity.estado}" />
+										<span class="label label-success"><h:outputText
+												rendered="#{entity.estado=='AC'}" value="NUEVO" /></span>
+										<span class="label label-danger"><h:outputText
+												rendered="#{entity.estado=='IN'}" value="Inactivo" /></span>
+										<span class="label label-danger"><h:outputText
+												rendered="#{entity.estado=='PR'}" value="PROCESADO" /></span>
 									</p:column>
 									<f:facet name="footer">
-            							Cantidad De Registros #{fichaTecnicaController.entitys.size()}
+            							Cantidad De Registros #{fichaTecnicaV2Controller.entitys.size()}
         							</f:facet>
 								</p:dataTable>
 							</div>
@@ -141,47 +138,36 @@
 		</h:form>
 
 		<h:form id="frm">
-			<ui:fragment rendered="#{fichaTecnicaController.nuevo}">
+			<ui:fragment
+				rendered="#{fichaTecnicaV2Controller.nuevo or fichaTecnicaV2Controller.aprobarFichaTecnica}">
 				<div class="row">
 					<div class="col-md-12">
-						<div class="btn-group btn-group-sm" style="width: 100%;">
-							<p:commandButton rendered="#{fichaTecnicaController.nuevo}"
-								action="#{fichaTecnicaController.cancelarEntity()}"
+						<div class="btn-group btn-group-sm"
+							style="width: 100%; padding-bottom: 10px;">
+							<p:commandButton
+								rendered="#{ ! fichaTecnicaV2Controller.verLista}"
+								onclick="location.href='#{request.contextPath}/pages/produccion/produccion-home.xhtml'"
 								icon="ui-icon-minus" style="width: 8em;"
 								styleClass="btn btn-default" value="Cancelar" immediate="true" />
 
-							<p:commandButton action="#{fichaTecnicaController.register()}"
+							<p:commandButton
+								rendered="#{fichaTecnicaV2Controller.buttonVerLista}"
+								action="#{fichaTecnicaV2Controller.cargarVerLista()}"
+								icon="ui-icon-search" style="width: 8em;" update="frm_list,frm"
+								styleClass="btn btn-default" value="Ver Lista" immediate="true" />
+
+							<p:commandButton action="#{fichaTecnicaV2Controller.register()}"
 								update="growl"
-								rendered="#{!fichaTecnicaController.modificar and fichaTecnicaController.nuevo}"
+								rendered="#{!fichaTecnicaV2Controller.modificar and fichaTecnicaV2Controller.buttonRegistrar}"
 								icon="ui-icon-disk" style="width: 8em;"
 								styleClass="btn btn-success" value="Registrar" />
 
-							<p:commandButton action="#{fichaTecnicaController.update()}"
-								update="growl" rendered="#{fichaTecnicaController.modificar}"
-								icon="ui-icon-refresh" style="width: 8em;"
-								styleClass="btn btn-primary" value="Modificar" />
-
-							<p:commandButton value="Ver Control Corte" icon="ui-icon-search"
-								rendered="#{!fichaTecnicaController.detalle}"
-								action="#{fichaTecnicaController.verControlCorte()}"
-								immediate="true" update="frm" />
-
-							<p:commandButton value="Ver Molde" icon="ui-icon-search"
-								rendered="#{fichaTecnicaController.detalle}"
-								action="#{fichaTecnicaController.verMolde()}" immediate="true"
-								update="frm" />
-
-							<p:commandButton action="#{fichaTecnicaController.aprobar()}"
+							<p:commandButton action="#{fichaTecnicaV2Controller.aprobar()}"
 								update="growl"
-								rendered="#{fichaTecnicaController.modificar and fichaTecnicaController.administrador and fichaTecnicaController.entity.estado=='Nuevo'}"
+								rendered="#{fichaTecnicaV2Controller.aprobarFichaTecnica}"
 								icon="ui-icon-refresh" style="width: 8em;"
 								styleClass="btn btn-success" value="Aprobar" />
 
-							<p:commandButton
-								action="#{fichaTecnicaController.verificarEntregaAlmancen()}"
-								rendered="#{fichaTecnicaController.modificar and fichaTecnicaController.administrador and fichaTecnicaController.entity.estado=='Aprobado'}"
-								icon="ui-icon-refresh" styleClass="btn btn-success"
-								value="Entrega Almacen" />
 						</div>
 					</div>
 				</div>
@@ -191,7 +177,7 @@
 							<div class="panel-heading">
 								<strong> <span class="icon"> <i
 										aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
-								</span>#{fichaTecnicaController.titulo}
+								</span>#{fichaTecnicaV2Controller.titulo}
 								</strong>
 							</div>
 							<div class="panel-body" style="margin-bottom: 10px;">
@@ -199,75 +185,75 @@
 									columnClasses="ui-grid-col-4,ui-grid-col-8" layout="grid">
 									<h:outputLabel value="Código" for="cod" />
 									<p:inputText id="cod"
-										value="HO000399" 
-										required="true" requiredMessage="Ingrese un confeccionista.!"
-										style="width: 95% !important;"
-										disabled="true">
+										value="#{fichaTecnicaV2Controller.entity.codigo}"
+										style="width: 95% !important;" disabled="true">
 									</p:inputText>
 									<h:outputLabel value="Confeccionista" for="c" />
-									<p:inputText id="c"
-										value="#{fichaTecnicaController.entity.confeccionista}"
-										required="true" requiredMessage="Ingrese un confeccionista.!"
-										style="width: 95% !important;"
-										inputStyle="width: 100%; "
-										disabled="#{fichaTecnicaController.entity.estado!='Nuevo'}">
-									</p:inputText>
+									<p:autoComplete id="autoCompleteConfeccionista"
+										style="width: 100%"
+										value="#{fichaTecnicaV2Controller.textoAutoCompleteConfeccionista}"
+										completeMethod="#{fichaTecnicaV2Controller.completeConfeccionista}"
+										required="true" requiredMessage="Confeccionista Requerido"
+										maxResults="10" placeholder="Confeccionista" dropdown="true">
+										<p:ajax event="itemSelect" update="autoCompleteConfeccionista"
+											listener="#{fichaTecnicaV2Controller.onRowSelectConfeccionistaClick}" />
+									</p:autoComplete>
 
 									<h:outputLabel value="Marca" for="m" />
-									<p:autoComplete id="m"
-										value="#{fichaTecnicaController.entity.marca}"
+									<p:autoComplete id="m" style="width: 100%"
+										value="#{fichaTecnicaV2Controller.entity.marca}"
 										placeholder="Buscar Marca"
-										completeMethod="#{fichaTecnicaController.completeMarca}"
+										completeMethod="#{fichaTecnicaV2Controller.completeMarca}"
 										dropdown="true" var="_pro" itemLabel="#{_pro.nombre}"
 										itemValue="#{_pro}" converter="atributoConverter">
 										<p:ajax event="itemSelect"
-											listener="#{fichaTecnicaController.onItemSelectMarca}"
+											listener="#{fichaTecnicaV2Controller.onItemSelectMarca}"
 											update="m" />
 									</p:autoComplete>
 
 									<h:outputLabel value="Color Atraque" for="ca" />
-									<p:autoComplete id="ca"
-										value="#{fichaTecnicaController.entity.colorAtraque}"
+									<p:autoComplete id="ca" style="width: 100%"
+										value="#{fichaTecnicaV2Controller.entity.colorAtraque}"
 										placeholder="Buscar Color Atraque"
-										completeMethod="#{fichaTecnicaController.completeColor}"
+										completeMethod="#{fichaTecnicaV2Controller.completeColor}"
 										dropdown="true" var="_pro" itemLabel="#{_pro.nombre}"
 										itemValue="#{_pro}" converter="atributoConverter">
 										<p:ajax event="itemSelect"
-											listener="#{fichaTecnicaController.onItemSelectColorAtraque}"
+											listener="#{fichaTecnicaV2Controller.onItemSelectColorAtraque}"
 											update="ca" />
 									</p:autoComplete>
 
 									<h:outputLabel value="Color De Hilo" for="ch" />
-									<p:autoComplete id="ch"
-										value="#{fichaTecnicaController.entity.colorHilo}"
+									<p:autoComplete id="ch" style="width: 100%"
+										value="#{fichaTecnicaV2Controller.entity.colorHilo}"
 										placeholder="Buscar Color Hilo"
-										completeMethod="#{fichaTecnicaController.completeColor}"
+										completeMethod="#{fichaTecnicaV2Controller.completeColor}"
 										dropdown="true" var="_pro" itemLabel="#{_pro.nombre}"
 										itemValue="#{_pro}" converter="atributoConverter">
 										<p:ajax event="itemSelect"
-											listener="#{fichaTecnicaController.onItemSelectColorHilo}"
+											listener="#{fichaTecnicaV2Controller.onItemSelectColorHilo}"
 											update="ch" />
 									</p:autoComplete>
 
 									<h:outputLabel value="Partida" for="p" />
 									<p:inputText id="p"
-										value="#{fichaTecnicaController.entity.partida}"
+										value="#{fichaTecnicaV2Controller.entity.partida}"
 										required="true" requiredMessage="Ingrese una Partida.!"
 										style="width: 95% !important;"
-										disabled="#{fichaTecnicaController.entity.estado!='Nuevo'}">
+										disabled="#{fichaTecnicaV2Controller.entity.estado!='AC'}">
 									</p:inputText>
 
 									<h:outputLabel value="Tipo de Tela" for="tt" />
 									<p:inputText id="tt"
-										value="#{fichaTecnicaController.entity.tipoTela}"
+										value="#{fichaTecnicaV2Controller.entity.tipoTela}"
 										required="true" requiredMessage="Ingrese un Tipo de Tela.!"
 										style="width: 95% !important;"
-										disabled="#{fichaTecnicaController.entity.estado!='Nuevo'}">
+										disabled="#{fichaTecnicaV2Controller.entity.estado!='AC'}">
 									</p:inputText>
 
 									<h:outputLabel value="Fecha Salida" for="fs" />
 									<p:calendar id="fs"
-										value="#{fichaTecnicaController.entity.fechaSalida}"
+										value="#{fichaTecnicaV2Controller.entity.fechaSalida}"
 										showOn="button" required="true"
 										requiredMessage="Ingrese una Fecha de Salida.!">
 									</p:calendar>
@@ -275,27 +261,27 @@
 
 									<h:outputLabel value="Fecha Entrada" for="fe" />
 									<p:calendar id="fe"
-										value="#{fichaTecnicaController.entity.fechaEntrada}"
+										value="#{fichaTecnicaV2Controller.entity.fechaEntrada}"
 										showOn="button" required="true"
 										requiredMessage="Ingrese una Fecha de Entrada.!">
 									</p:calendar>
 
 									<h:outputLabel value="Estado" for="e" />
 									<p:inputText id="e"
-										value="#{fichaTecnicaController.entity.estado}"
+										value="#{fichaTecnicaV2Controller.entity.estado.equals('AC')?'Nuevo':'OTHER'}"
 										disabled="true" style="width: 95% !important;">
 									</p:inputText>
 
 									<h:outputLabel value="Fecha Registro" for="fr" />
 									<p:inputText id="fr"
-										value="#{fichaTecnicaController.entity.fechaRegistro}"
+										value="#{fichaTecnicaV2Controller.entity.fechaRegistro}"
 										disabled="true" style="width: 95% !important;">
 										<f:convertDateTime pattern="MM-dd-yyyy" />
 									</p:inputText>
 
 									<h:outputLabel value="Usuario Registro" for="ur" />
 									<p:inputText id="ur"
-										value="#{fichaTecnicaController.entity.usuarioRegistro}"
+										value="#{fichaTecnicaV2Controller.entity.usuarioRegistro}"
 										disabled="true" style="width: 95% !important;">
 									</p:inputText>
 								</p:panelGrid>
@@ -306,185 +292,49 @@
 							</div>
 						</div>
 					</div>
-					<ui:fragment rendered="#{!fichaTecnicaController.detalle}">
-						<div class="col-md-8">
-							<div class="panel panel-primary">
-								<div class="panel-heading">
-									<strong> <span class="icon"> <i
-											aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
-									</span>MOLDE
-									</strong>
-								</div>
-								<div class="panel-body" style="margin-bottom: 10px;">
-									<p:commandLink oncomplete="PF('wv_dlg_molde').show()"
-										update="frm_molde" id="molde">
-										<p:graphicImage
-											value="#{fichaTecnicaController.streamedContent}"
-											cache="false" width="100%"></p:graphicImage>
-									</p:commandLink>
-								</div>
+					<div class="col-md-8">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<strong> <span class="icon"> <i
+										aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
+								</span>Detalles
+								</strong>
+							</div>
+							<div class="panel-body" style="margin-bottom: 10px;">
+								<p:tabView id="tab_detalle">
+									<p:tab title="MOLDE">
+										<p:commandLink oncomplete="PF('wv_dlg_molde').show()"
+											update="frm_molde" id="molde">
+											<p:graphicImage
+												value="#{dynamicResourceController.streamedContentMolde}"
+												cache="false" width="100%">
+												<f:param name="param"
+													value="#{fichaTecnicaV2Controller.entity.id}" />
+											</p:graphicImage>
+										</p:commandLink>
+									</p:tab>
+									
+								</p:tabView>
+
 							</div>
 						</div>
-					</ui:fragment>
-					<ui:fragment rendered="#{fichaTecnicaController.detalle}">
-						<div class="col-md-8">
-							<div class="panel panel-primary">
-								<div class="panel-heading">
-									<strong> <span class="icon"> <i
-											aria-hidden="true" class="glyphicon glyphicon-th-list"></i>
-									</span>CONTROL DE CORTE
-									</strong>
-								</div>
-								<div class="panel-body" style="margin-bottom: 10px;">
-									<p:panelGrid columns="2"
-										columnClasses="ui-grid-col-2,ui-grid-col-10" layout="grid">
-										<h:outputLabel value="Operario" for="o" />
-										<p:inputText id="o"
-											value="#{fichaTecnicaController.entity.operario}"></p:inputText>
-									</p:panelGrid>
-
-									<p:panelGrid columns="4"
-										columnClasses="ui-grid-col-2,ui-grid-col-4,ui-grid-col-2,ui-grid-col-4"
-										layout="grid">
-										<h:outputLabel value="Tela" for="t" />
-										<p:autoComplete id="t"
-											value="#{fichaTecnicaController.entity.tela}"
-											placeholder="Buscar Tela"
-											completeMethod="#{fichaTecnicaController.completeProductoTela}"
-											dropdown="true" var="_pro" itemLabel="#{_pro.nombreProducto}"
-											itemValue="#{_pro}" converter="productoConverter">
-											<p:ajax event="itemSelect"
-												listener="#{fichaTecnicaController.onItemSelectTela}"
-												update="t" />
-										</p:autoComplete>
-
-										<h:outputLabel value="Metro Tela" for="mt" />
-										<p:inputText id="mt"
-											value="#{fichaTecnicaController.entity.metroTela}"></p:inputText>
-
-										<h:outputLabel value="Fecha Corte" for="fc" />
-										<p:calendar id="fc"
-											value="#{fichaTecnicaController.entity.fechaCorte}"></p:calendar>
-
-										<h:outputLabel value="Fecha Proceso" for="fp" />
-										<p:calendar id="fp"
-											value="#{fichaTecnicaController.entity.fechaProceso}"></p:calendar>
-									</p:panelGrid>
-									<p:tabView id="tab_detalle">
-										<p:tab title="1 Detalle Produccion">
-											<p:dataTable
-												value="#{fichaTecnicaController.listaFichaProducto}"
-												var="ficha" emptyMessage="No existes datos."
-												selectionMode="single"
-												selection="#{fichaTecnicaController.fichaProducto}"
-												rowKey="#{ficha.talla}">
-												<p:ajax event="rowSelect"
-													listener="#{fichaTecnicaController.onRowSelectProducto}" />
-												<p:column headerText="Talla">	
-													#{ficha.talla}
-												</p:column>
-												<p:column headerText="Cantidad">
-													#{ficha.cantidad}
-												</p:column>
-												<p:column headerText="Codigo Barra">
-													#{ficha.codigoBarra}
-												</p:column>
-												<f:facet name="footer">
-													Cantidad de Datos #{fichaTecnicaController.listaFichaProducto.size()}
-												</f:facet>
-											</p:dataTable>
-											<br />
-											<p:commandButton value="Nuevo"
-												action="#{fichaTecnicaController.agregarProducto()}"
-												update="growl"></p:commandButton>
-											<p:commandButton value="Modificar"
-												action="#{fichaTecnicaController.modificarProducto()}"
-												update="growl"></p:commandButton>
-											<p:commandButton value="Eliminar"
-												action="#{fichaTecnicaController.eliminarProducto()}"
-												update="growl"></p:commandButton>
-										</p:tab>
-										<p:tab title="2 Detalle Insumos De Corte">
-											<p:dataTable rows="10"
-												value="#{fichaTecnicaController.listaFichaInsumoCorte}"
-												var="ficha" paginator="true" paginatorPosition="top"
-												emptyMessage="No existes datos."
-												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-												rowsPerPageTemplate="5,10,15" selectionMode="single"
-												selection="#{fichaTecnicaController.fichaInsumoCorte}"
-												rowKey="#{ficha.producto.id}">
-												<p:ajax event="rowSelect"
-													listener="#{fichaTecnicaController.onRowSelectInsumoCorte}" />
-												<p:column headerText="Insumo">	
-													#{ficha.producto.nombreProducto}
-												</p:column>
-												<p:column headerText="Cantidad">
-													#{ficha.cantidad}
-												</p:column>
-												<f:facet name="footer">
-													Cantidad de Datos #{fichaTecnicaController.listaFichaInsumoCorte.size()}
-												</f:facet>
-											</p:dataTable>
-											<br />
-											<p:commandButton value="Nuevo"
-												action="#{fichaTecnicaController.agregarInsumoCorte()}"></p:commandButton>
-											<p:commandButton value="Modificar"
-												action="#{fichaTecnicaController.modificarInsumoCorte()}"
-												update="growl"></p:commandButton>
-											<p:commandButton value="Eliminar"
-												action="#{fichaTecnicaController.eliminarInsumoCorte()}"
-												update="growl"></p:commandButton>
-										</p:tab>
-										<p:tab title="3 Detalle Insumos De Acabado">
-											<p:dataTable rows="10"
-												value="#{fichaTecnicaController.listaFichaInsumoAcabado}"
-												var="ficha" paginator="true" paginatorPosition="top"
-												emptyMessage="No existes datos."
-												paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-												rowsPerPageTemplate="5,10,15" selectionMode="single"
-												selection="#{fichaTecnicaController.fichaInsumoAcabado}"
-												rowKey="#{ficha.producto.id}">
-												<p:ajax event="rowSelect"
-													listener="#{fichaTecnicaController.onRowSelectInsumoAcabado}" />
-												<p:column headerText="Insumo">
-													#{ficha.producto.nombreProducto}
-												</p:column>
-												<p:column headerText="Cantidad">
-													#{ficha.cantidad}
-												</p:column>
-												<f:facet name="footer">
-													Cantidad de Datos #{fichaTecnicaController.listaFichaInsumoAcabado.size()}
-												</f:facet>
-											</p:dataTable>
-											<br />
-											<p:commandButton value="Nuevo"
-												action="#{fichaTecnicaController.agregarInsumoAcabado()}"></p:commandButton>
-											<p:commandButton value="Modificar"
-												action="#{fichaTecnicaController.modificarInsumoAcabado()}"
-												update="growl"></p:commandButton>
-											<p:commandButton value="Eliminar"
-												action="#{fichaTecnicaController.eliminarInsumoAcabado()}"
-												update="growl"></p:commandButton>
-										</p:tab>
-									</p:tabView>
-								</div>
-							</div>
-						</div>
-					</ui:fragment>
+					</div>
 				</div>
 			</ui:fragment>
 		</h:form>
 
 		<p:dialog header="Agragar Molde" widgetVar="wv_dlg_molde"
-			position="center" modal="true">
+			position="center" modal="true" resizable="true">
 			<h:form id="frm_molde">
 				<p:fileUpload
-					fileUploadListener="#{fichaTecnicaController.handleFileUpload}"
+					fileUploadListener="#{fichaTecnicaV2Controller.handleFileUpload}"
 					mode="advanced" update="growl frm_molde" auto="true"
 					sizeLimit="100000" allowTypes="/(\.|\/)(jpe?g|png)$/"
 					label="Agregar Molde" />
-				<p:graphicImage width="350px"
-					value="#{fichaTecnicaController.streamedContent}" cache="false">
+				<p:graphicImage
+					value="#{dynamicResourceController.streamedContentMolde}"
+					cache="false" width="100%">
+					<f:param name="param" value="#{fichaTecnicaV2Controller.entity.id}" />
 				</p:graphicImage>
 			</h:form>
 		</p:dialog>
@@ -495,21 +345,21 @@
 				<h:panelGrid columns="2">
 					<h:outputLabel value="Talla" />
 					<p:selectOneMenu
-						value="#{fichaTecnicaController.fichaProducto.talla}"
+						value="#{fichaTecnicaV2Controller.fichaProducto.talla}"
 						filter="true" filterMatchMode="startsWith">
-						<f:selectItems value="#{fichaTecnicaController.listaTalla}"
+						<f:selectItems value="#{fichaTecnicaV2Controller.listaTalla}"
 							var="talla" itemLabel="#{talla.nombre}"
 							itemValue="#{talla.nombre}" />
 					</p:selectOneMenu>
 
 					<h:outputLabel value="Cantidad" />
 					<h:inputText
-						value="#{fichaTecnicaController.fichaProducto.cantidad}" />
+						value="#{fichaTecnicaV2Controller.fichaProducto.cantidad}" />
 
 				</h:panelGrid>
 				<br />
 				<p:commandButton value="Agregar"
-					action="#{fichaTecnicaController.accionAgregarProducto()}"
+					action="#{fichaTecnicaV2Controller.accionAgregarProducto()}"
 					update="growl"></p:commandButton>
 			</h:form>
 		</p:dialog>
@@ -520,22 +370,22 @@
 				<h:panelGrid columns="2">
 					<h:outputLabel value="Insumo" />
 					<p:autoComplete dropdown="true"
-						value="#{fichaTecnicaController.fichaInsumoCorte.producto}"
+						value="#{fichaTecnicaV2Controller.fichaInsumoCorte.producto}"
 						placeholder="Buscar Insumo"
-						completeMethod="#{fichaTecnicaController.completeProducto}"
+						completeMethod="#{fichaTecnicaV2Controller.completeProducto}"
 						var="_pro" itemLabel="#{_pro.nombreProducto}" itemValue="#{_pro}"
 						converter="productoConverter">
 						<p:ajax event="itemSelect"
-							listener="#{fichaTecnicaController.onItemSelectCorte}" />
+							listener="#{fichaTecnicaV2Controller.onItemSelectCorte}" />
 					</p:autoComplete>
 
 					<h:outputLabel value="Cantidad" />
 					<p:inputText
-						value="#{fichaTecnicaController.fichaInsumoCorte.cantidad}"></p:inputText>
+						value="#{fichaTecnicaV2Controller.fichaInsumoCorte.cantidad}"></p:inputText>
 				</h:panelGrid>
 				<br />
 				<p:commandButton value="Agregar"
-					action="#{fichaTecnicaController.accionAgregarInsumoCorte()}"
+					action="#{fichaTecnicaV2Controller.accionAgregarInsumoCorte()}"
 					update="growl"></p:commandButton>
 			</h:form>
 		</p:dialog>
@@ -546,22 +396,22 @@
 				<h:panelGrid columns="2">
 					<h:outputLabel value="Insumo" />
 					<p:autoComplete dropdown="true"
-						value="#{fichaTecnicaController.fichaInsumoAcabado.producto}"
+						value="#{fichaTecnicaV2Controller.fichaInsumoAcabado.producto}"
 						placeholder="Buscar Insumo"
-						completeMethod="#{fichaTecnicaController.completeProducto}"
+						completeMethod="#{fichaTecnicaV2Controller.completeProducto}"
 						var="_pro" itemLabel="#{_pro.nombreProducto}" itemValue="#{_pro}"
 						converter="productoConverter">
 						<p:ajax event="itemSelect"
-							listener="#{fichaTecnicaController.onItemSelectAcabado}" />
+							listener="#{fichaTecnicaV2Controller.onItemSelectAcabado}" />
 					</p:autoComplete>
 
 					<h:outputLabel value="Cantidad" />
 					<p:inputText
-						value="#{fichaTecnicaController.fichaInsumoAcabado.cantidad}"></p:inputText>
+						value="#{fichaTecnicaV2Controller.fichaInsumoAcabado.cantidad}"></p:inputText>
 				</h:panelGrid>
 				<br />
 				<p:commandButton value="Agregar"
-					action="#{fichaTecnicaController.accionAgregarInsumoAcabado()}"
+					action="#{fichaTecnicaV2Controller.accionAgregarInsumoAcabado()}"
 					update="growl"></p:commandButton>
 			</h:form>
 		</p:dialog>
@@ -574,16 +424,13 @@
 			<div class="modal-body">
 
 				<h:form id="formModalVistaPrevia" styleClass="form" role="form">
-
 					<p:media id="idReporteFactura" player="pdf"
-						value="#{fichaTecnicaController.urlVista}" width="700px"
+						value="#{fichaTecnicaV2Controller.urlVista}" width="700px"
 						height="500px" />
-
 				</h:form>
 			</div>
 
 			<div class="modal-footer">
-
 				<div class="btn-group btn-group-sm">
 					<h:panelGrid columns="2" width="100%">
 						<p:commandButton value="Cerrar"
@@ -591,18 +438,15 @@
 
 						</p:commandButton>
 					</h:panelGrid>
-
 				</div>
-
 			</div>
-
 		</p:dialog>
 
 		<p:confirmDialog widgetVar="wv_delete" showEffect="fade"
 			hideEffect="fade" header="ELIMINAR"
 			message="Esta seguro de eliminar el registro.?">
 			<p:commandButton value="Si" styleClass="ui-confirmdialog-yes"
-				icon="ui-icon-check" action="#{fichaTecnicaController.delete()}" />
+				icon="ui-icon-check" action="#{fichaTecnicaV2Controller.delete()}" />
 			<p:commandButton value="No" styleClass="ui-confirmdialog-no"
 				icon="ui-icon-close" oncomplete="PF('wv_delete').hide()" />
 		</p:confirmDialog>
@@ -612,7 +456,7 @@
 			message="Esta seguro de eliminar el registro.?">
 			<p:commandButton value="Si" styleClass="ui-confirmdialog-yes"
 				icon="ui-icon-check"
-				action="#{fichaTecnicaController.accionEliminarProducto()}"
+				action="#{fichaTecnicaV2Controller.accionEliminarProducto()}"
 				update="growl" />
 			<p:commandButton value="No" styleClass="ui-confirmdialog-no"
 				icon="ui-icon-close" oncomplete="PF('wv_delete_producto').hide()" />
@@ -623,7 +467,7 @@
 			message="Esta seguro de eliminar el registro.?">
 			<p:commandButton value="Si" styleClass="ui-confirmdialog-yes"
 				icon="ui-icon-check"
-				action="#{fichaTecnicaController.accionEliminarInsumoCorte()}"
+				action="#{fichaTecnicaV2Controller.accionEliminarInsumoCorte()}"
 				update="growl" />
 			<p:commandButton value="No" styleClass="ui-confirmdialog-no"
 				icon="ui-icon-close"
@@ -635,7 +479,7 @@
 			message="Esta seguro de eliminar el registro.?">
 			<p:commandButton value="Si" styleClass="ui-confirmdialog-yes"
 				icon="ui-icon-check"
-				action="#{fichaTecnicaController.accionEliminarInsumoAcabado()}"
+				action="#{fichaTecnicaV2Controller.accionEliminarInsumoAcabado()}"
 				update="growl" />
 			<p:commandButton value="No" styleClass="ui-confirmdialog-no"
 				icon="ui-icon-close"
@@ -649,19 +493,19 @@
 				<h:panelGrid columns="2" cellpadding="5" width="100%">
 					<h:outputLabel for="username" value="Usuario:" />
 					<p:inputText id="username"
-						value="#{fichaTecnicaController.usuario}" required="true"
+						value="#{fichaTecnicaV2Controller.usuario}" required="true"
 						label="username" requiredMessage="Ingrese su Usuario.!"
 						placeholder="Usuario" />
 
 					<h:outputLabel for="password" value="Contraseña:" />
 					<p:password id="password"
-						value="#{fichaTecnicaController.password}" required="true"
+						value="#{fichaTecnicaV2Controller.password}" required="true"
 						requiredMessage="Ingrese su contraseña.!" label="password"
 						placeholder="Contraseña" />
 
 					<f:facet name="footer">
 						<p:commandButton value="Verificar Usuario" update="growl"
-							actionListener="#{fichaTecnicaController.validarEntregaAlmacen}" />
+							actionListener="#{fichaTecnicaV2Controller.validarEntregaAlmacen}" />
 					</f:facet>
 				</h:panelGrid>
 			</h:form>

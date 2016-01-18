@@ -7,7 +7,7 @@ import javax.ejb.Stateless;
 import com.ahosoft.utils.FacesUtil;
 
 import bo.buffalo.model.FichaDetalleInsumoAcabado;
-import bo.buffalo.model.FichaDetalleInsumoCorte;
+import bo.buffalo.model.FichaInsumoCorte;
 import bo.buffalo.model.FichaDetalleProducto;
 import bo.buffalo.model.FichaTecnica;
 
@@ -21,7 +21,7 @@ public class FichaTecnicaRegistration extends DataAccessService<FichaTecnica>{
 		super(FichaTecnica.class);
 	}
 	
-	public FichaTecnica register(FichaTecnica t,List<FichaDetalleProducto> listaProducto,List<FichaDetalleInsumoCorte> listaCorte,
+	public FichaTecnica register(FichaTecnica t,List<FichaDetalleProducto> listaProducto,List<FichaInsumoCorte> listaCorte,
 			List<FichaDetalleInsumoAcabado> listaAcabado){
     	try {
     		getLog().info("Registering "+ t.toString());
@@ -40,7 +40,7 @@ public class FichaTecnicaRegistration extends DataAccessService<FichaTecnica>{
 
 			}
             
-            for (FichaDetalleInsumoCorte c : listaCorte) {
+            for (FichaInsumoCorte c : listaCorte) {
             	c.setFechaRegistro(t.getFechaRegistro());
 				c.setUsuarioRegistro(t.getUsuarioRegistro());
 				c.setFichaTecnica(t);
@@ -68,7 +68,7 @@ public class FichaTecnicaRegistration extends DataAccessService<FichaTecnica>{
     		
     }
 	
-	 public FichaTecnica updated(FichaTecnica item,List<FichaDetalleProducto> listaProducto,List<FichaDetalleInsumoCorte> listaCorte,
+	 public FichaTecnica updated(FichaTecnica item,List<FichaDetalleProducto> listaProducto,List<FichaInsumoCorte> listaCorte,
 				List<FichaDetalleInsumoAcabado> listaAcabado){
 		 FichaTecnica t= (FichaTecnica) this.getEm().merge(item);
 		 for (FichaDetalleProducto p : listaProducto) {
@@ -85,7 +85,7 @@ public class FichaTecnicaRegistration extends DataAccessService<FichaTecnica>{
 				}
 			}
          
-         for (FichaDetalleInsumoCorte c : listaCorte) {
+         for (FichaInsumoCorte c : listaCorte) {
          	c.setFechaRegistro(t.getFechaRegistro());
 				c.setUsuarioRegistro(t.getUsuarioRegistro());
 				c.setFichaTecnica(t);

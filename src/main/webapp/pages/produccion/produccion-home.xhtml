@@ -31,7 +31,7 @@
 					<li class="active" style="color: orange;"><a
 						style="color: orange;" class="fuente-link-sidebar"
 						href="#{request.contextPath}/pages/produccion/produccion-home.xhtml">Orden
-							Produccion </a></li>
+							Producción </a></li>
 				</ol>
 			</div>
 		</div>
@@ -51,7 +51,8 @@
 
 						<p:commandButton id="buttonCancelarID"
 							rendered="#{ produccionHomeController.buttonCargar}"
-							icon="ui-icon-minus" style="width: 8em;"
+							icon="ui-icon-minus" style="width: 8em;" update="form001"
+							action="#{produccionHomeController.init()}"
 							styleClass="btn btn-default" value="Cancelar" immediate="true"
 							type="submit" />
 
@@ -68,6 +69,13 @@
 							action="#{produccionHomeController.cargarOrdenProduccion()}"
 							style="width: 8em;" styleClass="btn btn-success" value="Cargar"
 							immediate="true" />
+
+						<p:commandButton id="buttonAgregarObservacionID"
+							rendered="#{produccionHomeController.buttonObservacion}"
+							update="form001" icon="ui-icon-plus"
+							action="#{produccionHomeController.cargarObservacion()}"
+							style="width: 9em;" styleClass="btn btn-success"
+							value="Agregar Obs." immediate="true" />
 					</div>
 					<br />
 
@@ -104,6 +112,14 @@
 									<h:outputText id="clasePrendaID" value="#{_var.clasePrenda}" />
 								</p:column>
 
+								<p:column headerText="Flujo" width="15%"
+									filterStyle="width: 100%;" style="text-align:center;"
+									filterBy="#{_var.procesoActual}" filterMatchMode="contains">
+									<h:outputText id="flujoID"
+										value="#{_var.procesoActual} - #{_var.porcentajeTotal} %">
+									</h:outputText>
+								</p:column>
+
 								<p:column headerText="Fecha Inicio" width="15%"
 									filterStyle="width: 100%;" style="text-align:center;"
 									filterBy="#{_var.fechaRegistro}" filterMatchMode="contains">
@@ -130,11 +146,10 @@
 									<span class="label label-danger"><h:outputText
 											rendered="#{_var.estado=='IN'}" value="Inactivo" /></span>
 									<span class="label label-success"><h:outputText
-											rendered="#{_var.estado=='PR'}" value="Procesado" /></span>
+											rendered="#{_var.estado=='AP'}" value="Procesado" /></span>
 								</p:column>
 
-
-								<p:column headerText="Usuario" width="15%"
+								<p:column headerText="Usuario" width="10%"
 									filterStyle="width: 100%;" style="text-align:center;"
 									filterBy="#{_var.usuarioRegistro}" filterMatchMode="contains">
 									<h:outputText id="usuarioID" value="#{_var.usuarioRegistro}" />
@@ -170,7 +185,7 @@
 								<p:graphicImage style="height: 190px;" library="gfx"
 									name="pantalon-hombre-juvenil.jpg" />
 								<div class="caption">
-									<h3>JUVENIL</h3>
+									<h3>KIDS - JUVENIL</h3>
 									<p>
 										<p:commandLink
 											styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
@@ -181,23 +196,24 @@
 								</div>
 							</div>
 						</div>
-
-						<div class="col-sm-4 col-md-3">
-							<div class="thumbnail">
-								<p:graphicImage style="height: 190px;" library="gfx"
-									name="construccion.gif" />
-								<div class="caption">
-									<h3>KIDS</h3>
-									<p>
-										<p:commandLink
-											styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
-											update="form001" value="Ingresar"
-											actionListener="#{produccionHomeController.cargarProcesoDeOrdenProduccion('HOMBRE-PANTALON-KIDS')}">
-										</p:commandLink>
-									</p>
+						<ui:fragment rendered="false">
+							<div class="col-sm-4 col-md-3">
+								<div class="thumbnail">
+									<p:graphicImage style="height: 190px;" library="gfx"
+										name="construccion.gif" />
+									<div class="caption">
+										<h3>KIDS</h3>
+										<p>
+											<p:commandLink
+												styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
+												update="form001" value="Ingresar"
+												actionListener="#{produccionHomeController.cargarProcesoDeOrdenProduccion('HOMBRE-PANTALON-KIDS')}">
+											</p:commandLink>
+										</p>
+									</div>
 								</div>
 							</div>
-						</div>
+						</ui:fragment>
 					</div>
 					<strong>PANTALON MUJER</strong>
 					<div class="row">
@@ -211,7 +227,7 @@
 										<p:commandLink
 											styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
 											value="Ingresar">
-											<p:ajax
+											<p:ajax update="form001"
 												listener="#{produccionHomeController.cargarProcesoDeOrdenProduccion('MUJER-PANTALON-MAYOR')}" />
 										</p:commandLink>
 									</p>
@@ -224,7 +240,7 @@
 								<p:graphicImage style="height: 190px;" library="gfx"
 									name="pantalon-mujer-juvenil.jpg" />
 								<div class="caption">
-									<h3>JUVENIL</h3>
+									<h3>KIDS - JUVENIL</h3>
 									<p>
 										<p:commandLink
 											styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
@@ -236,43 +252,83 @@
 							</div>
 						</div>
 
-						<div class="col-sm-4 col-md-3">
-							<div class="thumbnail">
-								<p:graphicImage style="height: 190px;" library="gfx"
-									name="construccion.gif" />
-								<div class="caption">
-									<h3>KIDS</h3>
-									<p>
-										<p:commandLink
-											styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
-											update="form001" value="Ingresar"
-											actionListener="#{produccionHomeController.cargarProcesoDeOrdenProduccion('MUJER-PANTALON-KIDS')}">
-										</p:commandLink>
-									</p>
+						<ui:fragment rendered="false">
+							<div class="col-sm-4 col-md-3">
+								<div class="thumbnail">
+									<p:graphicImage style="height: 190px;" library="gfx"
+										name="construccion.gif" />
+									<div class="caption">
+										<h3>KIDS</h3>
+										<p>
+											<p:commandLink
+												styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
+												update="form001" value="Ingresar"
+												actionListener="#{produccionHomeController.cargarProcesoDeOrdenProduccion('MUJER-PANTALON-KIDS')}">
+											</p:commandLink>
+										</p>
+									</div>
 								</div>
 							</div>
-						</div>
+						</ui:fragment>
 					</div>
 				</ui:fragment>
 
 				<!-- PROCESO -->
 				<ui:fragment rendered="#{produccionHomeController.verProceso}">
 					<div class="row">
-
 						<div class="col-sm-4 col-md-3">
 							<div class="thumbnail">
 								<h:graphicImage sclass="thumbnail" name="corteyconf.png"
-									library="gfx" width="122" />
+									library="gfx" width="135" />
 								<div class="caption">
 									<h3>CORTE</h3>
 									<p>
-										<h:outputText rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoFichaTecnica=='IN'}" value=" - Ficha Técnica" />
-										<span class="label label-primary"><h:outputText rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoFichaTecnica=='AC'}" value=" - Ficha Técnica" /></span>
-										<span class="label label-success"><h:outputText rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoFichaTecnica=='PR'}" value=" - Ficha Técnica" /></span>
+										<h:outputText
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoFichaTecnica == 'IN'}"
+											value=" - Ficha Técnica" />
+										<ui:fragment
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoFichaTecnica == 'AC'}">
+
+											<p:commandLink value=" - Ficha Técnica "
+												styleClass="label label-primary">
+												<p:ajax
+													listener="#{produccionHomeController.cargarFichaTecnica()}" />
+											</p:commandLink>
+
+										</ui:fragment>
+										<ui:fragment
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoFichaTecnica == 'AP'}">
+
+											<p:commandLink value=" - Ficha Técnica"
+												styleClass="label label-success">
+												<p:ajax
+													listener="#{produccionHomeController.cargarFichaTecnica()}" />
+											</p:commandLink>
+
+										</ui:fragment>
 									</p>
-									<p>- Detalle de Corte</p>
-									<p>- Inzumo de Corte</p>
-									<p>- Detalle Inzumo acabado</p>
+									<p>
+										<h:outputText
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoInsumoCorte == 'IN'}"
+											value=" - Control Corte" />
+										<ui:fragment
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoInsumoCorte == 'AC'}">
+											<p:commandLink value=" - Control Corte"
+												styleClass="label label-primary">
+												<p:ajax
+													listener="#{produccionHomeController.cargarInsumoCorte()}" />
+											</p:commandLink>
+										</ui:fragment>
+										<ui:fragment
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoInsumoCorte =='AP'}">
+
+											<p:commandLink value=" - Control Corte"
+												styleClass="label label-success">
+												<p:ajax
+													listener="#{produccionHomeController.cargarInsumoCorte()}" />
+											</p:commandLink>
+										</ui:fragment>
+									</p>
 									<p>
 										<p:commandLink
 											styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
@@ -285,36 +341,62 @@
 							</div>
 						</div>
 
-						<div class="col-sm-4 col-md-3">
-							<div class="thumbnail">
-								<h:graphicImage sclass="thumbnail" name="corteyconf.png"
-									library="gfx" width="135" />
-								<div class="caption">
-									<h3>MAQUILADOR</h3>
-									<p>- Pago de Confección.</p>
-									<p>- Orden de Pag.</p>
-									<p>
-										<p:commandLink
-											styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
-											value="Ingresar">
-											<p:ajax
-												listener="#{produccionHomeController.cargarProcesoMaquilador()}" />
-										</p:commandLink>
-									</p>
+						<ui:fragment rendered="false">
+							<div class="col-sm-4 col-md-3">
+								<div class="thumbnail">
+									<h:graphicImage sclass="thumbnail" name="icon-maquilador.jpg"
+										library="gfx" width="135" />
+									<div class="caption">
+										<h3>MAQUILADOR</h3>
+										<p>- Pago de Confección.</p>
+										<p>- Orden de Pag.</p>
+										<p>
+											<p:commandLink
+												styleClass="btn #{ produccionHomeController.estructuraFlujoProceso.estadoProcesoMaquilador.equals('IN')?'btn-default':'btn-primary'} btn-sm glyphicon glyphicon-plus"
+												disabled="#{ produccionHomeController.estructuraFlujoProceso.estadoProcesoMaquilador.equals('IN')}"
+												value="Ingresar">
+												<p:ajax
+													listener="#{produccionHomeController.cargarProcesoMaquilador()}" />
+											</p:commandLink>
+										</p>
+									</div>
 								</div>
 							</div>
-						</div>
+						</ui:fragment>
 
 						<div class="col-sm-4 col-md-3">
 							<div class="thumbnail">
-								<h:graphicImage sclass="thumbnail" name="corteyconf.png"
+								<h:graphicImage sclass="thumbnail" name="icon-lavado.jpg"
 									library="gfx" width="135" />
 								<div class="caption">
 									<h3>LAVADO</h3>
-									<p>- Recibo de Envio</p>
+									<p>
+										<h:outputText
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoReciboLavanderia == 'IN'}"
+											value=" - Recibo de Envio" />
+										<ui:fragment
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoReciboLavanderia == 'AC'}">
+
+											<p:commandLink value=" - Recibo de Envio"
+												styleClass="label label-primary">
+												<p:ajax
+													listener="#{produccionHomeController.cargarProcesoLavado()}" />
+											</p:commandLink>
+										</ui:fragment>
+										<ui:fragment
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoReciboLavanderia == 'AP'}">
+
+											<p:commandLink value=" - Recibo de Envio"
+												styleClass="label label-success">
+												<p:ajax
+													listener="#{produccionHomeController.cargarProcesoLavado()}" />
+											</p:commandLink>
+										</ui:fragment>
+									</p>
 									<p>
 										<p:commandLink
-											styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
+											styleClass="btn #{ produccionHomeController.estructuraFlujoProceso.estadoProcesoLavado.equals('IN')?'btn-default':'btn-primary'} btn-sm glyphicon glyphicon-plus"
+											disabled="#{ produccionHomeController.estructuraFlujoProceso.estadoProcesoLavado.equals('IN')}"
 											value="Ingresar">
 											<p:ajax
 												listener="#{produccionHomeController.cargarProcesoLavado()}" />
@@ -326,15 +408,57 @@
 
 						<div class="col-sm-4 col-md-3">
 							<div class="thumbnail">
-								<h:graphicImage sclass="thumbnail" name="corteyconf.png"
+								<h:graphicImage sclass="thumbnail" name="icon-empaque.jpg"
 									library="gfx" width="135" />
 								<div class="caption">
 									<h3>EMPAQUE FINAL</h3>
-									<p>- Inzumo Final.</p>
-									<p>- Almacen Prendas</p>
+									<p>
+										<h:outputText
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoInsumoFinal == 'IN'}"
+											value="- Insumo Final" />
+										<ui:fragment
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoInsumoFinal == 'AC'}">
+											<p:commandLink value="- Insumo Final"
+												styleClass="label label-primary">
+												<p:ajax
+													listener="#{produccionHomeController.cargarEmpaque()}" />
+											</p:commandLink>
+										</ui:fragment>
+										<ui:fragment
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoInsumoFinal == 'AP'}">
+											<p:commandLink value="- Insumo Final"
+												styleClass="label label-success">
+												<p:ajax
+													listener="#{produccionHomeController.cargarEmpaque()}" />
+											</p:commandLink>
+										</ui:fragment>
+									</p>
+									<p>
+										<h:outputText
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoAlmacenPrenda == 'IN'}"
+											value="- Almacen Prendas" />
+										<ui:fragment
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoAlmacenPrenda == 'AC'}">
+											<p:commandLink value="- Almacen Prendas"
+												styleClass="label label-primary">
+												<p:ajax
+													listener="#{produccionHomeController.cargarAlmacenPrenda()}" />
+											</p:commandLink>
+										</ui:fragment>
+										<ui:fragment
+											rendered="#{produccionHomeController.estructuraFlujoProceso.estadoSubProcesoAlmacenPrenda == 'AP'}">
+
+											<p:commandLink value="- Almacen Prendas"
+												styleClass="label label-success">
+												<p:ajax
+													listener="#{produccionHomeController.cargarAlmacenPrenda()}" />
+											</p:commandLink>
+										</ui:fragment>
+									</p>
 									<p>
 										<p:commandLink
-											styleClass="btn btn-primary btn-sm glyphicon glyphicon-plus"
+											styleClass="btn #{ produccionHomeController.estructuraFlujoProceso.estadoProcesoEmpaqueFinal.equals('IN')?'btn-default':'btn-primary'} btn-sm glyphicon glyphicon-plus"
+											disabled="#{ produccionHomeController.estructuraFlujoProceso.estadoProcesoEmpaqueFinal.equals('IN')}"
 											value="Ingresar">
 											<p:ajax
 												listener="#{produccionHomeController.cargarProcesoEmpaque()}" />
@@ -350,6 +474,34 @@
 
 		</div>
 		<!-- /container -->
+
+		<p:dialog header="DETALLE DE OBSERVACION"
+			widgetVar="dlgDetalleObservacion" modal="true">
+			<h:form id="detalleObservacionID">
+				<h:panelGrid columns="2">
+					<h:outputLabel value="Proceso:" />
+					<h:selectOneMenu id="estadoID"
+						value="#{produccionHomeController.textTipoProceso}"
+						styleClass="form-control" required="true"
+						requiredMessage="Estado Requerido.">
+						<f:selectItem itemValue="CORTE" itemLabel="CORTE" />
+						<f:selectItem itemValue="LAVANDERIA" itemLabel="LAVANDERIA" />
+						<f:selectItem itemValue="EMPAQUE" itemLabel="EMPAQUE" />
+						<p:ajax event="change" update="estadoID" />
+					</h:selectOneMenu>
+
+					<h:outputLabel value="Observación:" />
+					<p:inputTextarea style="width: 100%"
+						value="#{produccionHomeController.fallaProceso.observacion}"
+						rows="2">
+						<p:ajax event="change" />
+					</p:inputTextarea>
+
+				</h:panelGrid>
+				<br />
+				<p:commandButton value="Registrar" action="#" update="form001"></p:commandButton>
+			</h:form>
+		</p:dialog>
 
 	</ui:define>
 

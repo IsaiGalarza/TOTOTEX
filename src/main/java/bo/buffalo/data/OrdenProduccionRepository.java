@@ -20,7 +20,7 @@ public class OrdenProduccionRepository {
 	
 	@SuppressWarnings("unchecked")
 	public List<OrdenProduccion> findAllActivos() {
-		String query = "select em from OrdenProduccion em where ( em.estado='AC' or em.estado='IN' or em.estado='PR' )";
+		String query = "select em from OrdenProduccion em where ( em.estado='AC'  or em.estado='AP' )";
 		System.out.println("Query OrdenProduccion: " + query);
 		return em.createQuery(query).getResultList();
 	}

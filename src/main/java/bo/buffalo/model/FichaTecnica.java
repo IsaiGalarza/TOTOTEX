@@ -11,17 +11,16 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * @author Arturo.Herrera
- *
+ * @author Arturo.Herrera v1
+ * @author mauriciobejaranorivera v1.1
  */
-@SuppressWarnings("serial")
 @Entity
-@XmlRootElement
 @Table(name = "ficha_tecnica", schema = "public")
 public class FichaTecnica implements Serializable{
+
+	private static final long serialVersionUID = 8621741742472297490L;
 	
 	@Id  @GeneratedValue(strategy=GenerationType.IDENTITY)
 	private Integer id;
@@ -32,30 +31,32 @@ public class FichaTecnica implements Serializable{
 	@Column(name="correlativo",nullable=true)
 	private Integer correlativo;
 	
-	private String confeccionista;
+	@ManyToOne
+	@JoinColumn(name="id_confeccionista", nullable=true)
+	private Confeccionista confeccionista;
 	
 	@ManyToOne
-	@JoinColumn(name="id_marca")
+	@JoinColumn(name="id_marca",nullable=true)
 	private Atributo marca;
 	
 	@ManyToOne
-	@JoinColumn(name="id_color_atraque")
+	@JoinColumn(name="id_color_atraque",nullable=true)
 	private Atributo colorAtraque;
 	
 	@ManyToOne
-	@JoinColumn(name="id_color_hilo")
+	@JoinColumn(name="id_color_hilo",nullable=true)
 	private Atributo colorHilo;
 	
-	@Column(name="partida")
+	@Column(name="partida",nullable=true)
 	private String partida;
 	
-	@Column(name="tipo_tela")
+	@Column(name="tipo_tela",nullable=true)
 	private String tipoTela;
 	
-	@Column(name="fecha_salida")
+	@Column(name="fecha_salida",nullable=true)
 	private Date fechaSalida;
 	
-	@Column(name="fecha_entrada")
+	@Column(name="fecha_entrada",nullable=true)
 	private Date fechaEntrada;
 	
 	private Integer total;
@@ -72,25 +73,30 @@ public class FichaTecnica implements Serializable{
 	
 	private byte[] molde;
 	
-	private String operario;
+	@ManyToOne
+	@JoinColumn(name="id_operario", nullable=true)
+	private Operario operario;
 	
 	@ManyToOne
 	@JoinColumn(name="id_tela",nullable=true)
 	private Producto tela;
 	
-	@Column(name="metro_tela")
+	@Column(name="metro_tela",nullable=true)
 	private Integer metroTela;
 	
-	@Column(name="fecha_corte")
+	@Column(name="fecha_corte",nullable=true)
 	private Date fechaCorte;
 	
-	@Column(name="fecha_proceso")
+	@Column(name="fecha_proceso",nullable=true)
 	private Date fechaProceso;
 
 	public FichaTecnica(){
 		this.id = 0;
+		this.estado = "AC";
 		this.codigo="";
 		this.correlativo = 0;
+		this.confeccionista = new Confeccionista();
+		this.operario = new Operario();
 		baja=false;
 		molde=null;
 		tela=new Producto();
@@ -102,14 +108,6 @@ public class FichaTecnica implements Serializable{
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public String getConfeccionista() {
-		return confeccionista;
-	}
-
-	public void setConfeccionista(String confeccionista) {
-		this.confeccionista = confeccionista;
 	}
 
 	public Atributo getMarca() {
@@ -215,15 +213,6 @@ public class FichaTecnica implements Serializable{
 	public void setMolde(byte[] molde) {
 		this.molde = molde;
 	}
-	
-
-	public String getOperario() {
-		return operario;
-	}
-
-	public void setOperario(String operario) {
-		this.operario = operario;
-	}
 
 	public Producto getTela() {
 		return tela;
@@ -313,7 +302,21 @@ public class FichaTecnica implements Serializable{
 	public void setCorrelativo(Integer correlativo) {
 		this.correlativo = correlativo;
 	}
-	
-	
+
+	public Confeccionista getConfeccionista() {
+		return confeccionista;
+	}
+
+	public void setConfeccionista(Confeccionista confeccionista) {
+		this.confeccionista = confeccionista;
+	}
+
+	public Operario getOperario() {
+		return operario;
+	}
+
+	public void setOperario(Operario operario) {
+		this.operario = operario;
+	}
 	
 }

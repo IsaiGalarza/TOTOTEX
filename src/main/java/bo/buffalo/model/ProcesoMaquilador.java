@@ -36,12 +36,13 @@ public class ProcesoMaquilador implements Serializable {
 	private Date fechaAprobacion;
 
 	@ManyToOne
-	@JoinColumn(name = "id_usuario_aprobacion")
+	@JoinColumn(name = "id_usuario_aprobacion",nullable=true)
 	private Usuario usuarioAprobacion;
 
 	public ProcesoMaquilador() {
 		super();
 		this.id = 0;
+		this.usuarioAprobacion = new Usuario();
 	}
 
 	public Integer getId() {

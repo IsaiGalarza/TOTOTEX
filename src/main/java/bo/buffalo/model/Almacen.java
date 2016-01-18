@@ -55,6 +55,7 @@ public class Almacen implements Serializable {
 
 
 	public Almacen() {
+		this.id = 0;
 		usuario=new Usuario();
 		encargado= new Usuario();
 	}

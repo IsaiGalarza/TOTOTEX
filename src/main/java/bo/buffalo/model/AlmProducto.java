@@ -29,8 +29,6 @@ public class AlmProducto implements Serializable {
 	@Column(name="fecha_registro")
 	private Date fechaRegistro;
 
-
-
 	private double stock;
 
 	@Column(name="usuario_registro")

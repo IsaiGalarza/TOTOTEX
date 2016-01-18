@@ -27,7 +27,7 @@ import bo.buffalo.data.AlmacenProductoRepository;
 import bo.buffalo.data.AtributoRepository;
 import bo.buffalo.data.DetalleOrdenProduccionRepository;
 import bo.buffalo.data.FichaDetalleInsumoAcabadoRepository;
-import bo.buffalo.data.FichaDetalleInsumoCorteRepository;
+import bo.buffalo.data.FichaInsumoCorteRepository;
 import bo.buffalo.data.FichaDetalleProductoRepository;
 import bo.buffalo.data.FichaTecnicaRepository;
 import bo.buffalo.data.OrdenProduccionRepository;
@@ -40,7 +40,7 @@ import bo.buffalo.model.AtributoTipoProducto;
 import bo.buffalo.model.Confeccionista;
 import bo.buffalo.model.DetalleOrdenProduccion;
 import bo.buffalo.model.FichaDetalleInsumoAcabado;
-import bo.buffalo.model.FichaDetalleInsumoCorte;
+import bo.buffalo.model.FichaInsumoCorte;
 import bo.buffalo.model.FichaDetalleProducto;
 import bo.buffalo.model.FichaTecnica;
 import bo.buffalo.model.OrdenProduccion;
@@ -49,7 +49,6 @@ import bo.buffalo.model.Producto;
 import bo.buffalo.model.TipoProducto;
 import bo.buffalo.model.Usuario;
 import bo.buffalo.model.UsuarioRol;
-import bo.buffalo.service.DetalleOrdenProduccionRegistration;
 import bo.buffalo.service.FichaTecnicaRegistration;
 import bo.buffalo.service.ProcesoCorteRegistration;
 import bo.buffalo.service.TipoProductoRegistration;
@@ -72,7 +71,7 @@ public class FichaTecnicaController implements Serializable{
 	private @Inject AlmacenProductoRepository almacenProductoRepository;
 	private @Inject ProductoRepository productoRepository;
 	private @Inject FichaDetalleProductoRepository fichaDetalleProductoRepository;
-	private @Inject FichaDetalleInsumoCorteRepository fichaDetalleInsumoCorteRepository;
+	private @Inject FichaInsumoCorteRepository fichaDetalleInsumoCorteRepository;
 	private @Inject FichaDetalleInsumoAcabadoRepository fichaDetalleInsumoAcabadoRepository;
 	private @Inject TipoProductoRepository tipoProductoRepository;
 	private @Inject TipoProductoRegistration tipoProductoRegistration;
@@ -80,19 +79,27 @@ public class FichaTecnicaController implements Serializable{
 	//REPOSITORY
 	private @Inject OrdenProduccionRepository ordenProduccionRepository;
 	private @Inject DetalleOrdenProduccionRepository detalleOrdenProduccionRepository;
-	
+
 	//REGISTRATION
 	private @Inject ProcesoCorteRegistration procesoCorteRegistration;
 
 	//VAR
 	private String codigoPrenda;
 
+	//ESTADO
+	private boolean nuevo; /*Control para renderizar la vista*/
+	private boolean verLista;
+	private boolean aprobarFichaTecnica;
+	private boolean buttonCargarFichaTecnica;
+	private boolean buttonVerLista;
+
+	//OBJECT
+	private FichaTecnica selectedFichaTecnica;
+
 	private Confeccionista selectedConfeccionista;
 	private String textConfeccionista;
 	private FichaTecnica entity;
 	private List<FichaTecnica> entitys;
-	private Usuario usuarioSistema;
-	private boolean nuevo; /*Control para renderizar la vista*/
 	private boolean modificar; 
 	private boolean administrador;
 	private boolean detalle;
@@ -100,32 +107,36 @@ public class FichaTecnicaController implements Serializable{
 	private String titulo;
 	private StreamedContent streamedContent;
 	private FichaDetalleProducto fichaProducto;
-	private FichaDetalleInsumoCorte fichaInsumoCorte;
+	private FichaInsumoCorte fichaInsumoCorte;
 	private FichaDetalleInsumoAcabado fichaInsumoAcabado;
 	private List<FichaDetalleProducto> listaFichaProducto;
-	private List<FichaDetalleInsumoCorte> listaFichaInsumoCorte;
+	private List<FichaInsumoCorte> listaFichaInsumoCorte;
 	private List<FichaDetalleInsumoAcabado> listaFichaInsumoAcabado;
 	private List<FichaDetalleProducto> deleteListaFichaProducto;
-	private List<FichaDetalleInsumoCorte> deleteListaFichaInsumoCorte;
+	private List<FichaInsumoCorte> deleteListaFichaInsumoCorte;
 	private List<FichaDetalleInsumoAcabado> deleteListaFichaInsumoAcabado;
 	private List<Atributo> listaTalla;
 	private List<Producto> listaProductoInsumo;
 	private List<Producto> listaProductoTela;
 	private List<Atributo> listaColores;
 	private List<Atributo> listaMarca;
-
 	private String urlVista;
+
+	//SESION
+	private @Inject SessionMain sessionMain; //variable del login
 	private String usuario;
 	private String password;
-
-	private @Inject SessionMain sessionMain; //variable del login
+	private Usuario usuarioSistema;
 
 	//ORDEN PRODUCCION
 	private OrdenProduccion selectedOrdenProduccion;
 	private DetalleOrdenProduccion selectedDetalleOrdenProduccion;
+	
+	HttpServletRequest request ;
 
 	@PostConstruct
 	public void init(){
+		request = (HttpServletRequest) FacesContext.getCurrentInstance().getExternalContext().getRequest();
 		usuarioSistema= usuarioRepository.findByLogin(FacesUtil.getUserSession());
 		administrador=esAdministrador();
 		newEntity();
@@ -148,56 +159,84 @@ public class FichaTecnicaController implements Serializable{
 			System.out.println("selectedOrdenProduccion :"+selectedOrdenProduccion.getId());
 			//cargar el detalle orden de produccion
 			selectedDetalleOrdenProduccion = detalleOrdenProduccionRepository.findbyOrdenProduccion(selectedOrdenProduccion);
-			//VERIFICAR:
-			// SI YA SE CREO UNA FICHA TECNICA
+			//VERIFICAR:  SI YA SE CREO UNA FICHA TECNICA
 			if(selectedDetalleOrdenProduccion.getProcesoCorte().getFichaTecnica() == null){
-				
+				System.out.println("FichaTecnica: null");
+				//si no hay ficha tecnica:
+				this.nuevo = true;
+				this.verLista = false;
+				this.buttonVerLista = true;
+				this.aprobarFichaTecnica = false;
+				this.buttonCargarFichaTecnica = false;
+				cargarClasePrenda();				
 			}else {
+				System.out.println("FichaTecnica: "+selectedDetalleOrdenProduccion.getProcesoCorte().getFichaTecnica().getId());
 				entity = selectedDetalleOrdenProduccion.getProcesoCorte().getFichaTecnica();
-			}
-			// - VERIFICAR SI ESTA PROCESADA
-			//  - SI NO ESTA PROCESADA
-
-			// SI NO SE CREO cargar los parametros por defecto de una ficha tecnica
-
-			String pClasePrenda = selectedOrdenProduccion.getClasePrenda();
-			if(pClasePrenda != null){
-				switch (pClasePrenda) {
-				case "HOMBRE-PANTALON-MAYOR":
-					System.out.println("OK - pClasePrenda:"+pClasePrenda);
-					codigoPrenda="HPM";
-					break;
-				case "HOMBRE-PANTALON-JUVENIL":
-					System.out.println("OK - pClasePrenda:"+pClasePrenda);
-					codigoPrenda="HPJ";
-					break;
-				case "HOMBRE-PANTALON-KIDS":
-					System.out.println("OK - pClasePrenda:"+pClasePrenda);
-					codigoPrenda="HPK";
-					break;
-				case "MUJER-PANTALON-MAYOR":
-					System.out.println("OK - pClasePrenda:"+pClasePrenda);
-					codigoPrenda="MPM";
-					break;
-				case "MUJER-PANTALON-JUVENIL":
-					System.out.println("OK - pClasePrenda:"+pClasePrenda);
-					codigoPrenda="MPJ";
-					break;
-				case "MUJER-PANTALON-KIDS":
-					System.out.println("OK - pClasePrenda:"+pClasePrenda);
-					codigoPrenda="MPK";
-					break;
-					//CAMISA
-					// ...
-					//OTROS
-				default:
-					break;
+				// - VERIFICAR SI ESTA PROCESADA
+				if(entity.getEstado().equals("PR")){
+					this.nuevo = false;
+					this.verLista = false;
+					this.buttonVerLista = false;
+					this.aprobarFichaTecnica = false;
+					this.buttonCargarFichaTecnica = false;
+					
+				}else if(entity.getEstado().equals("AC")){//  - SI NO ESTA PROCESADA
+					//  cargar los parametros por defecto de una ficha tecnica
+					this.nuevo = false;
+					this.verLista = false;
+					this.buttonVerLista = false;
+					this.aprobarFichaTecnica = true;
+					this.buttonCargarFichaTecnica = false;
 				}
 			}
 		}
 	}
+	
+	private void cargarClasePrenda(){
+		String pClasePrenda = selectedOrdenProduccion.getClasePrenda();
+		if(pClasePrenda != null){
+			switch (pClasePrenda) {
+			case "HOMBRE-PANTALON-MAYOR":
+				System.out.println("OK - pClasePrenda:"+pClasePrenda);
+				codigoPrenda="HPM";
+				break;
+			case "HOMBRE-PANTALON-JUVENIL":
+				System.out.println("OK - pClasePrenda:"+pClasePrenda);
+				codigoPrenda="HPJ";
+				break;
+			case "HOMBRE-PANTALON-KIDS":
+				System.out.println("OK - pClasePrenda:"+pClasePrenda);
+				codigoPrenda="HPK";
+				break;
+			case "MUJER-PANTALON-MAYOR":
+				System.out.println("OK - pClasePrenda:"+pClasePrenda);
+				codigoPrenda="MPM";
+				break;
+			case "MUJER-PANTALON-JUVENIL":
+				System.out.println("OK - pClasePrenda:"+pClasePrenda);
+				codigoPrenda="MPJ";
+				break;
+			case "MUJER-PANTALON-KIDS":
+				System.out.println("OK - pClasePrenda:"+pClasePrenda);
+				codigoPrenda="MPK";
+				break;
+				//CAMISA
+				// ...
+				//OTROS
+			default:
+				break;
+			}
+		}
+		entity.setCodigo(codigoPrenda+"-"+String.format("%06d", entity.getCorrelativo()));//Ej: HPJ-000001
+	}
 
 	private void newEntity(){
+		this.nuevo = true;
+		this.verLista = false;
+		this.buttonVerLista = false;
+		this.aprobarFichaTecnica = false;
+		this.buttonCargarFichaTecnica = false;
+		selectedFichaTecnica = new FichaTecnica();
 		selectedOrdenProduccion = new OrdenProduccion();
 		selectedDetalleOrdenProduccion = new DetalleOrdenProduccion();
 
@@ -214,7 +253,7 @@ public class FichaTecnicaController implements Serializable{
 		detalle=false;
 		titulo="Registrar Ficha Tecnica";
 		fichaProducto=new FichaDetalleProducto();
-		fichaInsumoCorte=new FichaDetalleInsumoCorte();
+		fichaInsumoCorte=new FichaInsumoCorte();
 		fichaInsumoAcabado=new FichaDetalleInsumoAcabado();
 		listaFichaProducto=new ArrayList<>();
 		listaFichaInsumoCorte=new ArrayList<>();
@@ -232,14 +271,24 @@ public class FichaTecnicaController implements Serializable{
 	public void register(){
 		try {
 			if(validarCampos()){
-				entity = fichaTecnicaRegistration.register(entity,listaFichaProducto,listaFichaInsumoCorte,listaFichaInsumoAcabado);
+				//verificar si la ficha tecnica fue seleccionada de una anterior
+				if(entity.getId()==0){
+					//entity = fichaTecnicaRegistration.register(entity,listaFichaProducto,listaFichaInsumoCorte,listaFichaInsumoAcabado);
+					entity = fichaTecnicaRegistration.register(entity);
+				}
 				//agregar la ficha tecnica creada al proceso de corte
 				ProcesoCorte procesoCorte = selectedDetalleOrdenProduccion.getProcesoCorte();
 				procesoCorte.setFichaTecnica(entity);
 				procesoCorteRegistration.updated(procesoCorte);
-				newEntity();
-				FacesUtil.infoMessage("Registrado Correctamente.!");
-				FacesUtil.updateComponets(frms);
+				//aqui deberia llevarlo de retorno al flujo de proceso de corte
+				
+				//enviando los parametros necesarios para cargar el controller
+				String path = request.getContextPath()+"/pages/produccion/ficha-tecnica.xhtml";
+				FacesUtil.redirect(path);
+				
+				//newEntity();
+				//FacesUtil.infoMessage("Registrado Correctamente.!");
+				//FacesUtil.updateComponets(frms);
 			}
 		} catch (Exception e) {
 			System.out.println("Error en registro Ficha Tecnica: "+e.getMessage());
@@ -287,7 +336,6 @@ public class FichaTecnicaController implements Serializable{
 		}
 	}
 
-
 	public void aprobar(){
 		try {
 			if(validarCampos()){
@@ -318,7 +366,6 @@ public class FichaTecnicaController implements Serializable{
 			seguir=false;
 			FacesUtil.warmMessage("No tiene agregado un Detalle de Insumo de Acabado.!");
 		}
-
 		if(seguir){
 
 		}
@@ -341,6 +388,7 @@ public class FichaTecnicaController implements Serializable{
 		FacesUtil.updateComponent("dlg_aprobar");
 		FacesUtil.showDialog("wv_aprobar");
 	}
+	
 	private boolean validarCampos(){
 		boolean result=true;
 		if(this.entity.getConfeccionista()==null){
@@ -401,7 +449,7 @@ public class FichaTecnicaController implements Serializable{
 			modificar=true;
 			titulo="Modificar Ficha Tecnica";
 			fichaProducto=new FichaDetalleProducto();
-			fichaInsumoCorte=new FichaDetalleInsumoCorte();
+			fichaInsumoCorte=new FichaInsumoCorte();
 			fichaInsumoAcabado=new FichaDetalleInsumoAcabado();
 			listaFichaProducto=fichaDetalleProductoRepository.findAllByParameterObjectTwo("fichaTecnica", "baja", entity, false);
 			listaFichaInsumoCorte=fichaDetalleInsumoCorteRepository.findAllByParameterObjectTwo("fichaTecnica", "baja", entity, false);
@@ -449,9 +497,7 @@ public class FichaTecnicaController implements Serializable{
 		} catch (Exception e) {
 			FacesUtil.warmMessage("No se pudo subir el modelo.!");;
 		}
-
 	}
-
 
 	private byte[] toByteArrayUsingJava(InputStream is)
 			throws IOException {
@@ -467,6 +513,7 @@ public class FichaTecnicaController implements Serializable{
 	/* method select*/
 	public void onRowSelect(SelectEvent event) {
 		FacesUtil.infoMessage("Selecionado: "+(FichaTecnica) event.getObject());
+		this.buttonCargarFichaTecnica = true;
 
 	}
 
@@ -527,7 +574,7 @@ public class FichaTecnicaController implements Serializable{
 	public void agregarInsumoCorte(){
 		if(this.usuarioSistema.getAlmacen()!=null){
 			System.out.println("Almacen: "+usuarioSistema.getAlmacen());
-			this.fichaInsumoCorte=new FichaDetalleInsumoCorte();
+			this.fichaInsumoCorte=new FichaInsumoCorte();
 			FacesUtil.updateComponent("frm_insumo_corte");
 			FacesUtil.showDialog("wv_dlg_insumo_corte");
 		}else{
@@ -756,7 +803,6 @@ public class FichaTecnicaController implements Serializable{
 		return result;
 	}
 
-
 	public void onItemSelectTela(SelectEvent event) {
 		System.out.println("Insumo corte: "+event.getObject());
 		Producto pr = ((Producto)event.getObject());
@@ -792,7 +838,7 @@ public class FichaTecnicaController implements Serializable{
 		if(pr!=null){
 			System.out.println("Producto: "+pr);
 			if(fichaInsumoCorte==null){
-				fichaInsumoCorte=new FichaDetalleInsumoCorte();
+				fichaInsumoCorte=new FichaInsumoCorte();
 			}
 			fichaInsumoCorte.setProducto(pr);
 		}
@@ -825,7 +871,7 @@ public class FichaTecnicaController implements Serializable{
 			fichaInsumoCorte.setProducto(productoRepository.findById(fichaInsumoCorte.getProducto().getId()));
 			listaFichaInsumoCorte.add(fichaInsumoCorte);
 			System.out.println("Insucmo agregado "+fichaInsumoCorte);
-			fichaInsumoCorte=new FichaDetalleInsumoCorte();
+			fichaInsumoCorte=new FichaInsumoCorte();
 			FacesUtil.updateComponent("frm:tab_detalle");
 			FacesUtil.updateComponent("frm_insumo_corte");	
 		}
@@ -860,7 +906,7 @@ public class FichaTecnicaController implements Serializable{
 
 	public void accionEliminarInsumoCorte(){
 		for (int i = 0; i < listaFichaInsumoCorte.size(); i++) {
-			FichaDetalleInsumoCorte fc=listaFichaInsumoCorte.get(i);
+			FichaInsumoCorte fc=listaFichaInsumoCorte.get(i);
 			if(fc.getProducto().getId()==fichaInsumoCorte.getProducto().getId()){
 				listaFichaInsumoCorte.remove(i);
 				if(fc.getId()!=null){
@@ -931,11 +977,11 @@ public class FichaTecnicaController implements Serializable{
 				return true;
 			}
 			if(listaFichaInsumoCorte.size()>0){
-				for (FichaDetalleInsumoCorte fc : listaFichaInsumoCorte) {
+				for (FichaInsumoCorte fc : listaFichaInsumoCorte) {
 					if(fc.getProducto().getId()==fichaInsumoCorte.getProducto().getId()){
 						if(fc.getId()==fichaInsumoCorte.getId()){
 							fc=fichaInsumoCorte;
-							fichaInsumoCorte=new FichaDetalleInsumoCorte();
+							fichaInsumoCorte=new FichaInsumoCorte();
 							FacesUtil.infoMessage("Modificado Correctametne");
 							FacesUtil.updateComponent("frm:tab_detalle");
 							FacesUtil.updateComponent("frm_insumo_corte");
@@ -997,6 +1043,28 @@ public class FichaTecnicaController implements Serializable{
 
 	public void onRowSelectInsumoAcabado(SelectEvent event) {
 		System.out.println("Seleccionado insumo acabado: "+event.getObject());
+	}
+
+	//
+	public void cargarVerLista(){
+		this.buttonVerLista = false;
+		this.verLista = true;
+		this.nuevo = false;
+		this.aprobarFichaTecnica = false;
+		//FacesUtil.updateComponets(frms);
+	}
+
+	public void volverAtras(){
+		this.buttonVerLista = true;
+		this.verLista = false;
+		this.nuevo = true;
+		this.aprobarFichaTecnica = false;
+	}
+
+	public void cargarFichaTecnicaSeleccionada(){
+		volverAtras();
+		//newEntity = selectedEntiry;
+		entity = selectedFichaTecnica;
 	}
 
 	/* Get and Set */
@@ -1092,11 +1160,11 @@ public class FichaTecnicaController implements Serializable{
 		this.fichaProducto = fichaProducto;
 	}
 
-	public FichaDetalleInsumoCorte getFichaInsumoCorte() {
+	public FichaInsumoCorte getFichaInsumoCorte() {
 		return fichaInsumoCorte;
 	}
 
-	public void setFichaInsumoCorte(FichaDetalleInsumoCorte fichaInsumoCorte) {
+	public void setFichaInsumoCorte(FichaInsumoCorte fichaInsumoCorte) {
 		this.fichaInsumoCorte = fichaInsumoCorte;
 	}
 
@@ -1116,11 +1184,11 @@ public class FichaTecnicaController implements Serializable{
 		this.listaFichaProducto = listaFichaProducto;
 	}
 
-	public List<FichaDetalleInsumoCorte> getListaFichaInsumoCorte() {
+	public List<FichaInsumoCorte> getListaFichaInsumoCorte() {
 		return listaFichaInsumoCorte;
 	}
 
-	public void setListaFichaInsumoCorte(List<FichaDetalleInsumoCorte> listaFichaInsumoCorte) {
+	public void setListaFichaInsumoCorte(List<FichaInsumoCorte> listaFichaInsumoCorte) {
 		this.listaFichaInsumoCorte = listaFichaInsumoCorte;
 	}
 
@@ -1156,12 +1224,12 @@ public class FichaTecnicaController implements Serializable{
 		this.deleteListaFichaProducto = deleteListaFichaProducto;
 	}
 
-	public List<FichaDetalleInsumoCorte> getDeleteListaFichaInsumoCorte() {
+	public List<FichaInsumoCorte> getDeleteListaFichaInsumoCorte() {
 		return deleteListaFichaInsumoCorte;
 	}
 
 	public void setDeleteListaFichaInsumoCorte(
-			List<FichaDetalleInsumoCorte> deleteListaFichaInsumoCorte) {
+			List<FichaInsumoCorte> deleteListaFichaInsumoCorte) {
 		this.deleteListaFichaInsumoCorte = deleteListaFichaInsumoCorte;
 	}
 
@@ -1246,7 +1314,44 @@ public class FichaTecnicaController implements Serializable{
 		this.codigoPrenda = codigoPrenda;
 	}
 
+	public boolean isVerLista() {
+		return verLista;
+	}
 
+	public void setVerLista(boolean verLista) {
+		this.verLista = verLista;
+	}
 
+	public boolean isAprobarFichaTecnica() {
+		return aprobarFichaTecnica;
+	}
+
+	public void setAprobarFichaTecnica(boolean aprobarFichaTecnica) {
+		this.aprobarFichaTecnica = aprobarFichaTecnica;
+	}
+
+	public boolean isButtonCargarFichaTecnica() {
+		return buttonCargarFichaTecnica;
+	}
+
+	public void setButtonCargarFichaTecnica(boolean buttonCargarFichaTecnica) {
+		this.buttonCargarFichaTecnica = buttonCargarFichaTecnica;
+	}
+
+	public boolean isButtonVerLista() {
+		return buttonVerLista;
+	}
+
+	public void setButtonVerLista(boolean buttonVerLista) {
+		this.buttonVerLista = buttonVerLista;
+	}
+
+	public FichaTecnica getSelectedFichaTecnica() {
+		return selectedFichaTecnica;
+	}
+
+	public void setSelectedFichaTecnica(FichaTecnica selectedFichaTecnica) {
+		this.selectedFichaTecnica = selectedFichaTecnica;
+	}
 
 }
